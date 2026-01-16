@@ -1,0 +1,10 @@
+# node
+node_modules/
+package.json
+yarn.lock
+
+# os
+.DS_Store
+
+# editor
+.marks.json
