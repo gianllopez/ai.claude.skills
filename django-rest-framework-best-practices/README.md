@@ -1,6 +1,6 @@
 # Django Best Practices
 
-A structured repository for creating and maintaining *Django* & *Django REST Framework* Best Practices optimized for agents, LLMs, and human developers.
+A structured repository for creating and maintaining _Django_ & _Django REST Framework_ Best Practices optimized for agents, LLMs, and human developers.
 
 ## Structure
 
@@ -23,9 +23,6 @@ A structured repository for creating and maintaining *Django* & *Django REST Fra
 2. Choose the appropriate category prefix:
    - `arch-` for Architecture & App Structure
    - `conf-` for Configuration & DevOps (Settings, Docker, Env)
-   - `orm-` for ORM & Database Models
-   - `api-` for Serialization & API Design
-   - `view-` for Views & URL Handling
 3. Fill in the frontmatter (`title`, `impact`, `description`, `tags`)
 4. Ensure you have clear **Incorrect** vs **Correct** examples.
 5. Update `rules/_sections.md` to include your new rule in the index.
@@ -34,7 +31,7 @@ A structured repository for creating and maintaining *Django* & *Django REST Fra
 
 Each rule file should follow this strict frontmatter and structure:
 
-```````markdown
+````markdown
 | Title    | Impact                       | Description (optional) | Tags (comma-separeted) |
 | -------- | ---------------------------- | ---------------------- | ---------------------- |
 | \<title> | \<impact: LOW, MEDIUM, HIGH> | \<description>         | \<tags>                |
@@ -60,7 +57,7 @@ const good = example();
 ```
 
 Reference: [Link to documentation or resource](https://example.com)
-```````
+````
 
 Reference: [Some link example](google.com)
 
@@ -77,7 +74,7 @@ Reference: [Some link example](google.com)
 - **MEDIUM-HIGH** - Standardization that prevents technical debt.
 - **MEDIUM** - Optimizations for performance or readability.
 - **LOW** - Stylistic preferences.
-  
+
 ## Acknowledgments
 
 Originally created by [@gianllopez](https://github.com/gianllopez).

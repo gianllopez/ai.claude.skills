@@ -13,21 +13,23 @@ tags: docker, devops, configuration, naming-convention
 
 1.  **Base Image:** Always use Python `slim` variants (e.g., `python:3.13-slim`) to minimize image size.
 2.  **Dockerfile Optimization:**
-    * Set `PYTHONUNBUFFERED=1` and `PYTHONDONTWRITEBYTECODE=1`.
-    * Copy and install `requirements` before copying the source code to leverage *Docker* layer caching.
-    * Use strict paths (e.g., `requirements/production.txt`).
+    - Set `PYTHONUNBUFFERED=1` and `PYTHONDONTWRITEBYTECODE=1`.
+    - Copy and install `requirements` before copying the source code to leverage _Docker_ layer caching.
+    - Use strict paths (e.g., `requirements/production.txt`).
 3.  **Naming Convention (Reverse Domain):**
-    * **Container Names:** `com.example.project.service` (e.g., `com.example.project.api`).
-    * **Volume Names:** `com-example-project-service-data` (kebab-case variant of reverse domain).
-    * **Image Names:** `com.example.project.service`.
+    - **Container Names:** `com.example.project.service` (e.g., `com.example.project.api`).
+    - **Volume Names:** `com-example-project-service-data` (kebab-case variant of reverse domain).
+    - **Image Names:** `com.example.project.service`.
 4.  **Environment Segregation:**
-    * **Development:** Use `python manage.py runserver 0.0.0.0:8000` and `settings.development`.
-    * **Production:** Use `gunicorn project.wsgi --bind=0.0.0.0:8000` and `settings.production`.
+    - **Development:** Use `python manage.py runserver 0.0.0.0:8000` and `settings.development`.
+    - **Production:** Use `gunicorn project.wsgi --bind=0.0.0.0:8000` and `settings.production`.
 5.  **Ignore Files:** Strict `.dockerignore` including `.venv`, `.env`, `__pycache__`, and system files.
 
 **Incorrect (Generic names, fat images, cache breaking):**
 
 ```dockerfile
+# ./Dockerfile
+
 # Bad: Full image is heavy
 FROM python:3.13
 
@@ -37,7 +39,8 @@ RUN pip install -r requirements.txt
 ```
 
 ```yaml
-# compose.yml
+# ./compose.yml
+
 services:
   database:
     image: postgres
@@ -49,7 +52,7 @@ services:
 **Correct (Slim, Cached, Reverse Domain, Env-Aware):**
 
 ```dockerfile
-# Dockerfile
+# ./Dockerfile
 
 # syntax=docker/dockerfile:1
 FROM python:3.13-slim
@@ -68,7 +71,7 @@ COPY . .
 ```
 
 ```yaml
-# compose.yml
+# ./compose.yml
 
 services:
   database:
@@ -112,7 +115,7 @@ volumes:
 ```
 
 ```yaml
-# compose.production.yml
+# ./compose.production.yml
 
 services:
   app:
@@ -122,7 +125,7 @@ services:
 ```
 
 ```plaintext
-# .dockerignore
+# ./.dockerignore
 
 # environment
 .venv.*/
@@ -143,16 +146,17 @@ __pycache__/
 
 ### Execution Reference
 
-**Development (Default):**    
+**Development (Default):**
+
 ```bash
 $ docker compose up -d --build
 ```
-    
+
 **Production (Override):**
 Combines the base config with production overrides.
-    
+
 ```bash
-$ docker compose -f compose.yml -f compose.prod.yml up -d --build    
+$ docker compose -f compose.yml -f compose.prod.yml up -d --build
 ```
 
 Reference: [Docker Best Practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices)

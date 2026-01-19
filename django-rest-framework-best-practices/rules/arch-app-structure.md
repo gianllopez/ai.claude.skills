@@ -20,14 +20,15 @@ tags: django, configuration
 **Incorrect (Flat structure & Default Config):**
 
 ```plaintext
-users/models.py
-users/views.py
-users/apps.py
-users/apps.py (missing)
+./users/
+├── apps.py (missing)
+├── models.py
+└── views.py
 ```
 
 ```python
-# users/apps.py
+# ./apps/users/apps.py
+
 from django.apps import AppConfig
 
 class UsersConfig(AppConfig):
@@ -38,16 +39,22 @@ class UsersConfig(AppConfig):
 **Correct (Modular Structure & Custom Config):**
 
 ```plaintext
-apps/users/models/__init__.py
-apps/users/models/user.py
-apps/users/serializers/__init__.py
-apps/users/views/__init__.py
-apps/users/urls.py
-apps/users/apps.py
+./apps/
+└── users/
+    ├── apps.py
+    ├── models/
+    │   ├── __init__.py
+    │   └── user.py
+    ├── serializers/
+    │   └── __init__.py
+    ├── urls.py
+    └── views/
+        └── __init__.py
 ```
 
 ```python
-# apps/users/apps.py
+# ./apps/users/apps.py
+
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
@@ -59,7 +66,8 @@ class UsersConfig(AppConfig):
 ```
 
 ```python
-# apps/my_app/models/__init__.py
+# ./apps/app/models/__init__.py
+
 # Facade pattern: Import internal implementations
 from .users import User
 

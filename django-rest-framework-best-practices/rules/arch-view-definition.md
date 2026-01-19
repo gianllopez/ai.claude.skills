@@ -24,7 +24,8 @@ tags: django-rest-framework, views
 **Incorrect (Direct imports & Missing Types):**
 
 ```python
-# urls.py
+# ./apps/users/urls.py
+
 from .views import UserLoginAPIView # Potential name conflict
 
 urlpatterns = [
@@ -33,7 +34,8 @@ urlpatterns = [
 ```
 
 ```python
-# views.py
+# ./apps/users/views/login.py
+
 class UserLoginAPIView(APIView):
     # Missing Type Hints
     def post(self, request):
@@ -43,7 +45,8 @@ class UserLoginAPIView(APIView):
 **Correct (Context-Aware Selection & Module Import):**
 
 ```python
-# apps/users/views.py
+# ./apps/users/views/login.py
+
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -59,7 +62,8 @@ class UserLoginAPIView(APIView):
 ```
 
 ```python
-# apps/users/urls.py
+# ./apps/users/urls.py
+
 from django.urls import path
 
 # Standard: Import the module, not the class

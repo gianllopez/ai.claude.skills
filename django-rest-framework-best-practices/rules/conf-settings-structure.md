@@ -22,11 +22,13 @@ tags: django, configuration
 **Incorrect (Monolithic & Insecure):**
 
 ```plaintext
-project/settings.py
+./project/
+└── settings.py
 ```
 
 ```python
-# project/settings.py
+# ./project/settings.py
+
 # Risk: Forgetting to change this before deployment
 DEBUG = True
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,14 +37,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 **Correct (Modular & Environment-Aware):**
 
 ```plaintext
-project/settings/__init__.py
-project/settings/development.py
-project/settings/production.py
-project/settings/settings.py
+./project/
+└── settings/
+    ├── __init__.py
+    ├── development.py
+    ├── production.py
+    └── settings.py
 ```
 
 ```python
-# project/settings/settings.py (Base)
+# ./project/settings/settings.py (Base)
+
 import os
 from pathlib import Path
 
@@ -60,7 +65,8 @@ TIME_ZONE = "America/Bogota"
 ```
 
 ```python
-# project/settings/development.py
+# ./project/settings/development.py
+
 from .settings import *
 
 DEBUG = True
@@ -69,7 +75,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 ```
 
 ```python
-# project/settings/production.py
+# ./project/settings/production.py
+
 from .settings import *
 
 DEBUG = False

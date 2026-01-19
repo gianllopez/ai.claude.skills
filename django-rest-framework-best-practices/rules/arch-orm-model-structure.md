@@ -11,7 +11,7 @@ tags: django, orm
 
 **Guidelines:**
 
-1.  **File Isolation:** Each model must reside in its own file within the `models/` package (e.g., `apps/users/models/user.py`).
+1.  **File Isolation:** Each model must reside in its own file within the `models/` package (e.g., `./apps/users/models/user.py`).
 2.  **Field Definition:** The first argument of every non-relational field must be the translated `verbose_name` (using `gettext_lazy`).
 3.  **Class Structure:** Adhere to the following order inside the class:
     1.  `Choices` (Enums/TextChoices)
@@ -22,13 +22,14 @@ tags: django, orm
     6.  `def __str__(self) -> str:`
 4.  **Metadata:**
     - Explicitly define `verbose_name` and `verbose_name_plural`.
-    - Explicitly define `db_table` (Conditional) for models with multi-word names (e.g., `UserAsset`), you **MUST** explicitly define `db_table` to enforce _snake_case_ separation (e.g., `users_user_asset`). For single-word models, the default behavior is acceptable.
+    - Explicitly define `db_table` (Conditional) for models with multi-word names (e.g., `UserAsset`), you must explicitly define `db_table` to enforce _snake_case_ separation (e.g., `users_user_asset`). For single-word models, the default behavior is acceptable.
 5.  **Typing:** The `__str__` method must strictly include the return type hint `-> str`.
 
 **Incorrect (Mixed structure, missing translations/types):**
 
 ```python
-# apps/users/models/asset.py
+# ./apps/users/models/asset.py
+
 class UserAsset(models.Model):
     # Implicit table: "users_userasset" (Hard to read)
     class Meta:
@@ -40,7 +41,8 @@ class UserAsset(models.Model):
 **Correct (Conditional logic applied)**
 
 ```python
-# apps/users/models/user.py
+# ./apps/users/models/user.py
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _

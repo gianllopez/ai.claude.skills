@@ -12,11 +12,11 @@ tags: python, virtualenv, dependencies, pip, configuration
 **Guidelines:**
 
 1.  **Dual Virtual Environments:** Do not use a generic `.venv`. Create two explicit environments in the project root:
-    * `.venv.development`: For local coding, linting, and testing.
-    * `.venv.production`: To simulate the build process and verify clean installs.
-2.  **Requirement Files:** Store dependencies in a `requirements/` directory, never in a root `requirements.txt`.
-    * `requirements/production.txt`: Only libraries required for the application to run.
-    * `requirements/development.txt`: Libraries for type checking (stubs), formatting, and debugging.
+    - `.venv.development`: For local coding, linting, and testing.
+    - `.venv.production`: To simulate the build process and verify clean installs.
+2.  **Requirement Files:** Store dependencies in a `requirements/` directory, never in a root `./requirements.txt`.
+    - `./requirements/production.txt`: Only libraries required for the application to run.
+    - `./requirements/development.txt`: Libraries for type checking (stubs), formatting, and debugging.
 3.  **Contextual Installation:** Before installing a package, explicitly decide: "Is this needed for the app logic or for the developer?" Install into the corresponding environment/file.
 4.  **Standard Development Stack:** Development requirements must include type stubs for strict typing (e.g., `django-stubs`, `djangorestframework-stubs`).
 
@@ -27,7 +27,7 @@ tags: python, virtualenv, dependencies, pip, configuration
 $ python3 -m venv .venv
 
 # Bad: Root file mixing concerns
-$ cat project/requirements.txt
+$ cat ./project/requirements.txt
 ```
 
 **Correct (Segregated Environments & Files):**
@@ -43,16 +43,19 @@ $ python3 -m venv .venv.development
 **File Structure:**
 
 ```plaintext
-project/.venv.development/
-project/.venv.production/
-project/requirements/development.txt
-project/requirements/production.txt
+./project/
+├── .venv.development/
+├── .venv.production/
+└── requirements/
+    ├── development.txt
+    └── production.txt
 ```
 
 **Content Examples:**
 
 ```plaintext
-# requirements/production.txt (example)
+# ./requirements/production.txt (example)
+
 django
 djangorestframework
 gunicorn
@@ -60,7 +63,8 @@ psycopg2-binary
 ```
 
 ```plaintext
-# requirements/development.txt (example)
+# ./requirements/development.txt (example)
+
 certifi==2025.8.3
 charset-normalizer==3.4.3
 django-stubs==5.2.5

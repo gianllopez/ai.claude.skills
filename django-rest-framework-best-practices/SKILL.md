@@ -1,5 +1,5 @@
 ---
-name: django-rest-api-best-practices
+name: django-rest-framework-best-practices
 description: Django and Django REST Framework optimization guidelines. This skill defines the architectural and performance standards for the back-end, focusing on ORM efficiency, serialization strategies, and API security
 license: MIT
 metadata:
@@ -28,14 +28,10 @@ Reference these guidelines when:
 
 ## Rule Categories by Priority
 
-| Priority | Category                        | Impact      | Prefix  |
-| -------- | ------------------------------- | ----------- | ------- |
-| 1        | Database Optimization & ORM     | CRITICAL    | `orm-`  |
-| 2        | Security & Data Integrity       | CRITICAL    | `sec-`  |
-| 3        | API Serialization & Performance | HIGH        | `api-`  |
-| 4        | Architecture & Design Patterns  | HIGH        | `arch-` |
-| 5        | View Logic & Request Handling   | MEDIUM-HIGH | `view-` |
-| 6        | Project Configuration & Tooling | LOW         | `conf-` |
+| Priority | Category                        | Impact | Prefix  |
+| -------- | ------------------------------- | ------ | ------- |
+| 1        | Architecture & Design Patterns  | HIGH   | `arch-` |
+| 2        | Project Configuration & Tooling | LOW    | `conf-` |
 
 ## Quick Reference
 
