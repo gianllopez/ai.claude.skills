@@ -38,13 +38,11 @@ declare module 'axios' { ... }
 export type User = { id: string };
 ```
 
-TypeScript
-
 ```typescript
 // ./features/profile.tsx
 
 // Bad: Importing a type as a value
-import { User } from "@/core/types/users";
+import { User } from '@/core/types/users';
 ```
 
 **Correct (Separated, Structured, Explicit Type Imports):**
@@ -77,12 +75,12 @@ export interface Product {
 // ./core/types/products/index.ts
 
 // Explicit type export
-export type { Product } from "./product";
+export type { Product } from './product';
 ```
 
 ```typescript
 // ./app/products.tsx
 
 // Explicit type import
-import type { Product } from "@/core/types/products";
+import type { Product } from '@/core/types/products';
 ```

@@ -1,18 +1,18 @@
 ---
 title: Core Utilities & Configuration Structure
-impact: MEDIUM-HIGH
+impact: MEDIUM
 description: Enforces organization for global configuration, functional helpers (no static classes), shared hooks, and third-party library adapters.
 tags: architecture, core
 ---
 
 ## Core Utilities & Configuration Structure
 
-**Impact (MEDIUM-HIGH):** Centralizing configuration constants prevents "magic strings". Using functional helpers instead of static classes improves tree-shaking. Isolating third-party logic in `lib/` prevents vendor lock-in leaking into business logic.
+**Impact (MEDIUM):** Centralizing configuration constants prevents magic strings. Using functional helpers instead of static classes improves tree-shaking. Isolating third-party logic in `lib/` prevents vendor lock-in leaking into business logic.
 
 **Guidelines:**
 
 1.  **Configuration (`./core/config/`):**
-    - Must store global constants (Storage Keys, UI metrics, Query timings) and theme definitions.
+    - Must store global constants (storage keys, UI metrics, query timings) and theme definitions.
     - **Theme:** Colors must be explicitly defined (e.g., mapping _TailwindCSS_ colors to semantic names), avoiding raw hex codes in components.
 2.  **Helpers (`./core/helpers/`):**
     - **Functional Approach:** Must use top-level named exports (`export const login = ...`).
@@ -49,7 +49,7 @@ AsyncStorage.setItem('my-token', '...');
 // ./core/config/constants.ts
 
 export const STORAGE = {
-  SESSION: { JSON_WEB_TOKEN: "@session/jwt/token" },
+  SESSION: { JSON_WEB_TOKEN: '@session/jwt/token' },
 };
 
 export const QUERY = {
@@ -61,8 +61,8 @@ export const QUERY = {
 // ./core/helpers/session.ts
 
 // Good: Direct module exports (Tree-shakable)
-import { STORAGE } from "@/core/config/constants";
-import { storage } from "@/core/lib/react-native-mmkv";
+import { STORAGE } from '@/core/config/constants';
+import { storage } from '@/core/lib/react-native-mmkv';
 
 export const login = (token: string) => {
   storage.set(STORAGE.SESSION.JSON_WEB_TOKEN, token);

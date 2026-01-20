@@ -1,7 +1,7 @@
 ---
 title: Component Structure & Composition
 impact: HIGH
-description: Enforces function declarations, named exports, and specific folder structures for Integral, Grouped, and Complex (Base/Preset) components.
+description: Enforces function declarations, named exports, and specific folder structures for integral, grouped, and complex (base/preset) components.
 tags: architecture, components
 ---
 
@@ -20,9 +20,9 @@ tags: architecture, components
     - If exported, rename to `ComponentNameProps`.
 3.  **File Structure Strategy:**
     - **Integral Component:** Single file (`components/my-component.tsx`) if it has no sub-components.
-    - **Grouped Component:** Directory with `index.tsx` (Main) and helper files (e.g., `item.tsx`). Helper components must have generic names internal to the folder but specific implementation details.
-    - **Complex Component (Base/Presets):** For components with multiple variants (e.g., _Buttons_, _Inputs_), strictly follow the **Base/Presets Pattern**.
-      - `base/`: Contains the logic container (State, Theme injection, Layout). Uses `render` props to pass data to children.
+    - **Grouped Component:** Directory with `index.tsx` (main) and helper files (e.g., `item.tsx`). Helper components must have generic names internal to the folder but specific implementation details.
+    - **Complex Component (base/presets):** For components with multiple variants (e.g., _Buttons_, _Inputs_), strictly follow the respective pattern.
+      - `base/`: Contains the logic container (state, theme injection, layout). Uses `render` props to pass data to children.
       - `presets/`: Contains visual implementations consuming the `base`.
       - `index.ts`: Multiple barrel files to control visibility.
 
@@ -40,7 +40,7 @@ export default Button;
 
 ```plaintext
 ./components/products-list/
-├── index.tsx (Exports ProductsList)
+├── index.tsx (Exports `ProductsList`)
 └── item.tsx  (Internal generic naming)
 ```
 

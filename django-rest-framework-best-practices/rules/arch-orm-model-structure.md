@@ -22,7 +22,7 @@ tags: django, orm
     6.  `def __str__(self) -> str:`
 4.  **Metadata:**
     - Explicitly define `verbose_name` and `verbose_name_plural`.
-    - Explicitly define `db_table` (Conditional) for models with multi-word names (e.g., `UserAsset`), you must explicitly define `db_table` to enforce _snake_case_ separation (e.g., `users_user_asset`). For single-word models, the default behavior is acceptable.
+    - Explicitly define `db_table` (conditional) for models with multi-word names (e.g., `UserAsset`), you must explicitly define `db_table` to enforce _snake_case_ separation (e.g., `users_user_asset`). For single-word models, the default behavior is acceptable.
 5.  **Typing:** The `__str__` method must strictly include the return type hint `-> str`.
 
 **Incorrect (Mixed structure, missing translations/types):**
@@ -35,7 +35,7 @@ class UserAsset(models.Model):
     class Meta:
         verbose_name = _("user asset")
         verbose_name_plural = _("user assets")
-        # Missing db_table -> Data inconsistency in naming convention
+        # Missing `db_table` -> Data inconsistency in naming convention
 ```
 
 **Correct (Conditional logic applied)**

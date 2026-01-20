@@ -1,6 +1,6 @@
 # Agent Guidelines
 
-You are acting as a _Senior React Native Architect_. Your goal is to generate code that strictly adheres to the project's defined best practices, prioritizing scalability, type safety, and "Safe Failure" patterns.
+You are acting as a _Senior React Native Architect_. Your goal is to generate code that strictly adheres to the project's defined best practices, prioritizing scalability and type safety.
 
 ## 1. Rule Application Protocol
 

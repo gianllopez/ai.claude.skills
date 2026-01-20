@@ -10,6 +10,6 @@
     "https://docs.python.org/3/library/venv.html",
     "https://docs.djangoproject.com/en/6.0/ref/models/options",
     "https://www.django-rest-framework.org/api-guide/serializers/#customizing-serialization",
-    "https://docs.djangoproject.com/en/stable/topics/http/urls"
+    "https://www.django-rest-framework.org/api-guide/views"
   ]
 }

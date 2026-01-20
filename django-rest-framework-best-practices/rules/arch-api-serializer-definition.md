@@ -1,7 +1,7 @@
 ---
 title: Serializer Definition, Naming & Delegation
 impact: HIGH
-description: Enforces conditional imports, action-based naming conventions, and response delegation for write serializers using `DelegateRepresentationMixin`.
+description: Enforces conditional imports, action-based naming conventions, and response delegation for write serializers using DelegateRepresentationMixin.
 tags: django-rest-framework, serializers
 ---
 

@@ -9,7 +9,7 @@ metadata:
 
 # React Native & Expo Best Practices
 
-Comprehensive guide for _Expo_ and _React Native_ development using TypeScript. Contains rules prioritized by impact on maintainability, performance, and scalability.
+Comprehensive guide for _Expo_ and _React Native_ development using _TypeScript_. Contains rules prioritized by impact on maintainability, performance, and scalability.
 
 ## When to Apply
 
@@ -28,26 +28,25 @@ Reference these guidelines when:
 | Priority | Category                      | Impact      | Prefix  |
 | :------- | :---------------------------- | :---------- | :------ |
 | 1        | Architecture & Core Structure | CRITICAL    | `arch-` |
-| 2        | API Data Layer & Fetching     | HIGH        | `api-`  |
-| 3        | Project Configuration         | MEDIUM-HIGH | `conf-` |
+| 2        | Project Configuration         | MEDIUM-HIGH | `conf-` |
 
 ## Quick Reference
 
-### 1. Architecture (`arch-`)
+### 1. Architecture & Core Structure (HIGH)
 
-- **Folder Structure:** [Modular Project Structure](./rules/arch-folder-structure.md)
-- **Component Structure:** [Component Structure (Base/Presets)](./rules/arch-comp-structure.md)
-- **Core Utilities:** [Core Utilities & Config](./rules/arch-core-utilities.md)
-- **Typing System:** [TypeScript Domain System](./rules/arch-typing-system.md)
-- **Styling Standards:** [Tailwind CSS & NativeWind](./rules/arch-style-nativewind.md)
+- `arch-folder-structure` - Enforce strict separation of `app` (_Expo Router_), `core` (Logic), and `components` (UI)
+- `arch-components-structure` - Standards for Integral components vs the base/presets pattern for variants
+- `arch-typing-system` - Segregate domain `types` from library `typings` using explicit imports
+- `arch-core-utilities` - Functional helpers, centralized config constants, and library adapters
 
-### 2. Data (`api-`)
+### 2. UI Engineering & Styling (HIGH)
 
-- **API Layer:** [Data Fetching & Axios](./rules/api-data-layer.md)
+- `arch-style-nativewind` - Use `className` with _NativeWind_ and `classnames` for conditional logic
 
-### 3. Configuration (`conf-`)
+### 3. Data & Configuration (MEDIUM-HIGH)
 
-- **Expo Config:** [Environment & Plugins](./rules/conf-expo.md)
+- `arch-api-data-layer` - Centralized _Axios_ and `react-query-kit` with safe return patterns
+- `conf-expo` - Native config via plugins, strict _Prettier_ sorting, and clean-state scripts
 
 ## How to Use
 

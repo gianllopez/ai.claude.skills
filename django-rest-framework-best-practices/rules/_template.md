@@ -1,12 +1,15 @@
-| Title    | Impact                       | Description (optional) | Tags (comma-separeted) |
-| -------- | ---------------------------- | ---------------------- | ---------------------- |
-| \<title> | \<impact: LOW, MEDIUM, HIGH> | \<description>         | \<tags>                |
+---
+title: \<title>
+impact: \<impact>
+description: \<description>
+tags: \<tags>
+---
 
 ## \<title>
 
 **Impact (\<impact: LOW, MEDIUM, HIGH>):** \<description>
 
-<Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications>
+Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications.
 
 **Incorrect (description of what's wrong):**
 

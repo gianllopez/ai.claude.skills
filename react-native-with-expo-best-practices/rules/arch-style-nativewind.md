@@ -1,25 +1,25 @@
 ---
 title: Tailwind CSS & Styling Standards
 impact: HIGH
-description: Enforces the use of *NativeWind* (className) over *StyleSheet*, strict usage of the `classnames` library for conditional logic, and theme constraints.
+description: Enforces the use of NativeWind (className) over StyleSheet, strict usage of the classnames library for conditional logic, and theme constraints.
 tags: architecture, styles
 ---
 
 ## Tailwind CSS & Styling Standards
 
-**Impact (HIGH):** Unified styling via utility classes reduces bundle size (no StyleSheet objects) and improves readability. Using a dedicated library for conditional classes prevents messy template literals and ensures consistent class resolution.
+**Impact (HIGH):** Unified styling via utility classes reduces bundle size (no _StyleSheet_ objects) and improves readability. Using a dedicated library for conditional classes prevents messy template literals and ensures consistent class resolution.
 
 **Guidelines:**
 
 1.  **Primary Styling Approach:**
     - Must use the `className` prop for all component styling.
-    - The `style` prop is reserved strictly for dynamic values that Tailwind cannot handle (e.g., interpolated animations, dynamic safe-area insets calculated at runtime) or 3rd party components not compatible with _NativeWind_.
+    - The `style` prop is reserved strictly for dynamic values that _TailwindCSS_ cannot handle (e.g., interpolated animations, dynamic safe-area insets calculated at runtime) or 3rd party components not compatible with _NativeWind_.
 2.  **Conditional Classes:**
     - Must use the `classnames` library for handling conditional logic.
     - **Forbidden:** Do not use template literals or string concatenation for classes (e.g., `` `flex-1 ${active ? 'bg-red' : ''}` ``).
 3.  **Theme Restrictions:**
     - Must utilize the tokens defined in `./core/config/theme/colors.ts`.
-    - Avoid "Arbitrary Values" (e.g., `bg-[#123456]`) unless absolutely necessary for one-off generic values.
+    - Avoid arbitrary values (e.g., `bg-[#123456]`) unless absolutely necessary for one-off generic values.
 4.  **Formatting:**
     - Class names must be sorted automatically via `prettier-plugin-tailwindcss`.
 
@@ -67,3 +67,5 @@ export function Card({ isActive }: { isActive: boolean }) {
   );
 }
 ```
+
+Reference: [NativeWind](https://www.nativewind.dev/v4/overview)

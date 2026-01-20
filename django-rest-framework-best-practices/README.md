@@ -9,7 +9,7 @@ A structured repository for creating and maintaining _Django_ & _Django REST Fra
   - `_template.md` - Template for creating new rules
   - `category-rule-name.md` - Individual rule definitions
 - `metadata.json` - Document metadata (version, organization, references)
-- `AGENTS.md` - Compiled output (the "System Prompt" for Claude/LLMs)
+- `AGENTS.md` - Compiled output (the system prompt for _Claude/LLMs_)
 
 ## Workflow
 
@@ -22,9 +22,9 @@ A structured repository for creating and maintaining _Django_ & _Django REST Fra
 1. Copy `rules/_template.md` to `rules/category-name.md`
 2. Choose the appropriate category prefix:
    - `arch-` for Architecture & App Structure
-   - `conf-` for Configuration & DevOps (Settings, Docker, Env)
+   - `conf-` for Configuration & DevOps (settings, _Docker_, environment)
 3. Fill in the frontmatter (`title`, `impact`, `description`, `tags`)
-4. Ensure you have clear **Incorrect** vs **Correct** examples.
+4. Ensure you have clear _Incorrect_ vs _Correct_ examples.
 5. Update `rules/_sections.md` to include your new rule in the index.
 
 ## Rule File Structure
@@ -32,34 +32,35 @@ A structured repository for creating and maintaining _Django_ & _Django REST Fra
 Each rule file should follow this strict frontmatter and structure:
 
 ````markdown
-| Title    | Impact                       | Description (optional) | Tags (comma-separeted) |
-| -------- | ---------------------------- | ---------------------- | ---------------------- |
-| \<title> | \<impact: LOW, MEDIUM, HIGH> | \<description>         | \<tags>                |
+---
+title: \<title>
+impact: \<impact>
+description: \<description>
+tags: \<tags>
+---
 
 ## \<title>
 
 **Impact (\<impact: LOW, MEDIUM, HIGH>):** \<description>
 
-<Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications>
+Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications.
 
 **Incorrect (description of what's wrong):**
 
 ```python
 // Bad code example here
-const bad = example();
+bad = example();
 ```
 
 **Correct (description of what's right):**
 
 ```python
 // Good code example here
-const good = example();
+good = example();
 ```
 
 Reference: [Link to documentation or resource](https://example.com)
 ````
-
-Reference: [Some link example](google.com)
 
 ## File Naming Convention
 

@@ -1,19 +1,18 @@
 ---
 title: Expo & Environment Configuration
-impact: MEDIUM-HIGH
-description: Enforces strict *Prettier* formatting (import sorting, *TailwindCSS*), custom lifecycle scripts, and plugin-based *Expo* configuration for assets and fonts.
+impact: HIGH
+description: Enforces strict _Prettier_ formatting (import sorting, TailwindCSS), custom lifecycle scripts, and plugin-based Expo configuration for assets and fonts.
 tags: configuration, expo
 ---
 
 ## Expo & Environment Configuration
 
-**Impact (MEDIUM-HIGH):** Standardization of code style (imports/formatting) and project configuration reduces cognitive load. Using `plugins` in `app.json` for native capabilities (fonts, splash screens) ensures native projects are generated consistently during prebuild. Custom scripts facilitate rapid testing cycles.
+**Impact (HIGH):** Standardization of code style (imports/formatting) and project configuration reduces cognitive load. Using `plugins` in `app.json` for native capabilities (fonts, splash screens) ensures native projects are generated consistently during prebuild. Custom scripts facilitate rapid testing cycles.
 
 **Guidelines:**
 
 1.  **Code Formatting:**
     - Must use `prettier` with `@trivago/prettier-plugin-sort-imports` and `prettier-plugin-tailwindcss`.
-    - **Import Order:** Strict separation: React Native, React, Expo, 3rd Party, Aliases (`@/components`, `@/core`), Relative.
 2.  **Custom Scripts:**
     - Include `ios:uninstall` and `android:uninstall` commands to quickly wipe the app from simulators/emulators for clean install testing.
 3.  **Expo Configuration (`app.json`):**
@@ -53,22 +52,22 @@ tags: configuration, expo
 
 printWidth: 80
 tabWidth: 2
-trailingComma: "all"
+trailingComma: 'all'
 singleQuote: true
 semi: true
 importOrderSeparation: true
 importOrderSortSpecifiers: true
 importOrder:
-  - "^react-native$"
-  - "^react$"
-  - "^@?expo(.*)$"
-  - "<THIRD_PARTY_MODULES>"
-  - "@/components"
-  - "@/core"
-  - "^[./]"
+  - '^react-native$'
+  - '^react$'
+  - '^@?expo(.*)$'
+  - '<THIRD_PARTY_MODULES>'
+  - '@/components'
+  - '@/core'
+  - '^[./]'
 plugins:
-  - "@trivago/prettier-plugin-sort-imports"
-  - "prettier-plugin-tailwindcss"
+  - '@trivago/prettier-plugin-sort-imports'
+  - 'prettier-plugin-tailwindcss'
 ```
 
 ```json

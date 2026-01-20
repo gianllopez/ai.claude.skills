@@ -1,8 +1,8 @@
 ---
 title: Environment & Dependency Segregation
 impact: MEDIUM
-description: Enforces the creation of distinct virtual environments (.venv.development, .venv.production) and split requirement files to isolate build dependencies from runtime logic.
-tags: python, virtualenv, dependencies, pip, configuration
+description: Enforces the creation of distinct virtual environments and split requirement files to isolate build dependencies from runtime logic.
+tags: configuration, environment, requirements
 ---
 
 ## Environment & Dependency Segregation
@@ -56,10 +56,10 @@ $ python3 -m venv .venv.development
 ```plaintext
 # ./requirements/production.txt (example)
 
-django
-djangorestframework
-gunicorn
-psycopg2-binary
+Django==5.2.6
+djangorestframework==3.16.1
+gunicorn==23.0.0
+psycopg2-binary==2.9.10
 ```
 
 ```plaintext

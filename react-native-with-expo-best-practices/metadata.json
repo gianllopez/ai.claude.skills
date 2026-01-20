@@ -11,6 +11,7 @@
     "https://www.typescriptlang.org/docs/handbook/2/objects.html",
     "https://docs.expo.dev/config-plugins/introduction/",
     "https://github.com/trivago/prettier-plugin-sort-imports",
-    "https://github.com/JedWatson/classnames"
+    "https://github.com/JedWatson/classnames",
+    "https://tanstack.com/query/v4/docs/framework/react/community/liaoliao666-react-query-kit"
   ]
 }

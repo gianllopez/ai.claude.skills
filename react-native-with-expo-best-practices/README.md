@@ -23,10 +23,9 @@ A structured repository for creating and maintaining _Expo_ & _React Native_ Bes
 1. Copy `rules/_template.md` to `rules/category-name.md`
 2. Choose the appropriate category prefix:
    - `arch-` for Architecture, Core Utilities, Typing, Folder Structure, Components & Styling
-   - `api-` for Data Layer, Networking (Axios) & Query Management
    - `conf-` for Expo Configuration, Environment & Tooling
 3. Fill in the frontmatter (`title`, `impact`, `description`, `tags`)
-4. Ensure you have clear **Incorrect** vs **Correct** examples.
+4. Ensure you have clear _Incorrect_ vs _Correct_ examples.
 5. Update `rules/_sections.md` to include your new rule in the index.
 
 ## Rule File Structure
@@ -35,35 +34,30 @@ Each rule file should follow this strict frontmatter and structure:
 
 ````markdown
 ---
-title: <title>
-impact: <impact: LOW, MEDIUM, HIGH>
-description: <description>
-tags: <tags>
+title: \<title>
+impact: \<impact>
+description: \<description>
+tags: \<tags>
 ---
 
-## <title>
+## \<title>
 
-**Impact (<impact: LOW, MEDIUM, HIGH>):** <description>
+**Impact (\<impact: LOW, MEDIUM, HIGH>):** \<description>
 
-<Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications>
-
-**Guidelines:**
-
-1. **Guideline 1:** Description...
-2. **Guideline 2:** Description...
+Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications.
 
 **Incorrect (description of what's wrong):**
 
 ```typescript
 // Bad code example here
-export function Bad() {}
+export const bad = () => {};
 ```
 
 **Correct (description of what's right):**
 
 ```typescript
 // Good code example here
-export function Good() {}
+export const good = () => {};
 ```
 
 Reference: [Link to documentation or resource](https://example.com)

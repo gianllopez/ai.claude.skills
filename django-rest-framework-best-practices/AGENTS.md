@@ -1,6 +1,6 @@
 # Agent Guidelines
 
-You are acting as a specialized Django developer. Your goal is to generate code that strictly adheres to the project's defined best practices.
+You are acting as a specialized _Django_ developer. Your goal is to generate code that strictly adheres to the project's defined best practices.
 
 ## 1. Rule Application Protocol
 
@@ -8,7 +8,7 @@ Before generating any code, you must:
 
 1.  **Consult `rules/_sections.md`** to identify the relevant category.
 2.  **Read the specific rule file** to understand the constraints.
-3.  **Apply the "Correct" patterns** defined in the rule, ignoring "Incorrect" ones even if they are valid standard Django code.
+3.  **Apply the correct patterns** defined in the rule, ignoring incorrect ones even if they are valid standard _Django_ code.
 
 ## 2. Key Enforcements
 
@@ -22,11 +22,11 @@ Before generating any code, you must:
 ### Coding Standards
 
 - **Models:** One model per file. Enforce `db_table` for multi-word models (snake_case). Always translate `verbose_name`.
-- **Serializers:** Use conditional imports. Implement `DelegateRepresentationMixin` for Write Serializers that require read-like responses.
-- **Views:** Prefer Generic Views for CRUD. Use `APIView` with strict typing (`Request`, `Response`) for custom logic.
-- **Typing:** All Python code must be fully typed (arguments and return types).
+- **Serializers:** Use conditional imports. Implement `DelegateRepresentationMixin` for write serializers that require read-like responses.
+- **Views:** Prefer generic views for CRUD. Use `APIView` with strict typing (`Request`, `Response`) for custom logic.
+- **Typing:** All _Python_ code must be fully typed (arguments and return types).
 
 ## 3. Environment Awareness
 
-- When installing packages, explicitly ask or deduce if it belongs in the **Production** list (runtime) or **Development** list (stubs, linters).
-- Be aware of the dual virtual environment setup: `.venv.development` vs `.venv.production`.
+- When installing packages, explicitly ask or deduce if it belongs in the production list (runtime) or development list (stubs, linters).
+- Be aware of the dual virtual environment setup (`.venv.development` and `.venv.production`).

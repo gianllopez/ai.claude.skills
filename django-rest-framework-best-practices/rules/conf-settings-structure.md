@@ -1,7 +1,7 @@
 ---
 title: Modular Settings Configuration
 impact: MEDIUM
-description: Enforces splitting *Django* settings into a modular structure (base, development, production) to ensure security and environment isolation.
+description: Enforces splitting Django settings into a modular structure (base, development, production) to ensure security and environment isolation.
 tags: django, configuration
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: Docker & Container Standards
 impact: MEDIUM
-description: Enforces usage of slim base images, reverse-domain naming conventions for containers/volumes, and distinct commands for Dev/Prod environments.
-tags: docker, devops, configuration, naming-convention
+description: Enforces usage of slim base images, reverse-domain naming conventions for containers/volumes, and distinct commands for development and production environments.
+tags: configuration, docker
 ---
 
 ## Docker & Container Standards
@@ -11,7 +11,7 @@ tags: docker, devops, configuration, naming-convention
 
 **Guidelines:**
 
-1.  **Base Image:** Always use Python `slim` variants (e.g., `python:3.13-slim`) to minimize image size.
+1.  **Base Image:** Always use _Python_ `slim` variants (e.g., `python:3.13-slim`) to minimize image size.
 2.  **Dockerfile Optimization:**
     - Set `PYTHONUNBUFFERED=1` and `PYTHONDONTWRITEBYTECODE=1`.
     - Copy and install `requirements` before copying the source code to leverage _Docker_ layer caching.

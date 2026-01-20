@@ -7,7 +7,7 @@ tags: django-rest-framework, views
 
 ## View Selection, Typing & Registration
 
-**Impact (MEDIUM-HIGH):** Standardization prevents boilerplate code. Using generic views reduces maintenance. Strict typing in _APIViews_ ensures clarity. Module-level imports in `urls.py` prevent naming conflicts and circular dependencies.
+**Impact (MEDIUM):** Standardization prevents boilerplate code. Using generic views reduces maintenance. Strict typing in _APIViews_ ensures clarity. Module-level imports in `urls.py` prevent naming conflicts and circular dependencies.
 
 **Guidelines:**
 
@@ -16,7 +16,7 @@ tags: django-rest-framework, views
     - **APIView:** Use only when standard Generics are insufficient (e.g., complex business logic, Auth, RPC).
 2.  **Strict Typing (APIView):**
     - Explicitly type-hint `request` (`Request`) and the return value (`Response`).
-    - Use explicit imports: `from rest_framework.request import Request`.
+    - Use explicit imports (e.g., `from rest_framework.request import Request`).
 3.  **URL Registration:**
     - In `urls.py`, import the views module relatively: `from . import views`.
     - Register paths referencing the module: `views.MyClassName.as_view()`.
@@ -74,4 +74,4 @@ urlpatterns = [
 ]
 ```
 
-Reference: [Django URL Dispatcher](https://docs.djangoproject.com/en/stable/topics/http/urls)
+Reference: [Django REST Framework Class-based Views](https://www.django-rest-framework.org/api-guide/views)
