@@ -1,5 +1,5 @@
 ---
-name: react-native-best-practices
+name: react-native-with-expo-best-practices
 description: Expo and React Native architectural guidelines. This skill defines the standards for the mobile front-end, focusing on separation of concerns, type safety, atomic component composition, and efficient data handling.
 license: MIT
 metadata:
