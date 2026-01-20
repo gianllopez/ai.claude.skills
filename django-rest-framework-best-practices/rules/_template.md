@@ -12,14 +12,14 @@
 
 ```python
 // Bad code example here
-const bad = example();
+bad = example();
 ```
 
 **Correct (description of what's right):**
 
 ```python
 // Good code example here
-const good = example();
+good = example();
 ```
 
 Reference: [Link to documentation or resource](https://example.com)

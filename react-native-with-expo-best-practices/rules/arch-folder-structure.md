@@ -29,7 +29,7 @@ tags: architecture, folders
 
 **Incorrect (Mixed concerns & unstructured):**
 
-```typescriptreact
+```typescript
 // ./app/index.tsx
 
 // Bad: Defining API logic and Types inside a route
@@ -66,7 +66,7 @@ export default function Screen() {
 │   └── index.tsx
 ```
 
-```typescriptreact
+```typescript
 // ./app/(tabs)/index.tsx
 
 import { EntityList } from '@/components/entity-list';

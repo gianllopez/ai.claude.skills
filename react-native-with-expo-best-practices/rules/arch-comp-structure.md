@@ -28,7 +28,7 @@ tags: architecture, components
 
 **Incorrect (Arrow functions, Defaults, Flat logic):**
 
-```typescriptreact
+```typescript
 // ./components/button.tsx
 
 // Bad: Flat structure for complex logic, Arrow function, Default export
@@ -58,7 +58,7 @@ export default Button;
 └── index.ts (Global Exports)
 ```
 
-```typescriptreact
+```typescript
 // ./components/button/base/button-container.tsx
 
 import { View } from 'react-native';
@@ -80,8 +80,9 @@ export function ButtonContainer({ tone = 'primary', render, ...rest }: Props) {
 }
 ```
 
-```typescriptreact
+```typescript
 // ./components/button/presets/button-text.tsx
+
 import { ButtonContainer } from '../base';
 
 export function ButtonText({ children, ...rest }: Props) {

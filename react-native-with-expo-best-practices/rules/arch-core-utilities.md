@@ -35,7 +35,7 @@ export class SessionHelper {
 }
 ```
 
-```typescriptreact
+```typescript
 // ./components/card.tsx
 
 // Bad: Magic string and raw hex
