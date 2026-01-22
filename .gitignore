@@ -8,3 +8,8 @@ yarn.lock
 
 # editor
 .marks.json
+
+# Pendientes:
+# 1. Que en las implementaciones de `.map()`, el argumento inicial (`item`) tenga como nombre solamente la primera letra del nombre de la lista que se está usando.
+# 2. Que los tipos de una sola propiedad vayan en una sola línea.
+# 3. Eliminar los créditos en los mensajes de commit.
