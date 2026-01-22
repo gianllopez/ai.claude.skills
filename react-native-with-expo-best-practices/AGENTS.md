@@ -20,6 +20,8 @@ Before generating any code, you must:
   - Use integral structure for simple components.
   - Use base/presets pattern (`base/`, `presets/`, `index.ts`) for complex components with variants.
   - Never use arrow functions for top-level components; use `export function Name`.
+- **Iterator Naming:** For inline array methods (`.map`, `.filter`), strictly use the **first letter** of the collection name as the argument (e.g., `users.map(u => ...)`). Exceptions allowed only for complex multi-line logic.
+- **Type Definitions:** Types or interfaces with exactly **one property** must be defined on a **single line** (e.g., `type Props = { visible: boolean }`) to conserve vertical space.
 
 ### UI Engineering & Styling
 

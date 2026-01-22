@@ -48,6 +48,10 @@ Reference these guidelines when:
 - `arch-api-data-layer` - Centralized _Axios_ and `react-query-kit` with safe return patterns
 - `conf-expo` - Native config via plugins, strict _Prettier_ sorting, and clean-state scripts
 
+### 4. Coding Standards (LOW)
+
+- `arch-syntax-conventions` - Short-hand iterators (`u` vs `user`) and single-line type definitions
+
 ## How to Use
 
 Read individual rule files for detailed explanations and code examples:

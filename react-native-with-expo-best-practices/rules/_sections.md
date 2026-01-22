@@ -10,6 +10,10 @@ description: Index of all enforced best practices for the React Native (Expo) pr
 - **Typing:** [TypeScript Domain System](./arch-typing-system.md)
 - **API Layer:** [API Data Layer & Query Management](./arch-api-data-layer.md)
 
+## Conventions
+
+- **Syntax:** [Syntax & Conciseness Conventions](./arch-syntax-conventions.md)
+
 ## UI & Design System
 
 - **Components:** [Component Structure & Composition](./arch-components-structure.md)
