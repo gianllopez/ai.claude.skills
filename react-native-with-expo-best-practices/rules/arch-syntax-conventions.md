@@ -69,4 +69,52 @@ type Props = {
 type Props = { visible: boolean };
 ```
 
+### 3. Event Handler Naming Convention
+
+Event handler implementations must use the `handle` prefix to distinguish them semantically from event props (which use the `on` prefix). This creates a clear visual distinction between the prop interface (what events the component accepts) and the implementation (what happens when the event fires). Using `on` for both the prop and the implementation creates ambiguity. The `handle` prefix makes it immediately clear that this is the concrete implementation being passed to the event prop.
+
+**Incorrect (ambiguous naming):**
+
+```typescript
+export function MyScreen() {
+  // Bad: Using 'on' prefix for implementation
+  const onChangeText = (text: string) => {
+    console.log(text);
+  };
+
+  const onPress = () => {
+    console.log('Pressed');
+  };
+
+  return (
+    <View>
+      <Input onChangeText={onChangeText} />
+      <Button onPress={onPress}>Continue<Button />
+    </View>
+  );
+}
+```
+
+**Correct (semantic clarity):**
+
+```typescript
+export function MyScreen() {
+  // Good: Using 'handle' prefix for implementations
+  const handleChangeText = (text: string) => {
+    console.log(text);
+  };
+
+  const handlePress = () => {
+    console.log('Pressed');
+  };
+
+  return (
+    <View>
+      <Input onChangeText={handleChangeText} />
+      <Button onPress={handlePress} />
+    </View>
+  );
+}
+```
+
 Reference: [TypeScript Handbook - Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)
