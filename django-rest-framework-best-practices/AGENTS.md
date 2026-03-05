@@ -23,8 +23,8 @@ Before generating any code, you must:
 
 - **Models:** One model per file. Enforce `db_table` for multi-word models (snake_case). Always translate `verbose_name`.
 - **Serializers:** Use conditional imports. Implement `DelegateRepresentationMixin` for write serializers that require read-like responses.
-- **Views:** Prefer generic views for CRUD. Use `APIView` with strict typing (`Request`, `Response`) for custom logic.
-- **Typing:** All _Python_ code must be fully typed (arguments and return types).
+- **Views:** Prefer generic views for CRUD. Use `APIView` with explicit parameter typing (`request: Request`) for custom logic; omit return type annotations when the `return` statement makes the type self-evident.
+- **Typing:** Add type hints only when they add real value to the reader — primarily on parameters whose type is not obvious from their name or context. Omit return annotations when the return expression is self-documenting (e.g., `return Response(...)`, `return self.email`). Never annotate dunder methods whose contract is defined by the protocol (e.g., `__str__`, `__repr__`).
 
 ## 3. Environment Awareness
 

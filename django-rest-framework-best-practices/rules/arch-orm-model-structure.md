@@ -19,11 +19,11 @@ tags: django, orm
     3.  Custom Managers (`objects = ...`)
     4.  `class Meta`
     5.  Properties / Custom Methods
-    6.  `def __str__(self) -> str:`
+    6.  `def __str__(self):`
 4.  **Metadata:**
     - Explicitly define `verbose_name` and `verbose_name_plural`.
     - Explicitly define `db_table` (conditional) for models with multi-word names (e.g., `UserAsset`), you must explicitly define `db_table` to enforce _snake_case_ separation (e.g., `users_user_asset`). For single-word models, the default behavior is acceptable.
-5.  **Typing:** The `__str__` method must strictly include the return type hint `-> str`.
+5.  **Typing:** Add type hints only when they add real value to the reader. Omit return annotations on dunder methods (`__str__`, `__repr__`) since their contract is defined by the protocol, and on properties/methods where the return expression is self-documenting.
 
 **Incorrect (Mixed structure, missing translations/types):**
 
@@ -68,11 +68,11 @@ class User(AbstractUser):
 
     # 5. Methods/Properties
     @property
-    def is_premium(self) -> bool:
+    def is_premium(self):
         return self.role == self.Role.CUSTOMER
 
-    # 6. String representation (with type hint for return)
-    def __str__(self) -> str:
+    # 6. String representation
+    def __str__(self):
         return self.email or self.username
 ```
 

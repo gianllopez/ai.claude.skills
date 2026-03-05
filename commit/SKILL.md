@@ -61,7 +61,7 @@ You must generate a commit message that follows the _Conventional Commits_ speci
 
 1.  **Analyze** staged changes thoroughly
 2.  **Generate** commit message following all rules above
-3.  **Construct** the final git command: `git commit -m "<message>"`
+3.  **Construct** the final git command using single quotes: `git commit -m '<message>'`. Single quotes prevent bash from interpreting backticks as subcommands, so the message is stored literally — do not escape backticks inside the message string.
 4.  **Execute** the command immediately using the _bash_ tool
 5.  **Confirm** the commit was successful
 
@@ -71,11 +71,11 @@ You must generate a commit message that follows the _Conventional Commits_ speci
 
 ```bash
 # After analyzing changes to authentication system
-git commit -m "fix(\`auth\`): resolve token expiration handling in \`useSession\` hook
+git commit -m 'fix(`auth`): resolve token expiration handling in `useSession` hook
 
-Updated the \`useSession\` hook to properly check token expiration before making API requests. This prevents unnecessary 401 errors and improves user experience by proactively refreshing tokens when needed. The fix integrates with the existing \`react-query\` cache invalidation strategy.
+Updated the `useSession` hook to properly check token expiration before making API requests. This prevents unnecessary 401 errors and improves user experience by proactively refreshing tokens when needed. The fix integrates with the existing `react-query` cache invalidation strategy.
 
-Co-Authored-By: Claude Code (Claude 3.5 Sonnet)"
+Co-Authored-By: Claude Code (Claude 3.5 Sonnet)'
 ```
 
 **Reference:** [Conventional Commits](http://conventionalcommits.org/en/v1.0.0/#specification)
