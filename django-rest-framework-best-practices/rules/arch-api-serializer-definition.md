@@ -1,7 +1,7 @@
 ---
 title: Serializer Definition, Naming & Delegation
 impact: HIGH
-description: Enforces conditional imports, action-based naming conventions, and response delegation for write serializers using DelegateRepresentationMixin.
+description: Enforces conditional imports, action-based naming conventions, explicit field declaration, and response delegation for write serializers using DelegateRepresentationMixin.
 tags: django-rest-framework, serializers
 ---
 
@@ -21,6 +21,35 @@ tags: django-rest-framework, serializers
 3.  **Response Delegation (Write Operations):**
     - When a write serializer (`Create`/`Update`) needs to return a different representation than its input (e.g., return the full `UserRetrieveSerializer` structure after creating a user), must inherit from `DelegateRepresentationMixin`.
     - Define the target serializer in `Meta.representation`.
+4.  **Field Declaration:**
+    - `Meta.fields` must always be an explicit list `[...]`. Never use `"__all__"` or any other shorthand.
+    - The order of fields in the list must match the order in which they are defined in the model.
+
+**Incorrect (Implicit fields or arbitrary order):**
+
+```python
+class UserRetrieveSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"  # Bad: Exposes unintended fields; order is non-deterministic
+```
+
+```python
+class UserRetrieveSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["name", "id", "phone"]  # Bad: Order does not match model definition
+```
+
+**Correct (Explicit list ordered by model definition):**
+
+```python
+# Model definition order: id, phone, name, role
+class UserRetrieveSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "phone", "name", "role"]  # Matches model field order
+```
 
 **Incorrect (Manual override or returning incomplete data):**
 

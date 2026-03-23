@@ -22,8 +22,8 @@ Before generating any code, you must:
 ### Coding Standards
 
 - **Models:** One model per file. Enforce `db_table` for multi-word models (snake_case). Always translate `verbose_name`.
-- **Serializers:** Use conditional imports. Implement `DelegateRepresentationMixin` for write serializers that require read-like responses.
-- **Views:** Prefer generic views for CRUD. Use `APIView` with explicit parameter typing (`request: Request`) for custom logic; omit return type annotations when the `return` statement makes the type self-evident.
+- **Serializers:** Use conditional imports. Implement `DelegateRepresentationMixin` for write serializers that require read-like responses. Always declare `Meta.fields` as an explicit list `[...]`, never `"__all__"`, ordered to match the field definition order in the model.
+- **Views:** Prefer generic views for CRUD. Use `APIView` with explicit parameter typing (`request: Request`) for custom logic; omit return type annotations when the `return` statement makes the type self-evident. Every view must explicitly declare both `authentication_classes` and `permission_classes` — use empty lists `[]` when no auth or permissions are required. Declare them together, separated from `queryset` and `serializer_class` by a blank line.
 - **Typing:** Add type hints only when they add real value to the reader — primarily on parameters whose type is not obvious from their name or context. Omit return annotations when the return expression is self-documenting (e.g., `return Response(...)`, `return self.email`). Never annotate dunder methods whose contract is defined by the protocol (e.g., `__str__`, `__repr__`).
 
 ## 3. Environment Awareness

@@ -39,14 +39,14 @@ Reference these guidelines when:
 
 - `arch-app-structure` - Enforces `apps/` directory and package-based models/views
 - `arch-orm-model-structure` - One model per file, strict meta options, and typing
-- `arch-api-serializer-definition` - Action-based naming and representation delegation
+- `arch-api-serializer-definition` - Action-based naming, explicit field declaration ordered by model, and representation delegation
 
 ### 2. Configuration & DevOps (MEDIUM)
 
 - `conf-settings-structure` - Modular settings (base/development/production) and secure secrets
 - `conf-env-dependencies` - Segregated `.venv` and split requirement files
 - `conf-docker-standards` - Slim images, layer caching, and reverse-domain naming
-- `arch-view-definition` - Generic views usage and strict _APIView_ typing
+- `arch-view-definition` - Generic views usage, strict _APIView_ typing, and explicit security declaration
 
 ## How to Use
 
