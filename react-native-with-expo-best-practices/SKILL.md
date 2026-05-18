@@ -50,7 +50,7 @@ Reference these guidelines when:
 
 ### 4. Coding Standards (LOW)
 
-- `arch-syntax-conventions` - Short-hand iterators (`u` vs `user`), single-line type definitions, and event handler naming (`handle*` vs `on*`)
+- `arch-syntax-conventions` - Short-hand iterators (`u` vs `user`), single-line type definitions, event handler naming (`handle*` vs `on*`), and explicit conditional syntax (braces + ternary in JSX)
 
 ## How to Use
 

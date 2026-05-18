@@ -23,6 +23,7 @@ Before generating any code, you must:
 - **Iterator Naming:** For inline array methods (`.map`, `.filter`), strictly use the **first letter** of the collection name as the argument (e.g., `users.map(u => ...)`). Exceptions allowed only for complex multi-line logic.
 - **Event Handler Naming:** Event handler implementations must use the handle prefix (e.g., `handlePress`, `handleChangeText`), never on. The on prefix is reserved exclusively for event props.
 - **Type Definitions:** Types or interfaces with exactly **one property** must be defined on a **single line** (e.g., `type Props = { visible: boolean }`) to conserve vertical space.
+- **Conditionals:** Always use braces `{}` and line breaks in conditionals — including early returns and single-line bodies. In JSX, use ternary operators exclusively for conditional rendering; never `&&`. The negative case must always be `null` when nothing should render.
 
 ### UI Engineering & Styling
 
@@ -33,7 +34,6 @@ Before generating any code, you must:
 ### Data Layer & State
 
 - **React Query Kit:** Must use `createQuery` and `createMutation`. Raw `useQuery` is discouraged.
-- **Safe Return Pattern:** API fetchers must use `try/catch` and return a safe fallback (`[]` or `null`) on error. Never let the UI crash due to a backend failure.
 - **Axios:** Use the central instance at `@/core/lib/axios` with the `protected: true` config for auth (when needed).
 
 ### TypeScript & Configuration

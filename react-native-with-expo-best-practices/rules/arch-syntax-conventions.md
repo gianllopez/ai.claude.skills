@@ -1,13 +1,13 @@
 ---
 title: Syntax & Conciseness Conventions
 impact: LOW
-description: Enforces specific syntax patterns for iterators and type definitions to prioritize conciseness and visual scanning speed.
+description: Enforces specific syntax patterns for iterators, type definitions, and conditionals to prioritize conciseness, visual scanning speed, and explicit control flow.
 tags: architecture, syntax, conventions
 ---
 
 ## Syntax & Conciseness Conventions
 
-**Impact (LOW):** Improves code conciseness and reduces visual noise in high-frequency patterns.
+**Impact (LOW):** Improves code conciseness and reduces visual noise in high-frequency patterns, while enforcing explicit control flow in conditionals to prevent logic bugs and improve readability.
 
 These rules aim to maximize the information density of the code, making it easier to scan logic without getting lost in verbose boilerplate.
 
@@ -115,6 +115,48 @@ export function MyScreen() {
     </View>
   );
 }
+```
+
+### 4. Conditional Syntax
+
+All conditionals must use braces `{}` and line breaks — even for single-line bodies and early returns. This applies to every context: functions, components, and JSX rendering. Omitting braces is forbidden regardless of how simple the condition is.
+
+For conditional rendering in JSX, the ternary operator must always be used. The `&&` shorthand is forbidden because it can render unintended values (e.g., `0`, `NaN`). When the negative case renders nothing, use `null` explicitly.
+
+**Incorrect (braceless conditions, `&&` in JSX):**
+
+```typescript
+// Bad: Braceless early return
+if (!user) return null;
+
+// Bad: Braceless single-line body
+if (isLoading) return <Spinner />;
+
+// Bad: && shorthand — renders '0' if items.length is 0
+{items.length && <List items={items} />}
+
+// Bad: && shorthand with no explicit negative case
+{isVisible && <Modal />}
+```
+
+**Correct (braces + line breaks, ternary with null):**
+
+```typescript
+// Good: Early return with braces
+if (!user) {
+  return null;
+}
+
+// Good: Single-line body with braces
+if (isLoading) {
+  return <Spinner />;
+}
+
+// Good: Ternary with explicit null — no unintended renders
+{items.length > 0 ? <List items={items} /> : null}
+
+// Good: Ternary for toggle visibility
+{isVisible ? <Modal /> : null}
 ```
 
 Reference: [TypeScript Handbook - Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)

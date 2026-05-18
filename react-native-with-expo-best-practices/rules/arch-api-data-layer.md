@@ -1,13 +1,13 @@
 ---
 title: API Data Layer & Query Management
 impact: HIGH
-description: Enforces strict usage of React Query Kit for data fetching, domain-based organization, safe error handling, and a centralized Axios client with auth interceptors.
+description: Enforces strict usage of React Query Kit for data fetching, domain-based organization and a centralized Axios client with auth interceptors.
 tags: architecture, core, api
 ---
 
 ## API Data Layer & Query Management
 
-**Impact (HIGH):** Centralizing _API_ logic ensures consistent caching strategies, type safety across network boundaries, and unified authentication handling. The safe return pattern prevents UI crashes due to backend failures.
+**Impact (HIGH):** Centralizing _API_ logic ensures consistent caching strategies, type safety across network boundaries, and unified authentication handling. Letting errors propagate naturally to _React Query_ enables proper error state handling via `isError` and `error` in the consuming component.
 
 **Guidelines:**
 
@@ -16,34 +16,36 @@ tags: architecture, core, api
     - _API_ hooks must be grouped by domain in `@/core/api/<domain>/`.
     - Files should be named `use-<members|action>.ts` (e.g., `use-assets.ts`, `use-create-asset.ts`).
 3.  **Type Definitions:**
-    - Define `QueryResponse` (_API_ Contract), `QueryData` (UI consumption), and `QueryVariables`.
+    - Define `Response` (_API_ Contract), `Data` (UI consumption), and `Variables`.
     - Return types must be explicit.
 4.  **Query Keys:**
     - Format: `'@<domain>/<hook-name>'`.
     - Example: `'@users/use-assets'`.
-5.  **Error Handling (safe return):**
-    - Fetchers must use `try/catch`.
-    - **On Error:** Return a safe fallback (`[]` for lists, `null` for objects) to ensure the UI renders a empty state rather than crashing. Do not throw errors to the UI layer.
-6.  **Axios Configuration:**
+5.  **Axios Configuration:**
     - Use a central instance (`@/core/lib/axios`).
     - Implement `protected: true` via interceptors to inject the `Authorization` header.
     - Augment `AxiosRequestConfig` to support the custom `protected` property.
 
-**Incorrect (Inline fetch, unsafe errors, raw keys):**
+**Incorrect (Inline fetch, raw keys):**
 
 ```typescript
 // ./app/users.tsx
 
-// Bad: Inline fetching, no types, hardcoded key
+// Bad: Inline fetching, no types, hardcoded key, error suppressed with fallback
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 export function Users() {
   const { data } = useQuery({
     queryKey: ['users'],
-    queryFn: async () => (await axios.get('/users')).data,
+    queryFn: async () => {
+      try {
+        return (await axios.get('/users')).data;
+      } catch {
+        return []; // Bad: Suppresses error — isError will never be true
+      }
+    },
   });
-  // If API fails, 'data' is undefined and might crash if accessed blindly
 }
 ```
 
@@ -81,27 +83,23 @@ import { QUERY } from '@/core/config/constants';
 import { api } from '@/core/lib/axios';
 import type { Asset } from '@/core/types/users';
 
-type QueryResponse = Asset[];
+type Response = Asset[];
 
-type QueryData = QueryResponse;
+type Data = Response;
 
-type QueryVariables = string;
+type Variables = string;
 
-export const useAssets = createQuery<QueryData, QueryVariables>({
+export const useAssets = createQuery<Data, Variables>({
   queryKey: ['@users/use-assets'],
   fetcher: request,
   staleTime: QUERY.TIME.NONE,
 });
 
-async function request(id: QueryVariables) {
-  try {
-    const { data } = await api.get<QueryResponse>(`/users/${id}/assets/`, {
-      protected: true, // Custom config
-    });
-    return data;
-  } catch {
-    return []; // Safe fallback (No crash)
-  }
+async function request(id: Variables) {
+  const { data } = await api.get<Response>(`/users/${id}/assets/`, {
+    protected: true,
+  });
+  return data;
 }
 ```
 
