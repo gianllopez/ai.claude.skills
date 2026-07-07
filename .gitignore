@@ -8,3 +8,18 @@ yarn.lock
 
 # editor
 .marks.json
+
+# TODO: Crear las siguientes "skills".
+
+## Django REST Framework
+# 1. Crear la configuración de despliegue dentro de la skill de `django-rest-framework-best-practices`.
+
+## Astro
+# 2. Todos los nombres de los archivos van a ser en minúsculas y con "kebab-case".
+
+## Expo
+# 3. Crear una skill que permita configurar todo para el despliegue del proyecto usando EAS Submit.
+
+## Audit (Neovim)
+# 4. Que Claude Code pueda identificar el estado de cada archivo para tener contexto de las auditorias revisadas.
+# 5. Reducir los estados a solamente dos.
