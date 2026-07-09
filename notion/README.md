@@ -5,8 +5,8 @@ An executable skill that creates and manages tasks in the _Notion_ database
 and task conventions.
 
 Unlike the best-practices skills in this repository (which are reference catalogs split into a
-`rules/` directory), this is a procedural skill: a single, linear workflow that is read in
-full and executed in order. Its structure is intentionally flat.
+`rules/` directory), this is a procedural skill: a small set of linear operations that are read
+in full and executed in order. Its structure is intentionally flat.
 
 ## Structure
 
@@ -16,7 +16,9 @@ full and executed in order. Its structure is intentionally flat.
 
 ## What it does
 
-Given a request to create a task, the skill:
+The skill exposes two operations.
+
+**Operation A — Create a Task**
 
 1. **Re-validates the schema** - reads the live data source to get current options for the
    dynamic catalog properties.
@@ -29,6 +31,14 @@ Given a request to create a task, the skill:
    template body.
 6. **Confirms** - returns the created task's address.
 
+**Operation B — Calculate & Set Task Dates**
+
+Given a task (by link or mention), it maps the task's `Dificultad` to estimated hours — read live
+from the `⚙️ Sistema` page, the single source of truth for that mapping — sets `Fecha de Inicio`
+to the next full hour, and spreads the estimated hours over the company's working blocks (skipping
+lunch, weekends, and _Colombian_ holidays) to compute `Fecha de Finalización`. After approval, it
+writes both dates to the task.
+
 ## Behavior configuration
 
 The skill's behavior is defined by the user directives section of `SKILL.md`:
@@ -40,14 +50,16 @@ The skill's behavior is defined by the user directives section of `SKILL.md`:
    for technical terms, acronyms, and proper nouns.
 5. **"Registros" section behavior** - opening line plus an empty placeholder block that shows
    collaborators how to log progress.
+6. **Working schedule** - business hours, effective daily hours, and the holiday rule used by
+   _Operation B_ to compute dates.
 
 To change how the skill behaves, edit these directives — not the execution protocol.
 
 ## Scope
 
-This skill currently covers task creation. If it grows to cover multiple operations
-(updating status, closing tasks, logging progress, reporting), the recommended next step is to
-split it by operation, not into a `rules/` catalog.
+This skill currently covers task creation (_Operation A_) and date calculation (_Operation B_). If it
+grows further (updating status, closing tasks, logging progress, reporting), keep splitting it
+**by operation**, not into a `rules/` catalog.
 
 ## Acknowledgments
 

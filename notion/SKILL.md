@@ -1,6 +1,6 @@
 ---
 name: notion
-description: Creates and manages tasks, respecting the default task template and the workspace property schema.
+description: Creates tasks in the Notion "Control" database and computes their start/finish dates from the company's working hours, respecting the default template and property schema.
 allowed-tools:
   - mcp__claude_ai_Notion__notion-fetch
   - mcp__claude_ai_Notion__notion-create-pages
@@ -16,14 +16,16 @@ metadata:
 
 # Notion Task Management
 
-Creates tasks in the user's _Notion_ database following the default template and the property
-schema defined in the workspace.
+Manages tasks in the user's _Notion_ database. It provides two operations: A — Create a Task
+(following the default template and property schema) and B — Calculate & Set Task Dates
+(computing `Fecha de Inicio` and `Fecha de Finalización` from the company's working hours).
 
 ## When to Apply
 
 - The user types `/notion`
-- The user asks to _"create a task"_, _"add a task to Notion"_, _"register a task"_, etc
-- The user describes a piece of work or a to-do that should be recorded in the task database
+- The user asks to _"create a task"_, _"add a task to Notion"_, _"register a task"_, etc (_Operation A_)
+- The user describes a piece of work or a to-do that should be recorded in the task database (_Operation A_)
+- The user asks to _"calculate the dates"_, _"set the start/finish dates"_, or _"schedule"_ a task (_Operation B_)
 
 ## Fixed workspace references (do not change between runs)
 
@@ -35,11 +37,12 @@ These identifiers were confirmed and can be used directly:
 | Data source (parent)      | `collection://93c62c06-e9d7-826d-bd33-875c237b46f6` |
 | Default template          | `39162c06e9d78061a6fdcb399d848fb5`                  |
 | Primary user (Gian López) | `a3c06894-0016-457e-8d4a-5ebce86eb8c0`              |
+| Effort estimation source  | `⚙️ Sistema` — `f8b62c06e9d78242b6e6816333c7f6e9`   |
 
 > When creating the page, the `parent` must be
 > `{ "type": "data_source_id", "data_source_id": "93c62c06-e9d7-826d-bd33-875c237b46f6" }`.
 
-## Execution Protocol
+## Operation A — Create a Task
 
 ### 1. Re-validate the schema (mandatory for dynamic properties)
 
@@ -100,8 +103,8 @@ creation: formula fields are read-only, and `Fecha de Inicio`, `Fecha de Finaliz
 | `Sprint`                | select       | dynamic — read live options before assigning                                |
 | `Responsable`           | person       | _JSON_ array of user IDs                                                    |
 | `Notas`                 | text         | Free text                                                                   |
-| `Fecha de Inicio`       | date         | 🔒 Not set on creation — filled when work starts. Do not assign.            |
-| `Fecha de Finalización` | date         | 🔒 Not set on creation — filled when the task is completed. Do not assign.  |
+| `Fecha de Inicio`       | date         | 🔒 Not set at creation — assigned by _Operation B_ (or manually).           |
+| `Fecha de Finalización` | date         | 🔒 Not set at creation — assigned by _Operation B_ (or manually).           |
 | `Horas (Reales)`        | number       | 🔒 Not set on creation — filled when the task is completed. Do not assign.  |
 | `Horas (Estimadas)`     | formula      | 🔒 Read-only — do not assign                                                |
 | `Varianza (Horas)`      | formula      | 🔒 Read-only — do not assign                                                |
@@ -167,11 +170,67 @@ Se inicia la tarea con el objetivo de [contexto o punto de partida]
 > If you need more advanced block syntax, first read the MCP resource
 > `notion://docs/enhanced-markdown-spec` before generating the content.
 
+## Operation B — Calculate & Set Task Dates
+
+Computes a task's `Fecha de Inicio` and `Fecha de Finalización` from its estimated effort and the
+company's working schedule (Directive 6), then writes them to the task.
+
+### 1. Identify the target task
+
+The user provides the task by link or mention (a _Notion_ URL or page ID). Run `notion-fetch`
+on it to read its properties — in particular `Dificultad`.
+
+### 2. Resolve the estimated effort
+
+The task's `Horas (Estimadas)` is a formula whose value is returned opaquely by the API
+(`formulaResult://…`) and cannot be read or queried directly, so the effort must be derived from
+`Dificultad`.
+
+**Single source of truth:** the level → hours mapping lives only in _Notion_, on the `⚙️ Sistema`
+page, section _Esquema de Control de Horas → Capa 1: Estimación_
+(`f8b62c06e9d78242b6e6816333c7f6e9`). Run `notion-fetch` on that page and read the current mapping
+from that table. Do not hardcode the values in this skill — always read them from that page so
+the estimate is maintained in one place.
+
+### 3. Compute `Fecha de Inicio`
+
+Get the current time in _America/Bogota_ (e.g. `TZ="America/Bogota" date`). Round it up to the
+next full hour (10:15 → 11:00). If that instant falls outside a working block (lunch, after
+17:00, weekend, or holiday), move it forward to the next working instant.
+
+This operation is meant to run during working hours. If it is run outside working hours, the
+user will provide the start date instead — use the value they give.
+
+### 4. Compute `Fecha de Finalización`
+
+Starting at `Fecha de Inicio`, consume the estimated hours only within working blocks, rolling
+over lunch, end of day, weekends, and _Colombian_ public holidays, until the hours are exhausted.
+The instant the last hour is consumed is `Fecha de Finalización`. See Directive 6 for the exact
+schedule and holiday rule.
+
+### 5. Preview and get approval
+
+Show the computed `Fecha de Inicio` and `Fecha de Finalización` (with the effort hours used) and
+wait for explicit approval. Do not write to _Notion_ until the user approves.
+
+### 6. Write the dates
+
+Update the task with `notion-update-page` (`command: "update_properties"`), setting both dates as
+date-times:
+
+- `date:Fecha de Inicio:start` = ISO-8601 datetime, `date:Fecha de Inicio:is_datetime` = 1
+- `date:Fecha de Finalización:start` = ISO-8601 datetime, `date:Fecha de Finalización:is_datetime` = 1
+
+### 7. Confirm
+
+Return the task address and the dates written.
+
 ---
 
 # 🔧 User Directives
 
-> These blocks define the skill's _behavior_. Follow them on every task creation.
+> These blocks define the skill's _behavior_. Directives 1–5 govern _Operation A_ (task creation);
+> Directive 6 governs _Operation B_ (date calculation).
 
 ## 🔧 Directive 1 — Default values
 
@@ -222,3 +281,17 @@ On creation, generate:
 
 Keep the placeholder block with its bracketed placeholders — do not fill it with a real
 update and do not remove it.
+
+## 🔧 Directive 6 — Working schedule (for _Operation B_)
+
+Used to compute task dates in _Operation B_:
+
+- **Working days:** Monday to Friday.
+- **Working blocks:** 08:30–12:00 and 13:30–17:00 → 7 effective hours per day (the 12:00–13:30
+  lunch break does not count).
+- **Holidays:** skip _Colombia_'s official public holidays — they are not working days. Determine
+  them from the official _Colombian_ calendar for the year(s) the calculation spans.
+- **Time zone:** _America/Bogota_.
+- **Effort mapping:** `Dificultad` → hours is defined only in _Notion_ (single source of truth):
+  the `⚙️ Sistema` page, section _Esquema de Control de Horas → Capa 1: Estimación_. Read it live
+  with `notion-fetch` (_Operation B_, step 2); never hardcode the values in this skill.
