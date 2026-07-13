@@ -15,16 +15,16 @@ Comprehensive guide for _Django_ and _Django REST Framework_ development. Contai
 
 Reference these guidelines when:
 
-- Designing or modifying _Django_ models and database schemas (_PostgreSQL_).
-- Implementing _Django REST Framework_ serializers and data validation logic.
-- Developing _API_ views using _Django REST Framework ViewSets_ or _Generic Views_.
-- Optimizing database interactions using the _Django_ ORM (e.g., `select_related`, `prefetch_related`).
-- Managing authentication flows, custom permissions, and throttling policies.
-- Writing custom _Django_ management commands for administrative tasks.
-- Implementing middleware for global request or response processing.
-- Handling _Django_ signals and receivers for decoupled event logic.
-- Structuring new applications and defining dependencies within the _Django_ project.
-- Customizing the _Django_ Admin interface for internal data management.
+- Designing or modifying _Django_ models and database schemas (_PostgreSQL_)
+- Implementing _Django REST Framework_ serializers and data validation logic
+- Developing _API_ views using _Django REST Framework ViewSets_ or _Generic Views_
+- Optimizing database interactions using the _Django_ ORM (e.g., `select_related`, `prefetch_related`)
+- Managing authentication flows, custom permissions, and throttling policies
+- Writing custom _Django_ management commands for administrative tasks
+- Implementing middleware for global request or response processing
+- Handling _Django_ signals and receivers for decoupled event logic
+- Structuring new applications and defining dependencies within the _Django_ project
+- Customizing the _Django_ Admin interface for internal data management
 
 ## Rule Categories by Priority
 

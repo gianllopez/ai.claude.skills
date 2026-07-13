@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "author": "Gian López",
+  "date": "July 2026",
+  "abstract": "An executable, read-only skill that bridges Claude Code with the user's Neovim `audit` plugin. The plugin stores each project's review database in a single file at <git-root>/.git/audit.json, which this skill reads to report every source file's status (pending, done, or unaudited) and to enforce a guard that prevents Claude from modifying or proposing changes to files the user has already reviewed and marked `done`. Reading the same file the plugin writes keeps it as the single source of truth, with no duplicated storage logic that could silently drift",
+  "references": [
+    "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+    "https://neovim.io/doc/user/lua.html#vim.fs.find()"
+  ]
+}

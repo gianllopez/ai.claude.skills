@@ -15,13 +15,13 @@ Comprehensive guide for _Expo_ and _React Native_ development using _TypeScript_
 
 Reference these guidelines when:
 
-- Structuring the project folders or adding new features (`app/` vs `core/` vs `components/`).
-- Creating UI components, deciding between integral or base/presets patterns.
-- Implementing data fetching logic using `react-query-kit` and `axios`.
-- Defining _TypeScript_ interfaces or segregating domain types from library typings.
-- Styling components using _NativeWind_ (`className`) and handling conditional styles.
-- Configuring _Expo_ plugins, environment variables, or native directories.
-- Writing functional helpers or configuring global store hooks.
+- Structuring the project folders or adding new features (`app/` vs `core/` vs `components/`)
+- Creating UI components, deciding between integral or base/presets patterns
+- Implementing data fetching logic using `react-query-kit` and `axios`
+- Defining _TypeScript_ interfaces or segregating domain types from library typings
+- Styling components using _NativeWind_ (`className`) and handling conditional styles
+- Configuring _Expo_ plugins, environment variables, or native directories
+- Writing functional helpers or configuring global store hooks
 
 ## Rule Categories by Priority
 
