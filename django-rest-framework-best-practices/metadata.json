@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "author": "Gian López",
   "date": "January 2026",
-  "abstract": "A comprehensive configuration for Django and Django REST Framework development, optimized for AI-driven workflows. This setup defines strict architectural patterns for service-layer separation, ORM query optimization (N+1 prevention), and robust data validation protocols. It provides a structured framework for automated code generation, refactoring, and unit testing, ensuring high-performance back-end systems through precise technical constraints.",
+  "abstract": "A comprehensive configuration for Django and Django REST Framework development, optimized for AI-driven workflows. This setup defines strict architectural patterns for service-layer separation, ORM query optimization (N+1 prevention), and robust data validation protocols. It provides a structured framework for automated code generation, refactoring, and unit testing, ensuring high-performance back-end systems through precise technical constraints",
   "references": [
     "https://docs.djangoproject.com/en/6.0/ref/applications",
     "https://docs.djangoproject.com/en/6.0/ref/settings",

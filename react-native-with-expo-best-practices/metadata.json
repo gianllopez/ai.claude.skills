@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "author": "Gian López",
   "date": "January 2026",
-  "abstract": "Standard architectural guidelines for scalable React Native (Expo) applications. This manifest enforces strict separation of concerns between the View layer (app/components) and the Business Core (core), utilizes a domain-segregated TypeScript typing system, and adopts modern design patterns like 'Base/Presets' for UI components and 'Safe Return' for the data layer. Configuration prioritizes performance and maintainability through the use of NativeWind, React Query Kit, and native configuration plugins.",
+  "abstract": "Standard architectural guidelines for scalable React Native (Expo) applications. This manifest enforces strict separation of concerns between the View layer (app/components) and the Business Core (core), utilizes a domain-segregated TypeScript typing system, and adopts modern design patterns like 'Base/Presets' for UI components and 'Safe Return' for the data layer. Configuration prioritizes performance and maintainability through the use of NativeWind, React Query Kit, and native configuration plugins",
   "references": [
     "https://docs.expo.dev/router/introduction/",
     "https://www.nativewind.dev/v4/overview",
