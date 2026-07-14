@@ -12,19 +12,19 @@ tags: architecture, components
 **Guidelines:**
 
 1.  **Definition Syntax:**
-    - Must use function declarations (`export function Name() {}`).
-    - Must use named exports exclusively (No `export default`).
-    - Arrow functions are forbidden for top-level components.
+    - Must use function declarations (`export function Name() {}`)
+    - Must use named exports exclusively (No `export default`)
+    - Arrow functions are forbidden for top-level components
 2.  **Props Definition:**
-    - Must use `type Props = { ... }`.
-    - If exported, rename to `ComponentNameProps`.
+    - Must use `type Props = { ... }`
+    - If exported, rename to `ComponentNameProps`
 3.  **File Structure Strategy:**
-    - **Integral Component:** Single file (`components/my-component.tsx`) if it has no sub-components.
-    - **Grouped Component:** Directory with `index.tsx` (main) and helper files (e.g., `item.tsx`). Helper components must have generic names internal to the folder but specific implementation details.
-    - **Complex Component (base/presets):** For components with multiple variants (e.g., _Buttons_, _Inputs_), strictly follow the respective pattern.
-      - `base/`: Contains the logic container (state, theme injection, layout). Uses `render` props to pass data to children.
-      - `presets/`: Contains visual implementations consuming the `base`.
-      - `index.ts`: Multiple barrel files to control visibility.
+    - **Integral Component:** Single file (`components/my-component.tsx`) if it has no sub-components
+    - **Grouped Component:** Directory with `index.tsx` (main) and helper files (e.g., `item.tsx`). Helper components must have generic names internal to the folder but specific implementation details
+    - **Complex Component (base/presets):** For components with multiple variants (e.g., _Buttons_, _Inputs_), strictly follow the respective pattern
+      - `base/`: Contains the logic container (state, theme injection, layout). Uses `render` props to pass data to children
+      - `presets/`: Contains visual implementations consuming the `base`
+      - `index.ts`: Multiple barrel files to control visibility
 
 **Incorrect (Arrow functions, Defaults, Flat logic):**
 

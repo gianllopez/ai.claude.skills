@@ -12,16 +12,16 @@ tags: architecture, styles
 **Guidelines:**
 
 1.  **Primary Styling Approach:**
-    - Must use the `className` prop for all component styling.
-    - The `style` prop is reserved strictly for dynamic values that _TailwindCSS_ cannot handle (e.g., interpolated animations, dynamic safe-area insets calculated at runtime) or 3rd party components not compatible with _NativeWind_.
+    - Must use the `className` prop for all component styling
+    - The `style` prop is reserved strictly for dynamic values that _TailwindCSS_ cannot handle (e.g., interpolated animations, dynamic safe-area insets calculated at runtime) or 3rd party components not compatible with _NativeWind_
 2.  **Conditional Classes:**
-    - Must use the `classnames` library for handling conditional logic.
-    - **Forbidden:** Do not use template literals or string concatenation for classes (e.g., `` `flex-1 ${active ? 'bg-red' : ''}` ``).
+    - Must use the `classnames` library for handling conditional logic
+    - **Forbidden:** Do not use template literals or string concatenation for classes (e.g., `` `flex-1 ${active ? 'bg-red' : ''}` ``)
 3.  **Theme Restrictions:**
-    - Must utilize the tokens defined in `./core/config/theme/colors.ts`.
-    - Avoid arbitrary values (e.g., `bg-[#123456]`) unless absolutely necessary for one-off generic values.
+    - Must utilize the tokens defined in `./core/config/theme/colors.ts`
+    - Avoid arbitrary values (e.g., `bg-[#123456]`) unless absolutely necessary for one-off generic values
 4.  **Formatting:**
-    - Class names must be sorted automatically via `prettier-plugin-tailwindcss`.
+    - Class names must be sorted automatically via `prettier-plugin-tailwindcss`
 
 **Incorrect (StyleSheet usage, String interpolation, Arbitrary values):**
 

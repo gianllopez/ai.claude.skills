@@ -17,8 +17,8 @@ For inline array methods (`.map`, `.filter`, `.forEach`, etc.), strictly use the
 
 **Exceptions:**
 
-- **Complex Logic:** If the callback body requires a multi-line block (`{ ... }`) or complex destructuring, use the full descriptive singular name to maintain context.
-- **Nested Loops:** If iterating within another iterator, use full names to avoid confusion (e.g., avoid `u` inside another `u`).
+- **Complex Logic:** If the callback body requires a multi-line block (`{ ... }`) or complex destructuring, use the full descriptive singular name to maintain context
+- **Nested Loops:** If iterating within another iterator, use full names to avoid confusion (e.g., avoid `u` inside another `u`)
 
 **Incorrect (verbose for simple logic):**
 

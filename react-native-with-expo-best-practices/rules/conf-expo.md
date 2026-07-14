@@ -12,13 +12,13 @@ tags: configuration, expo
 **Guidelines:**
 
 1.  **Code Formatting:**
-    - Must use `prettier` with `@trivago/prettier-plugin-sort-imports` and `prettier-plugin-tailwindcss`.
+    - Must use `prettier` with `@trivago/prettier-plugin-sort-imports` and `prettier-plugin-tailwindcss`
 2.  **Custom Scripts:**
-    - Include `ios:uninstall` and `android:uninstall` commands to quickly wipe the app from simulators/emulators for clean install testing.
+    - Include `ios:uninstall` and `android:uninstall` commands to quickly wipe the app from simulators/emulators for clean install testing
 3.  **Expo Configuration (`app.json`):**
-    - **Identifiers:** Use strict _Reverse Domain_ notation (`com.org.project`).
-    - **Assets:** Store assets in `./public/` (not `./assets/`).
-    - **Plugins:** Configuration for splash screen and fonts must be done via the `plugins` array (not top-level props) to ensure granular control, especially for _Android_ font weights/styles.
+    - **Identifiers:** Use strict _Reverse Domain_ notation (`com.org.project`)
+    - **Assets:** Store assets in `./public/` (not `./assets/`)
+    - **Plugins:** Configuration for splash screen and fonts must be done via the `plugins` array (not top-level props) to ensure granular control, especially for _Android_ font weights/styles
 
 **Incorrect (Default Config & Missing Plugins):**
 

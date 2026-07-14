@@ -51,7 +51,7 @@ is registered at the moment — `Sprint`, `Módulo`, `Proyecto`, and `Tipo`.
 Before assigning any of these, run `notion-fetch` on
 `collection://93c62c06-e9d7-826d-bd33-875c237b46f6` to read the current options, then:
 
-1. Infer the best match from the existing options based on the user's request.
+1. Infer the best match from the existing options based on the user's request
 2. If no existing option fits with reasonable confidence, ask the user with `AskUserQuestion`,
    offering the live options as choices — do not invent new option values on your own.
 
@@ -236,13 +236,13 @@ Return the task address and the dates written.
 
 When the user does not specify a value:
 
-- **Estado:** always `PENDIENTE` — a new task is created in this state, no exception.
+- **Estado:** always `PENDIENTE` — a new task is created in this state, no exception
 - **Responsable:** default to _Gian López_ (`a3c06894-0016-457e-8d4a-5ebce86eb8c0`) unless another
   person is explicitly named.
-- **Prioridad:** never assume — always ask (see Directive 2).
-- **Dificultad:** infer from the described scope (e.g. several technical steps → `4 — COMPLEJO`).
+- **Prioridad:** never assume — always ask (see Directive 2)
+- **Dificultad:** infer from the described scope (e.g. several technical steps → `4 — COMPLEJO`)
   Do not ask.
-- **Sprint:** never assume — always ask, offering the live options (see Directive 2).
+- **Sprint:** never assume — always ask, offering the live options (see Directive 2)
 - **Módulo / Tipo:** dynamic catalogs — infer a candidate from the live options, but always
   confirm (see Directive 2).
 
@@ -264,9 +264,9 @@ The `Tarea` title must be written in uppercase and begin with a verb in the infi
 
 ## 🔧 Directive 4 — Content tone and style
 
-- **Language:** _Spanish_.
-- **Objetivo:** a single paragraph giving the context, need, or problem to solve.
-- **Plan de acción:** 3–5 actionable checkbox items.
+- **Language:** _Spanish_
+- **Objetivo:** a single paragraph giving the context, need, or problem to solve
+- **Plan de acción:** 3–5 actionable checkbox items
 - **Emphasis:** technical terms, acronyms, and proper nouns (brands, products, services,
   people, places) in _italics_ (e.g. _API_, _SQL_, _Google_).
 
@@ -286,12 +286,12 @@ update and do not remove it.
 
 Used to compute task dates in _Operation B_:
 
-- **Working days:** Monday to Friday.
+- **Working days:** Monday to Friday
 - **Working blocks:** 08:30–12:00 and 13:30–17:00 → 7 effective hours per day (the 12:00–13:30
   lunch break does not count).
 - **Holidays:** skip _Colombia_'s official public holidays — they are not working days. Determine
   them from the official _Colombian_ calendar for the year(s) the calculation spans.
-- **Time zone:** _America/Bogota_.
+- **Time zone:** _America/Bogota_
 - **Effort mapping:** `Dificultad` → hours is defined only in _Notion_ (single source of truth):
   the `⚙️ Sistema` page, section _Esquema de Control de Horas → Capa 1: Estimación_. Read it live
   with `notion-fetch` (_Operation B_, step 2); never hardcode the values in this skill.

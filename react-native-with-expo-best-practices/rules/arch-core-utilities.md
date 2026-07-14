@@ -12,17 +12,17 @@ tags: architecture, core
 **Guidelines:**
 
 1.  **Configuration (`./core/config/`):**
-    - Must store global constants (storage keys, UI metrics, query timings) and theme definitions.
-    - **Theme:** Colors must be explicitly defined (e.g., mapping _TailwindCSS_ colors to semantic names), avoiding raw hex codes in components.
+    - Must store global constants (storage keys, UI metrics, query timings) and theme definitions
+    - **Theme:** Colors must be explicitly defined (e.g., mapping _TailwindCSS_ colors to semantic names), avoiding raw hex codes in components
 2.  **Helpers (`./core/helpers/`):**
-    - **Functional Approach:** Must use top-level named exports (`export const login = ...`).
-    - **Forbidden:** Do not use `class` with `static` methods for helpers. This is an _OOP_ pattern not suitable for modern tree-shakable JS/TS bundles.
+    - **Functional Approach:** Must use top-level named exports (`export const login = ...`)
+    - **Forbidden:** Do not use `class` with `static` methods for helpers. This is an _OOP_ pattern not suitable for modern tree-shakable JS/TS bundles
 3.  **Hooks (`./core/hooks/`):**
-    - Contains global, reusable hooks (e.g., `use-screen-spacing`, `use-debounce`) and global state stores (`stores/`).
-    - Domain-specific hooks (like `use-create-asset`) belong in `./core/api/`, not here.
+    - Contains global, reusable hooks (e.g., `use-screen-spacing`, `use-debounce`) and global state stores (`stores/`)
+    - Domain-specific hooks (like `use-create-asset`) belong in `./core/api/`, not here
 4.  **Libraries (`./core/lib/`):**
-    - Contains configuration and adapters for third-party libraries (e.g., `axios`, `react-native-mmkv`).
-    - If a library requires complex setup, create a subfolder (e.g., `./core/lib/react-query/client.ts`).
+    - Contains configuration and adapters for third-party libraries (e.g., `axios`, `react-native-mmkv`)
+    - If a library requires complex setup, create a subfolder (e.g., `./core/lib/react-query/client.ts`)
 
 **Incorrect (Static Classes, Magic Strings, Scattered Config):**
 

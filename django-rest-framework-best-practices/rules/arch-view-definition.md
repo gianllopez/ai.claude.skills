@@ -12,19 +12,19 @@ tags: django-rest-framework, views
 **Guidelines:**
 
 1.  **Selection Criteria:**
-    - **Generic Views:** Must be the default choice for standard _CRUD_ operations (e.g., `ListCreateAPIView`).
-    - **APIView:** Use only when standard Generics are insufficient (e.g., complex business logic, Auth, RPC).
-2.  **Typing (APIView):**
-    - Always type-hint `request` as `Request` — it adds real value by enabling IDE autocompletion and making the parameter contract explicit.
-    - Omit return type annotations when the `return` statement is self-documenting (e.g., `return Response(...)`); add them only when branching logic makes the return type non-obvious.
-    - Use explicit imports (e.g., `from rest_framework.request import Request`).
+    - **_Generic Views_:** Must be the default choice for standard _CRUD_ operations (e.g., `ListCreateAPIView`)
+    - **_APIView_:** Use only when standard Generics are insufficient (e.g., complex business logic, Auth, RPC)
+2.  **Typing (_APIView_):**
+    - Always type-hint `request` as `Request` — it adds real value by enabling IDE autocompletion and making the parameter contract explicit
+    - Omit return type annotations when the `return` statement is self-documenting (e.g., `return Response(...)`); add them only when branching logic makes the return type non-obvious
+    - Use explicit imports (e.g., `from rest_framework.request import Request`)
 3.  **URL Registration:**
-    - In `urls.py`, import the views module relatively: `from . import views`.
-    - Register paths referencing the module: `views.MyClassName.as_view()`.
+    - In `urls.py`, import the views module relatively: `from . import views`
+    - Register paths referencing the module: `views.MyClassName.as_view()`
 4.  **Security Declaration:**
-    - Every view (APIView, Generic View, or ViewSet) must explicitly declare both `authentication_classes` and `permission_classes`.
-    - When a view requires no authentication or permissions, declare empty lists explicitly — never rely on implicit global defaults.
-    - The two attributes must be declared together, separated from `queryset` and `serializer_class` by a blank line.
+    - Every view (_APIView_, _Generic View_, or _ViewSet_) must explicitly declare both `authentication_classes` and `permission_classes`
+    - When a view requires no authentication or permissions, declare empty lists explicitly — never rely on implicit global defaults
+    - The two attributes must be declared together, separated from `queryset` and `serializer_class` by a blank line
 
 **Incorrect (Implicit security — relies on global defaults):**
 

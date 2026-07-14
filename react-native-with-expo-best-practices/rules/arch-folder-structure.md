@@ -12,20 +12,20 @@ tags: architecture, folders
 **Guidelines:**
 
 1.  **Root Directory:**
-    - `app/`: Contains only _Expo Router_ files (`_layout`, `index`, `[id]`). No business logic here.
-    - `components/`: Contains UI elements.
-    - `core/`: Contains all non-UI logic.
+    - `app/`: Contains only _Expo Router_ files (`_layout`, `index`, `[id]`). No business logic here
+    - `components/`: Contains UI elements
+    - `core/`: Contains all non-UI logic
 2.  **Core Organization (`core/`):**
-    - Logic must be categorized by type: `api/`, `config/`, `constants/`, `hooks/`, `i18n/`, `lib/`, `store/`, `theme/`, `types/`, and `utils/`.
-    - **Types:** All _TypeScript_ definitions reside in `core/types/` (grouped by domain like `entity`, `user`).
-    - **API:** _API_ services must be grouped by domain (e.g., `core/api/entity/`).
+    - Logic must be categorized by type: `api/`, `config/`, `constants/`, `hooks/`, `i18n/`, `lib/`, `store/`, `theme/`, `types/`, and `utils/`
+    - **Types:** All _TypeScript_ definitions reside in `core/types/` (grouped by domain like `entity`, `user`)
+    - **API:** _API_ services must be grouped by domain (e.g., `core/api/entity/`)
 3.  **Component Organization (`components/`):**
-    - **Feature Components:** Grouped by domain (e.g., `feature-sheet`, `entity-list`) containing their own sub-components if necessary.
+    - **Feature Components:** Grouped by domain (e.g., `feature-sheet`, `entity-list`) containing their own sub-components if necessary
     - **Atomic/Complex Components:** If a component has multiple variants, use the base/presets pattern:
-      - `base/`: Logic and containers (e.g., `touchable.tsx`).
-      - `presets/`: Visual variants (e.g., `primary.tsx`, `secondary.tsx`).
-      - `index.ts`: Public exports.
-4.  **Imports:** Use strict aliases (e.g., `@/core/api/...`) instead of relative paths for cross-module imports.
+      - `base/`: Logic and containers (e.g., `touchable.tsx`)
+      - `presets/`: Visual variants (e.g., `primary.tsx`, `secondary.tsx`)
+      - `index.ts`: Public exports
+4.  **Imports:** Use strict aliases (e.g., `@/core/api/...`) instead of relative paths for cross-module imports
 
 **Incorrect (Mixed concerns & unstructured):**
 

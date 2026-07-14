@@ -12,18 +12,18 @@ tags: django-rest-framework, serializers
 **Guidelines:**
 
 1.  **Conditional Imports:**
-    - **Simple:** If inheriting _only_ from `ModelSerializer` with no custom fields, import `ModelSerializer` directly.
-    - **Complex:** If using custom fields (e.g., `CharField`), import the `serializers` module and use `serializers.ModelSerializer`.
+    - **Simple:** If inheriting _only_ from `ModelSerializer` with no custom fields, import `ModelSerializer` directly
+    - **Complex:** If using custom fields (e.g., `CharField`), import the `serializers` module and use `serializers.ModelSerializer`
 2.  **Naming Convention:** Use specific suffixes:
-    - `*ListSerializer`: Optimized for collections.
-    - `*RetrieveSerializer`: Detailed single-object read.
-    - `*CreateSerializer` / `*UpdateSerializer`: For write operations.
+    - `*ListSerializer`: Optimized for collections
+    - `*RetrieveSerializer`: Detailed single-object read
+    - `*CreateSerializer` / `*UpdateSerializer`: For write operations
 3.  **Response Delegation (Write Operations):**
-    - When a write serializer (`Create`/`Update`) needs to return a different representation than its input (e.g., return the full `UserRetrieveSerializer` structure after creating a user), must inherit from `DelegateRepresentationMixin`.
-    - Define the target serializer in `Meta.representation`.
+    - When a write serializer (`Create`/`Update`) needs to return a different representation than its input (e.g., return the full `UserRetrieveSerializer` structure after creating a user), must inherit from `DelegateRepresentationMixin`
+    - Define the target serializer in `Meta.representation`
 4.  **Field Declaration:**
-    - `Meta.fields` must always be an explicit list `[...]`. Never use `"__all__"` or any other shorthand.
-    - The order of fields in the list must match the order in which they are defined in the model.
+    - `Meta.fields` must always be an explicit list `[...]`. Never use `"__all__"` or any other shorthand
+    - The order of fields in the list must match the order in which they are defined in the model
 
 **Incorrect (Implicit fields or arbitrary order):**
 

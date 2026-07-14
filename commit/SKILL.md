@@ -21,26 +21,26 @@ This skill activates when:
 
 Before generating the commit message, you must:
 
-1.  **Check Status**: Run `git status` to confirm what is staged.
-2.  **Analyze Diff**: Run `git diff --staged` to understand the exact changes.
-3.  **User Input**: Consider any arguments provided (e.g., `/commit fixing auth bug`) as additional context for the commit intent.
+1.  **Check Status**: Run `git status` to confirm what is staged
+2.  **Analyze Diff**: Run `git diff --staged` to understand the exact changes
+3.  **User Input**: Consider any arguments provided (e.g., `/commit fixing auth bug`) as additional context for the commit intent
 
 ## Message Generation Rules (Strict)
 
 You must generate a commit message that follows the _Conventional Commits_ specification, strictly adhering to these constraints:
 
-- **Language**: The message must be written in _English_ only.
-- **Structure**: The message must consist of a header, a concise description paragraph, and a mandatory footer.
+- **Language**: The message must be written in _English_ only
+- **Structure**: The message must consist of a header, a concise description paragraph, and a mandatory footer
 - **Backticks Rule (CRITICAL)**:
-  - **Scope**: The scope inside the parentheses must be enclosed in backticks (e.g., `feat(api):`).
-  - **References**: All references to code members (variables, functions, classes, filenames) and third-party libraries (e.g., `react-query`, `axios`) must be enclosed in backticks in both the title and description.
-- **Forbidden**: Do not use bullet points or numbered lists. Do not use line breaks _inside_ the description paragraph itself.
+  - **Scope**: The scope inside the parentheses must be enclosed in backticks (e.g., `feat(api):`)
+  - **References**: All references to code members (variables, functions, classes, filenames) and third-party libraries (e.g., `react-query`, `axios`) must be enclosed in backticks in both the title and description
+- **Forbidden**: Do not use bullet points or numbered lists. Do not use line breaks _inside_ the description paragraph itself
 - **Footer (MANDATORY)**:
-  - Leave one empty line after the description.
+  - Leave one empty line after the description
   - Append the signature: `Co-Authored-By: Claude Code (<model>)`
-  - Replace `<model>` with the specific name of the model generating this response (e.g., _Claude 3.5 Sonnet_, _Claude 3 Opus_).
-- **Focus**: Summarize the most significant change only. Discard minor details.
-- **Types**: Use only: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+  - Replace `<model>` with the specific name of the model generating this response (e.g., _Claude 3.5 Sonnet_, _Claude 3 Opus_)
+- **Focus**: Summarize the most significant change only. Discard minor details
+- **Types**: Use only: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 
 ## Commit Type Guidelines
 
@@ -61,7 +61,7 @@ You must generate a commit message that follows the _Conventional Commits_ speci
 
 1.  **Analyze** staged changes thoroughly
 2.  **Generate** commit message following all rules above
-3.  **Construct** the final git command using single quotes: `git commit -m '<message>'`. Single quotes prevent bash from interpreting backticks as subcommands, so the message is stored literally — do not escape backticks inside the message string.
+3.  **Construct** the final git command using single quotes: `git commit -m '<message>'`. Single quotes prevent bash from interpreting backticks as subcommands, so the message is stored literally — do not escape backticks inside the message string
 4.  **Execute** the command immediately using the _bash_ tool
 5.  **Confirm** the commit was successful
 

@@ -11,13 +11,13 @@ tags: django, configuration
 
 **Guidelines:**
 
-1.  **Directory Structure:** Do not use a single `settings.py`. Create a `settings/` package inside the project configuration directory.
+1.  **Directory Structure:** Do not use a single `settings.py`. Create a `settings/` package inside the project configuration directory
 2.  **File Organization:**
-    - `settings.py`: Contains shared configurations (Apps, Middleware, Database connection logic, I18N, Auth).
-    - `development.py`: Imports base (`from .settings import *`) and sets `DEBUG = True` and permissive access.
-    - `production.py`: Imports base (`from .settings import *`) and sets `DEBUG = False` and restricted access.
-3.  **Path Adjustment:** In `settings.py`, `BASE_DIR` must calculate the parent three times (`.parent.parent.parent`) to compensate for the new subdirectory depth.
-4.  **Environment Variables:** Sensitive data (`SECRET_KEY`, `DB_PASSWORD`) must be loaded via `os.environ` in the base settings.
+    - `settings.py`: Contains shared configurations (Apps, Middleware, Database connection logic, I18N, Auth)
+    - `development.py`: Imports base (`from .settings import *`) and sets `DEBUG = True` and permissive access
+    - `production.py`: Imports base (`from .settings import *`) and sets `DEBUG = False` and restricted access
+3.  **Path Adjustment:** In `settings.py`, `BASE_DIR` must calculate the parent three times (`.parent.parent.parent`) to compensate for the new subdirectory depth
+4.  **Environment Variables:** Sensitive data (`SECRET_KEY`, `DB_PASSWORD`) must be loaded via `os.environ` in the base settings
 
 **Incorrect (Monolithic & Insecure):**
 

@@ -11,20 +11,20 @@ tags: architecture, core, api
 
 **Guidelines:**
 
-1.  **Library Standard:** Must use `react-query-kit` (`createQuery`, `createMutation`) to encapsulate _Query Keys_ and _Fetchers_.
+1.  **Library Standard:** Must use `react-query-kit` (`createQuery`, `createMutation`) to encapsulate _Query Keys_ and _Fetchers_
 2.  **Directory Structure:**
-    - _API_ hooks must be grouped by domain in `@/core/api/<domain>/`.
-    - Files should be named `use-<members|action>.ts` (e.g., `use-assets.ts`, `use-create-asset.ts`).
+    - _API_ hooks must be grouped by domain in `@/core/api/<domain>/`
+    - Files should be named `use-<members|action>.ts` (e.g., `use-assets.ts`, `use-create-asset.ts`)
 3.  **Type Definitions:**
-    - Define `Response` (_API_ Contract), `Data` (UI consumption), and `Variables`.
-    - Return types must be explicit.
+    - Define `Response` (_API_ Contract), `Data` (UI consumption), and `Variables`
+    - Return types must be explicit
 4.  **Query Keys:**
-    - Format: `'@<domain>/<hook-name>'`.
-    - Example: `'@users/use-assets'`.
+    - Format: `'@<domain>/<hook-name>'`
+    - Example: `'@users/use-assets'`
 5.  **Axios Configuration:**
-    - Use a central instance (`@/core/lib/axios`).
-    - Implement `protected: true` via interceptors to inject the `Authorization` header.
-    - Augment `AxiosRequestConfig` to support the custom `protected` property.
+    - Use a central instance (`@/core/lib/axios`)
+    - Implement `protected: true` via interceptors to inject the `Authorization` header
+    - Augment `AxiosRequestConfig` to support the custom `protected` property
 
 **Incorrect (Inline fetch, raw keys):**
 

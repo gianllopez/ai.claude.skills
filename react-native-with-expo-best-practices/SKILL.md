@@ -59,3 +59,7 @@ Read individual rule files for detailed explanations and code examples:
 ```plaintext
 rules/*.md
 ```
+
+## Full Compiled Document
+
+For the complete guide with all rules expanded: `AGENTS.md` (generated — see `README.md`).
