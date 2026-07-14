@@ -11,11 +11,11 @@ tags: django, configuration
 
 **Guidelines:**
 
-1.  **Directory Location:** All _Django_ apps must reside inside the project's `apps/` folder, not the project root.
-2.  **Package Conversion:** `models`, `serializers`, and `views` must be directories (packages) containing an `__init__.py`.
-3.  **Public API:** Use `__init__.py` to explicitly export only the public classes/functions.
-4.  **File Cleanup:** `admin.py` and `tests.py` should be cleared or reset upon creation; `urls.py` must be created if missing.
-5.  **App Configuration:** The `apps.py` file must use the full path in `name` (e.g., `apps.users`) and include a translatable `verbose_name`.
+1.  **Directory Location:** All _Django_ apps must reside inside the project's `apps/` folder, not the project root
+2.  **Package Conversion:** `models`, `serializers`, and `views` must be directories (packages) containing an `__init__.py`
+3.  **Public API:** Use `__init__.py` to explicitly export only the public classes/functions
+4.  **File Cleanup:** `admin.py` and `tests.py` should be cleared or reset upon creation; `urls.py` must be created if missing
+5.  **App Configuration:** The `apps.py` file must use the full path in `name` (e.g., `apps.users`) and include a translatable `verbose_name`
 
 **Incorrect (Flat structure & Default Config):**
 

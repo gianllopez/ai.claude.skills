@@ -49,7 +49,7 @@ python3 ~/.claude/skills/audit/scripts/audit.py list [--status pending|done|unau
 
 - `status <path…>` — prints `<icon> <status> <path>` for each file. Exit code is `1` if any target
   is `done`, `0` otherwise, so it doubles as a guard check.
-- `list` — prints every audited file in the current project; `--status` filters.
+- `list` — prints every audited file in the current project; `--status` filters
 
 Run the script from the project's working directory: it resolves the project root by walking up to
 the nearest `.git` and reads `<root>/.git/audit.json`. If that file is absent, the project simply

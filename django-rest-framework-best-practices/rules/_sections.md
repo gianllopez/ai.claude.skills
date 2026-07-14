@@ -10,7 +10,7 @@ description: Index of all enforced best practices for the Django project.
 ## Configuration & DevOps
 
 - [Modular Settings Configuration](./conf-settings-structure.md)
-- [Docker & Container Standards](./conf-docker-standards.md)
+- [Deployment Topology & Containerization](./conf-deployment-topology.md)
 - [Environment & Dependency Segregation](./conf-env-dependencies.md)
 
 ## ORM & Database

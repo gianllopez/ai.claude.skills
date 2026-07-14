@@ -45,7 +45,7 @@ Reference these guidelines when:
 
 - `conf-settings-structure` - Modular settings (base/development/production) and secure secrets
 - `conf-env-dependencies` - Segregated `.venv` and split requirement files
-- `conf-docker-standards` - Slim images, layer caching, and reverse-domain naming
+- `conf-deployment-topology` - Layered _Compose_ overlays, _Caddy_ reverse proxy, non-root image with a release entrypoint, _gunicorn_, and _systemd_ timers
 - `arch-view-definition` - Generic views usage, strict _APIView_ typing, and explicit security declaration
 
 ## How to Use

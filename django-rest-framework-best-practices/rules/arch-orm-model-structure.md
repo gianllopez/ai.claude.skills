@@ -11,8 +11,8 @@ tags: django, orm
 
 **Guidelines:**
 
-1.  **File Isolation:** Each model must reside in its own file within the `models/` package (e.g., `./apps/users/models/user.py`).
-2.  **Field Definition:** The first argument of every non-relational field must be the translated `verbose_name` (using `gettext_lazy`).
+1.  **File Isolation:** Each model must reside in its own file within the `models/` package (e.g., `./apps/users/models/user.py`)
+2.  **Field Definition:** The first argument of every non-relational field must be the translated `verbose_name` (using `gettext_lazy`)
 3.  **Class Structure:** Adhere to the following order inside the class:
     1.  `Choices` (Enums/TextChoices)
     2.  Database Fields
@@ -21,9 +21,9 @@ tags: django, orm
     5.  Properties / Custom Methods
     6.  `def __str__(self):`
 4.  **Metadata:**
-    - Explicitly define `verbose_name` and `verbose_name_plural`.
-    - Explicitly define `db_table` (conditional) for models with multi-word names (e.g., `UserAsset`), you must explicitly define `db_table` to enforce _snake_case_ separation (e.g., `users_user_asset`). For single-word models, the default behavior is acceptable.
-5.  **Typing:** Add type hints only when they add real value to the reader. Omit return annotations on dunder methods (`__str__`, `__repr__`) since their contract is defined by the protocol, and on properties/methods where the return expression is self-documenting.
+    - Explicitly define `verbose_name` and `verbose_name_plural`
+    - Explicitly define `db_table` (conditional) for models with multi-word names (e.g., `UserAsset`), you must explicitly define `db_table` to enforce _snake_case_ separation (e.g., `users_user_asset`). For single-word models, the default behavior is acceptable
+5.  **Typing:** Add type hints only when they add real value to the reader. Omit return annotations on dunder methods (`__str__`, `__repr__`) since their contract is defined by the protocol, and on properties/methods where the return expression is self-documenting
 
 **Incorrect (Mixed structure, missing translations/types):**
 

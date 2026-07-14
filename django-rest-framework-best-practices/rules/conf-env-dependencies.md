@@ -12,13 +12,13 @@ tags: configuration, environment, requirements
 **Guidelines:**
 
 1.  **Dual Virtual Environments:** Do not use a generic `.venv`. Create two explicit environments in the project root:
-    - `.venv.development`: For local coding, linting, and testing.
-    - `.venv.production`: To simulate the build process and verify clean installs.
-2.  **Requirement Files:** Store dependencies in a `requirements/` directory, never in a root `./requirements.txt`.
-    - `./requirements/production.txt`: Only libraries required for the application to run.
-    - `./requirements/development.txt`: Libraries for type checking (stubs), formatting, and debugging.
-3.  **Contextual Installation:** Before installing a package, explicitly decide: "Is this needed for the app logic or for the developer?" Install into the corresponding environment/file.
-4.  **Standard Development Stack:** Development requirements must include type stubs for strict typing (e.g., `django-stubs`, `djangorestframework-stubs`).
+    - `.venv.development`: For local coding, linting, and testing
+    - `.venv.production`: To simulate the build process and verify clean installs
+2.  **Requirement Files:** Store dependencies in a `requirements/` directory, never in a root `./requirements.txt`
+    - `./requirements/production.txt`: Only libraries required for the application to run
+    - `./requirements/development.txt`: Libraries for type checking (stubs), formatting, and debugging
+3.  **Contextual Installation:** Before installing a package, explicitly decide: "Is this needed for the app logic or for the developer?" Install into the corresponding environment/file
+4.  **Standard Development Stack:** Development requirements must include type stubs for strict typing (e.g., `django-stubs`, `djangorestframework-stubs`)
 
 **Incorrect (Mixed environment & Monolithic file):**
 

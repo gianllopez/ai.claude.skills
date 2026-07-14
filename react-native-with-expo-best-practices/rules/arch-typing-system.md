@@ -12,20 +12,20 @@ tags: architecture, core, types
 **Guidelines:**
 
 1.  **Directory Separation:**
-    - `core/types/`: Contains application-specific definitions grouped by domain (e.g., `users`, `products`).
-    - `core/typings/`: Contains global overrides and module augmentations for third-party libraries (e.g., `axios.d.ts`, `environment.d.ts`).
+    - `core/types/`: Contains application-specific definitions grouped by domain (e.g., `users`, `products`)
+    - `core/typings/`: Contains global overrides and module augmentations for third-party libraries (e.g., `axios.d.ts`, `environment.d.ts`)
 2.  **Definition Strategy:**
-    - **Interfaces:** Must be used for defining the shape of objects, especially _API_ responses and external services (extensible).
-    - **Types:** Must be used for unions, intersections, mapped types (`Pick`, `Omit`), and aliases.
+    - **Interfaces:** Must be used for defining the shape of objects, especially _API_ responses and external services (extensible)
+    - **Types:** Must be used for unions, intersections, mapped types (`Pick`, `Omit`), and aliases
 3.  **Domain Grouping:**
-    - Types must be grouped in folders matching their domain (e.g., `core/types/config/`).
-    - Each domain folder must have an `index.ts` exporting its members.
+    - Types must be grouped in folders matching their domain (e.g., `core/types/config/`)
+    - Each domain folder must have an `index.ts` exporting its members
 4.  **Import/Export Syntax:**
-    - **Imports:** Must use `import type { ... }` when importing interfaces or types.
-    - **Exports:** Must use `export type { ... }` in barrel files (`index.ts`).
+    - **Imports:** Must use `import type { ... }` when importing interfaces or types
+    - **Exports:** Must use `export type { ... }` in barrel files (`index.ts`)
 5.  **Naming Convention:**
-    - Do not prefix interfaces with `I`.
-    - Files should be named after the entity (e.g., `user.ts`) or the group (e.g., `cart.ts`).
+    - Do not prefix interfaces with `I`
+    - Files should be named after the entity (e.g., `user.ts`) or the group (e.g., `cart.ts`)
 
 **Incorrect (Flat structure, loose typing, value imports for types):**
 

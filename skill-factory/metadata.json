@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "author": "Gian López",
+  "date": "July 2026",
+  "abstract": "Authoring standard for the skills in this collection. Defines three complexity tiers (minimal, procedural, and compiled), the exact file formats each tier uses for SKILL.md, metadata.json, README.md, and the rules pipeline, and the AGENTS.md compilation workflow for rule-based skills. It exists to keep every skill organized, scalable, and consistent while staying faithful to the official Agent Skills specification.",
+  "references": [
+    "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+    "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices",
+    "https://github.com/vercel-labs/agent-skills"
+  ]
+}
