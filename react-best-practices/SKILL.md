@@ -1,6 +1,6 @@
 ---
 name: react-best-practices
-description: React application standards for code review — effect and state discipline, a typed React Query data layer, component composition and typing, semantic JSX markup, and TailwindCSS v4 utility usage over shadcn/ui semantic tokens. Reference stack is React Router in SPA mode with react-query-kit, react-hook-form and zustand. Use when reviewing, writing, or refactoring React components, hooks, queries, routes, forms, stores, class attributes, or shadcn/ui setup and theming.
+description: React application standards for writing and reviewing code — effect and state discipline, a typed React Query data layer, component composition and typing, semantic JSX markup, and TailwindCSS v4 utility usage over shadcn/ui semantic tokens. Reference stack is React Router in SPA mode with react-query-kit, react-hook-form and zustand. Use when reviewing, writing, or refactoring React components, hooks, queries, routes, forms, stores, class attributes, or shadcn/ui setup and theming.
 license: MIT
 metadata:
   author: gianllopez
@@ -9,9 +9,9 @@ metadata:
 
 # React Best Practices
 
-Review-oriented guide for _React_ applications. Framework-agnostic — examples use _React Router_ because that is the reference stack, but the principles hold for any router that owns navigation data.
+Standards for writing and reviewing _React_ applications. Framework-agnostic — examples use _React Router_ because that is the reference stack, but the principles hold for any router that owns navigation data.
 
-Every rule targets a defect a reviewer can point at: an effect that should not exist, a second source of truth, a request that starts after paint, the wrong element for the content, or a class string the build cannot see.
+Every rule names a defect concrete enough to point at in a diff — an effect that should not exist, a second source of truth, a request that starts after paint, the wrong element for the content, a class string the build cannot see — and shows the correct shape beside it. That is what makes the same rule usable in both directions: the **Correct** block is what to write, the defect is what to look for.
 
 **Scope:** _React_ application code and the markup and styling it renders. Accessibility auditing is deliberately out of scope — semantic rules are justified by structural correctness, machine-readability, and maintainability.
 
@@ -88,7 +88,15 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 - `perf-layout-stability` - Intrinsic media sizing, `h-dvh` over `h-screen`, `min-w-0` on flex children
 - `perf-css-footprint` - v4 automatic source detection, `@source inline()` over broad safelists
 
-## Applying These Rules in Review
+## Applying These Rules
+
+### While writing
+
+There is no triage. The **Correct** block of every rule is the target, including everything the _Do not report_ list below forgives: that list keeps review proportionate to what a diff can justify, and never licenses a lower standard while authoring.
+
+Where a rule states a convention rather than a defect — where a file lives, how it is named, which library owns a concern — it is the decision already made, not one of several options.
+
+### While reviewing
 
 Findings are only worth raising when they change behavior, break the design system, or add maintenance cost. Triage each one:
 

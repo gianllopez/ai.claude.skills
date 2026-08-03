@@ -1,6 +1,6 @@
 # React Best Practices
 
-A structured repository of _React_ application rules, optimized for agents, LLMs, and human reviewers. Built for code review: each rule names a defect that can be pointed at in a diff.
+A structured repository of _React_ application rules, optimized for agents, LLMs, and human developers. Built for writing and reviewing: each rule names a defect concrete enough to point at in a diff, and shows the correct shape beside it.
 
 Framework-agnostic — examples use _React Router_ because that is the reference stack, but the principles hold for any router that owns navigation data.
 
