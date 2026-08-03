@@ -16,7 +16,7 @@ in full and executed in order. Its structure is intentionally flat.
 
 ## What it does
 
-The skill exposes two operations.
+The skill exposes three operations.
 
 **Operation A — Create a Task**
 
@@ -30,6 +30,8 @@ The skill exposes two operations.
 5. **Creates the task** - under the correct data source, with the `📝` icon and the default
    template body.
 6. **Confirms** - returns the created task's address
+7. **Offers the date calculation** - always asks whether to run _Operation B_ right away on the
+   task just created.
 
 **Operation B — Calculate & Set Task Dates**
 
@@ -39,6 +41,15 @@ to the next full hour, and spreads the estimated hours over the company's workin
 lunch, weekends, and _Colombian_ holidays) to compute `Fecha de Finalización`. After approval, it
 writes both dates to the task.
 
+**Operation C — Add a Progress Record**
+
+Given a task (by link or mention), it appends an entry to the page's _Registros_ log: date, author,
+a short description of the progress or blocker, and a closing status line. The status is always
+asked for and shown in the preview, and it renders as a highlighted chip whose background color
+matches the color _Notion_ gives that option in the `Estado` select (`BLOQUEADO` on light red,
+`TERMINADO` on light green, …). If the status differs from the task's current `Estado`, the skill
+offers to update the property too.
+
 ## Behavior configuration
 
 The skill's behavior is defined by the user directives section of `SKILL.md`:
@@ -46,19 +57,22 @@ The skill's behavior is defined by the user directives section of `SKILL.md`:
 1. **Default values** - what to assume when the user does not specify a value
 2. **Fields that must always be confirmed** - `Proyecto`, `Sprint`, `Módulo`, `Tipo`, `Prioridad`
 3. **Task name convention** - uppercase, infinitive verb, no trailing period
-4. **Content tone and style** - _Spanish_, one-paragraph objective, 3–5 action items, and _italics_
-   for technical terms, acronyms, and proper nouns.
+4. **Content tone and style** - _Spanish_, one-paragraph objective, 3–5 action items, no trailing
+   period on any list item, and _italics_ for technical terms, acronyms, and proper nouns.
 5. **"Registros" section behavior** - opening line plus an empty placeholder block that shows
    collaborators how to log progress.
 6. **Working schedule** - business hours, effective daily hours, and the holiday rule used by
    _Operation B_ to compute dates.
+7. **Date-calculation prompt** - after creating a task, always ask whether to compute its dates now
+8. **Status in a progress record** - the status line is mandatory, always confirmed with the user,
+   and colored from the `Estado` background-color mapping.
 
 To change how the skill behaves, edit these directives — not the execution protocol.
 
 ## Scope
 
-This skill currently covers task creation (_Operation A_) and date calculation (_Operation B_). If it
-grows further (updating status, closing tasks, logging progress, reporting), keep splitting it
+This skill currently covers task creation (_Operation A_), date calculation (_Operation B_), and
+progress records (_Operation C_). If it grows further (closing tasks, reporting), keep splitting it
 **by operation**, not into a `rules/` catalog.
 
 ## Acknowledgments

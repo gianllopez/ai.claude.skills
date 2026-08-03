@@ -1,6 +1,6 @@
 ---
 name: notion
-description: Creates tasks in the Notion "Control" database and computes their start/finish dates from the company's working hours, respecting the default template and property schema.
+description: Creates tasks in the Notion "Control" database, computes their start/finish dates from the company's working hours, and appends progress records to a task's "Registros" log, respecting the default template and property schema.
 allowed-tools:
   - mcp__claude_ai_Notion__notion-fetch
   - mcp__claude_ai_Notion__notion-create-pages
@@ -11,14 +11,15 @@ allowed-tools:
 license: MIT
 metadata:
   author: gianllopez
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Notion Task Management
 
-Manages tasks in the user's _Notion_ database. It provides two operations: A — Create a Task
-(following the default template and property schema) and B — Calculate & Set Task Dates
-(computing `Fecha de Inicio` and `Fecha de Finalización` from the company's working hours).
+Manages tasks in the user's _Notion_ database. It provides three operations: A — Create a Task
+(following the default template and property schema), B — Calculate & Set Task Dates
+(computing `Fecha de Inicio` and `Fecha de Finalización` from the company's working hours), and
+C — Add a Progress Record (appending an entry to a task's _Registros_ log).
 
 ## When to Apply
 
@@ -26,6 +27,8 @@ Manages tasks in the user's _Notion_ database. It provides two operations: A —
 - The user asks to _"create a task"_, _"add a task to Notion"_, _"register a task"_, etc (_Operation A_)
 - The user describes a piece of work or a to-do that should be recorded in the task database (_Operation A_)
 - The user asks to _"calculate the dates"_, _"set the start/finish dates"_, or _"schedule"_ a task (_Operation B_)
+- The user asks to _"add a record"_, _"log progress"_, _"registrar un avance"_, or to note a blocker
+  or an update on an existing task (_Operation C_).
 
 ## Fixed workspace references (do not change between runs)
 
@@ -84,6 +87,12 @@ the `content` in _Notion-flavored Markdown_ following the template, and `icon: "
 ### 6. Confirm
 
 Return the address of the created task and a summary of the assigned properties.
+
+### 7. Offer to calculate the dates
+
+Right after confirming, always ask the user with `AskUserQuestion` whether the dates should be
+computed now (Directive 7). If they accept, continue straight into _Operation B_ using the task
+just created — do not ask again for the task link. If they decline, stop here.
 
 ## Property schema (valid values)
 
@@ -149,7 +158,7 @@ Se inicia la tarea con el objetivo de [contexto o punto de partida]
 <details>
 <summary>**[Día de la tarea (DD de MM)] — [[Mención de la persona]]**</summary>
 	[Describe qué se realizó, avance obtenido o bloqueo identificado]
-	**Estado: **<span color="gray">**`[Estado]`**</span>
+	**Estado: **<span color="gray_bg">**`[Estado]`**</span>
 </details>
 ```
 
@@ -163,12 +172,33 @@ Se inicia la tarea con el objetivo de [contexto o punto de partida]
 >   (`<mention-user url="user://a3c06894-0016-457e-8d4a-5ebce86eb8c0"/>`).
 
 > Each later update is appended inside a `<details>` block whose `<summary>` holds the date
-> (`<mention-date/>`) and the person (`<mention-user/>`), plus a status line formatted as
-> ``**Estado: **<span color="COLOR">**`ESTADO`**</span>``. Status colors:
-> `BLOQUEADO`→`red`, `PENDIENTE`→`gray`, `EN PROGRESO`→`blue`, `TERMINADO`→`green`.
+> (`<mention-date/>`) and the person (`<mention-user/>`), plus the status line described in
+> _Status line_ below. Appending those updates is _Operation C_.
 
 > If you need more advanced block syntax, first read the MCP resource
 > `notion://docs/enhanced-markdown-spec` before generating the content.
+
+## Status line (last line of every record)
+
+Every record in _Registros_ ends with a status line. It is never omitted, and its color is a
+**background** color (`*_bg`), so the status reads as a highlighted chip matching the color _Notion_
+gives that option in the `Estado` select:
+
+```markdown
+**Estado: **<span color="red_bg">**`BLOQUEADO`**</span>
+```
+
+| `Estado`      | Select color | Span color  |
+| :------------ | :----------- | :---------- |
+| `PENDIENTE`   | gray         | `gray_bg`   |
+| `EN PROGRESO` | blue         | `blue_bg`   |
+| `BLOQUEADO`   | red          | `red_bg`    |
+| `POR APROBAR` | yellow       | `yellow_bg` |
+| `TERMINADO`   | green        | `green_bg`  |
+
+> Text colors (`red`) and background colors (`red_bg`) are different values in
+> _Notion-flavored Markdown_ — always use the `_bg` variant here. Never invent a color outside this
+> table; if a status has no row, read the live option colors from the data source before rendering.
 
 ## Operation B — Calculate & Set Task Dates
 
@@ -225,12 +255,71 @@ date-times:
 
 Return the task address and the dates written.
 
+## Operation C — Add a Progress Record
+
+Appends one entry to an existing task's _Registros_ section: what happened, who logged it, when,
+and the status the task is left in.
+
+### 1. Identify the target task
+
+The user provides the task by link or mention (a _Notion_ URL or page ID). Run `notion-fetch` on it
+to read its current `Estado` and its existing _Registros_ entries.
+
+### 2. Gather the record data
+
+- **Date:** the current date and time in _America/Bogota_, as a `<mention-date>` (same format as the
+  opening record line).
+- **Person:** _Gian López_ (`a3c06894-0016-457e-8d4a-5ebce86eb8c0`) unless the user names someone
+  else — resolve other people with `notion-get-users`.
+- **Description:** one short paragraph in _Spanish_ describing what was done, the progress made, or
+  the blocker found (Directive 4).
+
+### 3. Resolve and present the status
+
+The record's status is never silently inferred. Always ask the user with `AskUserQuestion`,
+offering the five `Estado` options and marking the task's current one, then render it with its
+background color from the _Status line_ table (Directive 8).
+
+### 4. Render the record
+
+```markdown
+<details>
+<summary>**<mention-date start="<YYYY-MM-DD>" startTime="<HH:mm>" timeZone="America/Bogota"/> — <mention-user url="user://<user-id>"/>**</summary>
+	[Descripción del avance, resultado o bloqueo]
+	**Estado: **<span color="<estado>_bg">**`<ESTADO>`**</span>
+</details>
+```
+
+### 5. Preview and get approval
+
+Show the rendered record — including the resolved status and the color it will use — and wait for
+explicit approval. Do not write to _Notion_ until the user approves.
+
+### 6. Append the record
+
+Use `notion-update-page` with `command: "insert_content"` and `position: { "type": "end" }` so the
+entry lands at the bottom of _Registros_. If the placeholder `<details>` block from the template is
+still the last block, keep it: insert the real record and leave the placeholder in place
+(Directive 5).
+
+### 7. Sync the `Estado` property
+
+If the record's status differs from the task's current `Estado`, ask the user whether to update the
+property too. On a yes, run `notion-update-page` with `command: "update_properties"` setting
+`Estado`.
+
+### 8. Confirm
+
+Return the task address and a summary of the appended record.
+
 ---
 
 # 🔧 User Directives
 
 > These blocks define the skill's _behavior_. Directives 1–5 govern _Operation A_ (task creation);
-> Directive 6 governs _Operation B_ (date calculation).
+> Directive 6 governs _Operation B_ (date calculation); Directive 7 chains _A_ into _B_; Directive 8
+> governs _Operation C_ (progress records). Directive 4 applies to every operation that writes page
+> content.
 
 ## 🔧 Directive 1 — Default values
 
@@ -267,6 +356,10 @@ The `Tarea` title must be written in uppercase and begin with a verb in the infi
 - **Language:** _Spanish_
 - **Objetivo:** a single paragraph giving the context, need, or problem to solve
 - **Plan de acción:** 3–5 actionable checkbox items
+- **Lists:** no enumeration item ever ends with a period — checkboxes, bulleted lists, and numbered
+  lists alike, anywhere in the page body. Periods belong only to running-prose paragraphs
+  (_Objetivo_, record descriptions). Other trailing punctuation (`?`, `:`) is fine when the item
+  genuinely calls for it.
 - **Emphasis:** technical terms, acronyms, and proper nouns (brands, products, services,
   people, places) in _italics_ (e.g. _API_, _SQL_, _Google_).
 
@@ -280,7 +373,7 @@ On creation, generate:
    description, and status) so collaborators know how to log their progress updates.
 
 Keep the placeholder block with its bracketed placeholders — do not fill it with a real
-update and do not remove it.
+update and do not remove it. Real updates are appended below it by _Operation C_.
 
 ## 🔧 Directive 6 — Working schedule (for _Operation B_)
 
@@ -295,3 +388,25 @@ Used to compute task dates in _Operation B_:
 - **Effort mapping:** `Dificultad` → hours is defined only in _Notion_ (single source of truth):
   the `⚙️ Sistema` page, section _Esquema de Control de Horas → Capa 1: Estimación_. Read it live
   with `notion-fetch` (_Operation B_, step 2); never hardcode the values in this skill.
+
+## 🔧 Directive 7 — Always offer the date calculation after creating a task
+
+A newly created task has no dates. So immediately after _Operation A_ confirms the creation, always
+ask — with `AskUserQuestion`, never as a passing remark — whether to calculate them now:
+
+- **Yes** → run _Operation B_ on the task just created, reusing its page ID
+- **No** → close the interaction; the dates stay empty until the user asks for them
+
+Ask every time, even when the user did not mention dates, and never compute them without asking.
+
+## 🔧 Directive 8 — Status in a progress record
+
+Every record appended to _Registros_ (_Operation C_) ends with the status line, with no exceptions:
+
+- **Always present:** a record without its `Estado` line is incomplete — never omit it
+- **Always presented to the user:** show the resolved status in the preview before writing, so the
+  user sees which state the task is being left in and can correct it.
+- **Never inferred silently:** ask with `AskUserQuestion`, offering the five `Estado` options with
+  the task's current one marked.
+- **Color from the mapping:** use the `_bg` background color of the _Status line_ table, so
+  `BLOQUEADO` renders on light red, `TERMINADO` on light green, and so on.
