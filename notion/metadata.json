@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Gian López",
-  "date": "July 2026",
-  "abstract": "An executable skill for creating and managing tasks in the Notion database \"Control\" through the Notion connector. It reads the live data-source schema before assigning dynamic catalog properties (Proyecto, Tipo, Módulo, Sprint), enforces workspace conventions for task naming and content style, replicates the database's default page template, and guards every write with a duplicate check and a mandatory preview-and-approval step. Behavior is governed by a set of user directives covering default values, always-confirmed fields, naming, tone, and the structure of the \"Registros\" progress log",
+  "date": "August 2026",
+  "abstract": "An executable skill for creating and managing tasks in the Notion database \"Control\" through the Notion connector. It reads the live data-source schema before assigning dynamic catalog properties (Proyecto, Tipo, Módulo, Sprint), enforces workspace conventions for task naming and content style, replicates the database's default page template, computes start and finish dates from the company's working schedule, appends status-bearing entries to a task's \"Registros\" log, and guards every write with a duplicate check and a mandatory preview-and-approval step. Behavior is governed by a set of user directives covering default values, always-confirmed fields, naming, tone, and the structure and status rendering of the \"Registros\" progress log",
   "references": [
     "https://developers.notion.com/reference/intro",
     "https://www.notion.so/help/create-a-database",
