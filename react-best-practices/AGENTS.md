@@ -14,7 +14,7 @@ _August 2026_
 
 ## Abstract
 
-Review-oriented standards for _React_ applications, ordered by what actually breaks under review: effects and state first, because a misplaced `useEffect` or a duplicated source of truth is a behavioral defect; then data ownership, where a typed query layer holds the cache and components consume state instead of orchestrating requests; then the markup that carries the meaning; and finally the styling that presents it. The reference stack is _React Router_ in SPA mode with `react-query-kit` for every server request, `react-hook-form` for every form, `zustand` for state shared across the tree, and `shadcn/ui` over _TailwindCSS_ v4, where styling resolves through semantic theme tokens and merge-aware composition rather than arbitrary values or interpolated class strings. Rules are written around principles rather than APIs, scoped to defects a reviewer can point at, and exclude accessibility auditing by design.
+Standards for writing and reviewing _React_ applications, ordered by what actually breaks under review: effects and state first, because a misplaced `useEffect` or a duplicated source of truth is a behavioral defect; then data ownership, where a typed query layer holds the cache and components consume state instead of orchestrating requests; then the markup that carries the meaning; and finally the styling that presents it. The reference stack is _React Router_ in SPA mode with `react-query-kit` for every server request, `react-hook-form` for every form, `zustand` for state shared across the tree, and `shadcn/ui` over _TailwindCSS_ v4, where styling resolves through semantic theme tokens and merge-aware composition rather than arbitrary values or interpolated class strings. Rules are written around principles rather than APIs, scoped to defects a reviewer can point at, and exclude accessibility auditing by design.
 
 ---
 
@@ -73,22 +73,26 @@ Review-oriented standards for _React_ applications, ordered by what actually bre
     - `core/types/` — domain types, separate from any library's own typings
     - `core/helpers/` — own pure functions, with no third-party dependency
     - The line between `lib/` and `helpers/`: `lib/` wraps something external, `helpers/` depends on nothing
-3.  **The root varies, the shape does not:**
+3.  **Files are named in kebab case, whatever they export:**
+    - `invoice-table.tsx` for a component, `use-invoices.ts` for a hook, `format.ts` for helpers — the casing never follows the export, so `InvoiceTable.tsx` is a finding even though the component inside it is `InvoiceTable`
+    - One convention across the tree is what makes a path predictable before opening it, and it is what the generator already writes into `components/ui/`
+    - Hooks under `core/api/` carry their own shape on top of this — `use-<members|action>.ts` (see the query-layer rule)
+4.  **The root varies, the shape does not:**
     - Where `core/` sits depends on the technology and the layout it dictates
     - What must not vary between projects is what goes inside `core/` and which direction imports flow
     - The `~` alias resolves to that root, so every import inside the project reads the same regardless of which root it is
-4.  **The view layer splits by responsibility:**
+5.  **The view layer splits by responsibility:**
     - Route modules compose a screen: they read data through hooks and arrange components
     - `components/` holds reusable presentation, with the design-system primitives under `components/ui/`
     - A route module that declares a fetcher, or a component that reaches for `axios`, is in the wrong layer
-5.  **The tooling has to agree with the structure:**
+6.  **The tooling has to agree with the structure:**
     - `tsconfig` resolves `~/*` to the source root, and every generator reads the alias from there
     - With `shadcn/ui`, `components.json` decides where the next generated file lands, so its aliases are part of the structure and not a detail
     - Its `tailwind` block is part of the same contract: `cssVariables: true` is what makes generated components read the semantic tokens instead of arriving with the palette baked in, and `baseColor` seeds those variables at generation time (see the theme-tokens rule)
     - Point `ui` and `components` at the view layer, `utils` at `~/core/lib/utils`, and `lib` and `hooks` into `~/core/lib/shadcn/`. The generator then writes the component into `components/ui/`, rewrites its `cn` import to our path, and drops everything else it brings — its own helpers and hooks — under `core/lib/shadcn/`
     - Its `hooks` alias deliberately does not point at `core/hooks/`: those are ours to edit, and anything the generator writes is not
     - A structure the generator does not know about is undone the first time someone runs `shadcn add`
-6.  **`core/lib/shadcn/` is generated territory, and read-only:**
+7.  **`core/lib/shadcn/` is generated territory, and read-only:**
     - The folder is listed in `.prettierignore`, so the formatter never rewrites it — which means any diff inside it is a deliberate edit and never noise
     - Editing a file there is a review finding, however small the change: the file is regenerable and not ours, so the edit is silently lost the next time the generator writes over it
     - When the generated behavior is not what the project needs, add a module beside it — a new component or hook that wraps or replaces it — instead of patching in place
@@ -276,10 +280,7 @@ type CardBodyProps = React.ComponentProps<'div'>;
 
 export function CardBody({ className, ...props }: CardBodyProps) {
   return (
-    <div
-      className={cn('text-sm text-muted-foreground', className)}
-      {...props}
-    />
+    <div className={cn('text-sm text-muted-foreground', className)} {...props} />
   );
 }
 ```
@@ -1850,7 +1851,10 @@ export function SignupForm() {
         Basic
         <input type="radio" value="pro" onChange={() => setPlan('pro')} /> Pro
       </div>
-      <button onClick={submitForm} className="rounded-md bg-primary px-4 py-2">
+      <button
+        onClick={submitForm}
+        className="rounded-md bg-primary px-4 py-2"
+      >
         Continue
       </button>
     </div>
