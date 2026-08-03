@@ -134,6 +134,27 @@ Findings are only worth raising when they change behavior, break the design syst
 
 State the impact level with each finding so the author can sort blocking defects from polish.
 
+### Reporting findings
+
+Resolve the target first, because it fixes what may be reported:
+
+- A commit SHA, or "the last commit" — only the lines that commit changed
+- A file or a path — the whole file, not just its recent history
+- Neither — the working diff
+
+Reading is never limited by that scope: open the rest of the file whenever context is what makes a finding judgeable. On a commit review, a defect that predates the change is not a finding unless the change makes it worse — otherwise every review reopens the whole file.
+
+Nothing else belongs in the answer. No summary of what the change does, no preamble, no restating a rule's rationale. Findings are ordered by impact, blocking first, and each one is four things: where it is, which rule it breaks, what is wrong in one sentence, and the fix as code.
+
+> **`app/routes/invoices.tsx:24`** — `state-effect-discipline` (`CRITICAL`)
+> The effect copies the computed total into state, so it renders stale for one pass every time `invoice` changes.
+>
+> ```tsx
+> const total = invoice.items.reduce((sum, i) => sum + i.price, 0);
+> ```
+
+When a file breaks no rule, say so in one line and stop. If the project tracks review state and that file sits at `pending`, offer to mark it `done` — the assertion that something was reviewed is the user's to make, never one to act on unprompted.
+
 ## How to Use
 
 Read individual rule files for detailed explanations and code examples:
