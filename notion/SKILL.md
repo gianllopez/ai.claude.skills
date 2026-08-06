@@ -158,7 +158,7 @@ Se inicia la tarea con el objetivo de [contexto o punto de partida]
 <details>
 <summary>**[Día de la tarea (DD de MM)] — [[Mención de la persona]]**</summary>
 	[Describe qué se realizó, avance obtenido o bloqueo identificado]
-	**Estado: **<span color="gray_bg">**`[Estado]`**</span>
+	**Estado: **<span color="gray">**`[Estado]`**</span>
 </details>
 ```
 
@@ -180,25 +180,34 @@ Se inicia la tarea con el objetivo de [contexto o punto de partida]
 
 ## Status line (last line of every record)
 
-Every record in _Registros_ ends with a status line. It is never omitted, and its color is a
-**background** color (`*_bg`), so the status reads as a highlighted chip matching the color _Notion_
-gives that option in the `Estado` select:
+Every record in _Registros_ ends with a status line. It is never omitted, and the status word is
+inline code carrying a text color (no `_bg` suffix), so it reads as a monospaced token tinted to
+match the color _Notion_ gives that option in the `Estado` select:
 
 ```markdown
-**Estado: **<span color="red_bg">**`BLOQUEADO`**</span>
+**Estado: **<span color="red">**`BLOQUEADO`**</span>
 ```
 
-| `Estado`      | Select color | Span color  |
-| :------------ | :----------- | :---------- |
-| `PENDIENTE`   | gray         | `gray_bg`   |
-| `EN PROGRESO` | blue         | `blue_bg`   |
-| `BLOQUEADO`   | red          | `red_bg`    |
-| `POR APROBAR` | yellow       | `yellow_bg` |
-| `TERMINADO`   | green        | `green_bg`  |
+| `Estado`      | `<span>` color |
+| :------------ | :------------- |
+| `PENDIENTE`   | `gray`         |
+| `EN PROGRESO` | `blue`         |
+| `BLOQUEADO`   | `red`          |
+| `POR APROBAR` | `yellow`       |
+| `TERMINADO`   | `green`        |
 
-> Text colors (`red`) and background colors (`red_bg`) are different values in
-> _Notion-flavored Markdown_ — always use the `_bg` variant here. Never invent a color outside this
-> table; if a status has no row, read the live option colors from the data source before rendering.
+> **Never use the `_bg` variants here.** A rich text run in _Notion_ has a single color slot holding
+> either a text color or a background color, never both. On a run that is also inline code, a
+> background color wins the slot and leaves _Notion's_ own fixed red on the letters — every status
+> then renders with the same red word, only the backdrop changing. A text color instead overrides
+> that red, which is what gives each status its own tint. This was verified by rendering all five
+> statuses both ways.
+
+> Never invent a color outside this table; if a status has no row, read the live option colors from
+> the data source before rendering.
+
+The token keeps the pale grey backdrop that _Notion_ gives all inline code — the same for all five
+statuses. Tinting that backdrop per status is a manual step for the user, covered by Directive 9.
 
 ## Operation B — Calculate & Set Task Dates
 
@@ -277,8 +286,8 @@ to read its current `Estado` and its existing _Registros_ entries.
 ### 3. Resolve and present the status
 
 The record's status is never silently inferred. Always ask the user with `AskUserQuestion`,
-offering the five `Estado` options and marking the task's current one, then render it with its
-background color from the _Status line_ table (Directive 8).
+offering the five `Estado` options and marking the task's current one, then render it with its text
+color from the _Status line_ table (Directive 8).
 
 ### 4. Render the record
 
@@ -286,9 +295,13 @@ background color from the _Status line_ table (Directive 8).
 <details>
 <summary>**<mention-date start="<YYYY-MM-DD>" startTime="<HH:mm>" timeZone="America/Bogota"/> — <mention-user url="user://<user-id>"/>**</summary>
 	[Descripción del avance, resultado o bloqueo]
-	**Estado: **<span color="<estado>_bg">**`<ESTADO>`**</span>
+	**Estado: **<span color="green">**`TERMINADO`**</span>
 </details>
 ```
+
+The status line above is a filled-in example. Replace the label and the `color` value with the row
+the resolved status matches in the _Status line_ table (Directive 8), taking the color cell verbatim
+— `green`, `red`, `gray`, and so on. Never append `_bg`.
 
 ### 5. Preview and get approval
 
@@ -308,18 +321,19 @@ If the record's status differs from the task's current `Estado`, ask the user wh
 property too. On a yes, run `notion-update-page` with `command: "update_properties"` setting
 `Estado`.
 
-### 8. Confirm
+### 8. Confirm and hand off the background tint
 
-Return the task address and a summary of the appended record.
+Return the task address and a summary of the appended record, and close with the manual-tint notice
+required by Directive 9 — never omit it, even on a record the user requested tersely.
 
 ---
 
 # 🔧 User Directives
 
 > These blocks define the skill's _behavior_. Directives 1–5 govern _Operation A_ (task creation);
-> Directive 6 governs _Operation B_ (date calculation); Directive 7 chains _A_ into _B_; Directive 8
-> governs _Operation C_ (progress records). Directive 4 applies to every operation that writes page
-> content.
+> Directive 6 governs _Operation B_ (date calculation); Directive 7 chains _A_ into _B_; Directives 8
+> and 9 govern _Operation C_ (progress records). Directive 4 applies to every operation that writes
+> page content.
 
 ## 🔧 Directive 1 — Default values
 
@@ -408,5 +422,30 @@ Every record appended to _Registros_ (_Operation C_) ends with the status line, 
   user sees which state the task is being left in and can correct it.
 - **Never inferred silently:** ask with `AskUserQuestion`, offering the five `Estado` options with
   the task's current one marked.
-- **Color from the mapping:** use the `_bg` background color of the _Status line_ table, so
-  `BLOQUEADO` renders on light red, `TERMINADO` on light green, and so on.
+- **Color copied verbatim:** take the color cell of the _Status line_ table exactly as written, so
+  `BLOQUEADO` reads in red, `TERMINADO` in green, and so on. These are text colors — never append
+  `_bg`, which would flatten all five to the same red word.
+
+## 🔧 Directive 9 — Hand off the background tint
+
+The status word carries a text color, so its backdrop stays the pale grey _Notion_ gives all inline
+code. The tint that makes a task's state readable at a glance has to be applied by hand in the
+_Notion UI_, and the _API_ cannot do it — so every time a record is appended (_Operation C_, step 8),
+tell the user, in _Spanish_, that the step is pending. Never leave it implied.
+
+The notice states three things:
+
+1. The record was written and which status it carries.
+2. That its background is still untinted, and tinting it is manual.
+3. **How to do it without destroying the status color:** select the whole line — the block, not just
+   the word — and apply the background from _Notion's_ color menu. A rich text run holds one color
+   at a time, so applying a background to the highlighted word alone replaces its text color and the
+   status loses its tint. The block's color is a separate slot and coexists with it.
+
+Name the background to pick, using the label from _Notion's_ own color menu in _Spanish_ — _Rojo
+claro_ for `BLOQUEADO`, _Verde claro_ for `TERMINADO`, _Azul claro_ for `EN PROGRESO`, _Amarillo
+claro_ for `POR APROBAR`, _Gris claro_ for `PENDIENTE`.
+
+> This is a deliberate trade-off, not a workaround for a defect. Inline code plus a per-status text
+> color was chosen over a per-status background precisely because the background cannot coexist with
+> the tinted word inside a single run. Do not "fix" it by switching the span back to `_bg`.
