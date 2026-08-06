@@ -48,6 +48,7 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 ### 1. Component Architecture (HIGH)
 
 - `arch-folder-structure` - `core/` owns logic and data, the view composes it; imports flow one direction, and a `core/lib/` module waits for its second consumer
+- `arch-components-structure` - One file, a folder with an index, or base and presets; a filename never repeats its folder
 - `arch-composition-patterns` - Slots and children over a boolean per screen; compound components for structure, render props only for internal state
 - `arch-component-extraction` - When repeated markup becomes a component, and how `cva` exposes its variants
 - `arch-typing-conventions` - `ComponentProps` over hand-rolled props; unions over impossible boolean combinations
