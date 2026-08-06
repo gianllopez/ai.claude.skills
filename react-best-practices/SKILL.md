@@ -47,12 +47,12 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 
 ### 1. Component Architecture (HIGH)
 
-- `arch-folder-structure` - `core/` owns logic and data, the view composes it; imports flow one direction
+- `arch-folder-structure` - `core/` owns logic and data, the view composes it; imports flow one direction, and a `core/lib/` module waits for its second consumer
 - `arch-composition-patterns` - Slots and children over a boolean per screen; compound components for structure, render props only for internal state
 - `arch-component-extraction` - When repeated markup becomes a component, and how `cva` exposes its variants
 - `arch-typing-conventions` - `ComponentProps` over hand-rolled props; unions over impossible boolean combinations
 - `arch-markup-minimalism` - Delete wrappers that only carry classes; spacing comes from the parent
-- `arch-syntax-conventions` - Short-hand iterators, `handle*` implementations, arrow functions inside components, braces on every conditional, ternary over `&&`
+- `arch-syntax-conventions` - Short-hand iterators, `handle*` implementations, `function` for components and hand-written hooks, everything else an arrow, braces on every conditional, ternary over `&&`
 
 ### 2. State & Effects (CRITICAL)
 
@@ -118,6 +118,7 @@ Findings are only worth raising when they change behavior, break the design syst
 
 - State could be derived, or belongs in the _URL_ instead of a component
 - A component is configured by flags where composition would do
+- A `core/lib/` module initializes a library that one module consumes, and re-exports it unchanged
 - Props are hand-rolled instead of extending `ComponentProps`
 - A wrapper element exists only to carry classes
 - `@apply` is used where a component would do

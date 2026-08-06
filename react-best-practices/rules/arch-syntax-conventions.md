@@ -134,17 +134,27 @@ export function InvoiceRow({ invoice }: Props) {
 }
 ```
 
-### 4. Function Declarations Inside Components
+### 4. Function Declarations
 
-A function declared inside a component is always an arrow assigned to a `const`; the `function` keyword stays at module scope. The component itself is a module-level declaration, so it keeps `export function`.
+`function` declares what _React_ itself calls — a component or a hook — and nothing else. Every other function in the file, at any scope, is an arrow assigned to a `const`.
+
+A hook built by a factory is the one shape that cannot follow this, and it does not have to: `createQuery`, `createMutation` and `zustand`'s `create` **return** the hook, so `const useInvoices = createQuery(…)` is an assignment by nature rather than a declaration that chose the wrong keyword (see the query-layer rule). A hook written by hand has no such excuse.
+
+The scope is what makes the rest worth stating. Inside the body it is obvious; at module level it is where the convention leaks, because a helper written as `function formatAmount()` beside the component reads like a second component until you reach its body. A module holding a compound set is not an exception either — it has one `function` per component and nothing else (see the composition rule).
+
+There is one exception, and it is a runtime requirement rather than a preference: **when hoisting is what makes the module load**, `function` is the only correct declaration. A query file names its fetcher inside the `createQuery` config and declares it below, so a `const` there is a `ReferenceError` in the temporal dead zone, not a style choice (see the query-layer rule). Reordering to avoid it would put the private detail above the exported hook, so the declaration is what gives way. What does not qualify is a helper that merely happens to sit below its caller inside a function body — nothing runs before that body does.
 
 The arrow may be wrapped. `const handleSelect = useCallback(() => …, [])` satisfies this convention exactly as well as a bare arrow does, because the convention is about the binding and not about the arrow being unadorned. Whether a wrapper is needed at all is the render-stability rule's decision; this one only fixes the shape.
 
-Three reasons this matters beyond taste: the component body then reads as one shape all the way down, nothing is hoisted above the props and state it closes over, and the `const` keeps visible that the function is a new reference on every render — which is exactly what matters when it crosses a memoized boundary.
+Three reasons this matters beyond taste: the file reads as one shape all the way down, nothing is hoisted above the values it closes over, and `function` becomes a reliable signal — where it appears, something _React_ will call is being declared.
 
-**Incorrect (declarations inside the component body):**
+**Incorrect (a module-level helper and two declarations inside the body):**
 
 ```tsx
+function formatAmount(invoice: Invoice) {
+  return `${invoice.currency} ${invoice.amount.toFixed(2)}`;
+}
+
 export function InvoiceRow({ invoice }: Props) {
   function handleDownload() {
     downloadInvoice(invoice.id);
@@ -158,9 +168,12 @@ export function InvoiceRow({ invoice }: Props) {
 }
 ```
 
-**Correct (arrows assigned to a const):**
+**Correct (one function, the component; everything else an arrow on a const):**
 
 ```tsx
+const formatAmount = (invoice: Invoice) =>
+  `${invoice.currency} ${invoice.amount.toFixed(2)}`;
+
 export function InvoiceRow({ invoice }: Props) {
   const handleDownload = () => {
     downloadInvoice(invoice.id);
@@ -171,6 +184,21 @@ export function InvoiceRow({ invoice }: Props) {
   };
 
   return <RowActions onDownload={handleDownload} onArchive={handleArchive} />;
+}
+```
+
+```ts
+// Good: a hook is a declaration too, and only its internals are arrows
+export function useDebouncedValue(value: string, delay: number) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
 }
 ```
 
