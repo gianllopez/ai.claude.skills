@@ -25,6 +25,10 @@ tags: architecture, components
       - `base/`: Contains the logic container (state, theme injection, layout). Uses `render` props to pass data to children
       - `presets/`: Contains visual implementations consuming the `base`
       - `index.ts`: Multiple barrel files to control visibility
+4.  **A file never repeats the folder that contains it:**
+    - Inside `presets/`, the file is named after what distinguishes that variant and nothing else — `text.tsx`, `icon.tsx`, never `button-text.tsx`
+    - The path already states the parent: `button/presets/text.tsx` reads the parent twice when the file carries the prefix, and every rename of the component turns into a rename of every file under it
+    - Only the filename drops the prefix. The component it exports keeps its full name — `presets/text.tsx` exports `ButtonText`, because that name is read at the call site where no folder is in view
 
 **Incorrect (Arrow functions, Defaults, Flat logic):**
 
@@ -52,8 +56,8 @@ export default Button;
 │   ├── button-container.tsx (Logic & Layout)
 │   └── index.ts
 ├── presets/
-│   ├── button-text.tsx (Variant 1)
-│   ├── button-icon.tsx (Variant 2)
+│   ├── text.tsx  (Variant 1 — exports `ButtonText`)
+│   ├── icon.tsx  (Variant 2 — exports `ButtonIcon`)
 │   └── index.ts
 └── index.ts (Global Exports)
 ```
@@ -81,7 +85,7 @@ export function ButtonContainer({ tone = 'primary', render, ...rest }: Props) {
 ```
 
 ```typescript
-// ./components/button/presets/button-text.tsx
+// ./components/button/presets/text.tsx
 
 import { ButtonContainer } from '../base';
 

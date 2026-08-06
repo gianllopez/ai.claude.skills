@@ -6,6 +6,7 @@ description: Index of all enforced best practices for React applications, framew
 ## Component Architecture
 
 - **Structure:** [Folder Structure & Layer Boundary](./arch-folder-structure.md)
+- **Files:** [Component File Structure](./arch-components-structure.md)
 - **Composition:** [Composition Over Configuration](./arch-composition-patterns.md)
 - **Reuse:** [Component Extraction Threshold](./arch-component-extraction.md)
 - **Typing:** [Component Typing Conventions](./arch-typing-conventions.md)
