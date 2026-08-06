@@ -102,9 +102,55 @@ export const useInvoices = createQuery<Data, Variables>({
   fetcher: request,
 });
 
+// Declared with function so it hoists: the config above names it before this line
 async function request({ status }: Variables) {
   const { data } = await api.get<Response>('/invoices/', {
     params: { status },
+    protected: true,
+  });
+
+  return data;
+}
+```
+
+```ts
+// ./app/shared/types/api.ts
+
+// Good: no domain owns this shape, so it does not belong in core/types/
+export type Paginated<T> = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+};
+```
+
+```ts
+// ./app/core/api/invoices/use-invoice-page.ts
+
+import { keepPreviousData } from '@tanstack/react-query';
+import { createQuery } from 'react-query-kit';
+import { api } from '~/core/lib/axios';
+import type { Invoice } from '~/core/types/invoices';
+import type { Paginated } from '~/shared/types/api';
+
+type Variables = { page: number };
+
+type Response = Paginated<Invoice>;
+
+type Data = Response;
+
+export const useInvoicePage = createQuery<Data, Variables>({
+  queryKey: ['@invoices/use-invoice-page'],
+  fetcher: request,
+  // Good: the previous page stays on screen instead of blanking the table
+  placeholderData: keepPreviousData,
+});
+
+// Declared with function so it hoists: the config above names it before this line
+async function request({ page }: Variables) {
+  const { data } = await api.get<Response>('/invoices/', {
+    params: { page },
     protected: true,
   });
 
@@ -157,6 +203,7 @@ export const useMarkPaid = createMutation<Data, Variables>({
   use: [withInvalidation(useInvoices.getKey())],
 });
 
+// Declared with function so it hoists: the config above names it before this line
 async function request({ id, reference }: Variables) {
   const { data } = await api.patch<Response>(
     `/invoices/${id}/paid/`,
