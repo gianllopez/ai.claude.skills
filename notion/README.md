@@ -45,10 +45,11 @@ writes both dates to the task.
 
 Given a task (by link or mention), it appends an entry to the page's _Registros_ log: date, author,
 a short description of the progress or blocker, and a closing status line. The status is always
-asked for and shown in the preview, and it renders as a highlighted chip whose background color
-matches the color _Notion_ gives that option in the `Estado` select (`BLOQUEADO` on light red,
-`TERMINADO` on light green, …). If the status differs from the task's current `Estado`, the skill
-offers to update the property too.
+asked for and shown in the preview, and it renders as a monospaced token tinted with the color
+_Notion_ gives that option in the `Estado` select (`BLOQUEADO` in red, `TERMINADO` in green, …). If
+the status differs from the task's current `Estado`, the skill offers to update the property too.
+Because a _Notion_ text run holds one color at a time, the token's backdrop cannot also be tinted
+from the _API_ — so the skill closes every record by telling the user how to apply it by hand.
 
 ## Behavior configuration
 
@@ -65,7 +66,9 @@ The skill's behavior is defined by the user directives section of `SKILL.md`:
    _Operation B_ to compute dates.
 7. **Date-calculation prompt** - after creating a task, always ask whether to compute its dates now
 8. **Status in a progress record** - the status line is mandatory, always confirmed with the user,
-   and colored from the `Estado` background-color mapping.
+   and colored from the `Estado` text-color mapping.
+9. **Background tint handoff** - every appended record ends by telling the user that tinting the
+   status backdrop is a manual step in the _Notion UI_, and how to do it without losing the color.
 
 To change how the skill behaves, edit these directives — not the execution protocol.
 
