@@ -260,13 +260,17 @@ Reference: [shadcn/ui components.json](https://ui.shadcn.com/docs/components-jso
 
 1.  **Three shapes, chosen by what the component contains:**
     - **Integral** — one file, `components/invoice-badge.tsx`, when there are no sub-components
-    - **Grouped** — a folder with `index.tsx` as the entry point and one file per internal piece
+    - **Grouped** — a folder where every component has its own file, and an `index.ts` barrel states which of them are public
     - **Base and presets** — a folder that splits the logic container from its visual implementations, for a component whose variants differ in structure
-2.  **A folder earns its index when a second file appears:**
+2.  **A folder earns its barrel when a second file appears:**
     - Promote from integral to grouped the moment a sub-component is extracted, not in anticipation of one
-    - `index.tsx` holds the component the folder is named after; nothing else leaves the folder unless another module actually imports it
-3.  **A filename never repeats the folder that contains it:**
-    - `invoice-table/row.tsx`, never `invoice-table/invoice-table-row.tsx`; `button/presets/text.tsx`, never `button/presets/button-text.tsx`
+    - The barrel is `index.ts` and never `index.tsx`: it re-exports and does nothing else, so it holds no JSX and there is no component to find inside it
+    - No file is "the main one". Every component gets its own file named for what it is — `list.tsx`, `item.tsx` — and the barrel is what says which of them the rest of the codebase may reach
+3.  **Names stay singular, and never repeat the folder:**
+    - The entity in a component's name is singular whatever the component renders — `InvoiceList`, `InvoiceTable`, `InvoiceRow`, `InvoiceCard`. The suffix already carries the plurality, so `InvoicesList` states it twice
+    - Singular is what keeps a family consistent: with a plural prefix the name changes shape depending on the suffix — `InvoicesList` beside `InvoiceRow` — and there is no convention left, only a decision to make per component
+    - Domain folders are the opposite and stay plural: `core/api/invoices/` holds everything about the domain rather than one invoice (see the folder-structure rule)
+    - A filename never repeats its folder: `invoice-list/item.tsx`, never `invoice-list/invoice-list-item.tsx`; `button/presets/text.tsx`, never `button/presets/button-text.tsx`
     - The path already states the parent, so repeating it turns every rename of the component into a rename of every file beneath it
     - Only the filename drops the prefix. The exported component keeps its full name — `presets/text.tsx` exports `ButtonText`, because that name is read at a call site where no folder is in view
 4.  **Base and presets is for structural variation, never for styling:**
@@ -274,7 +278,9 @@ Reference: [shadcn/ui components.json](https://ui.shadcn.com/docs/components-jso
     - The pattern earns its place when the variants render **different children** — a confirm dialog and a form dialog share open state, focus handling and the overlay, and share nothing about what sits inside them
     - `base/` holds the logic container and hands down what it owns through a `render` prop, which is exactly the case the composition rule reserves render props for
 5.  **The barrels decide what is reachable:**
-    - `base/index.ts` and `presets/index.ts` are internal; the folder's own `index.ts` decides what the rest of the codebase may import
+    - The folder's `index.ts` exports only what the rest of the codebase may import — `InvoiceList` and not `InvoiceItem`, even though both live in the folder
+    - A piece that only its siblings ever render is not re-exported. The day another module needs it, that is a deliberate line added to the barrel rather than an import that happened to resolve
+    - `base/index.ts` and `presets/index.ts` follow the same rule one level down
     - A preset that imports another preset is a signal the shared part belongs in `base/`
 
 **Incorrect (a flag per screen inside one file, and a folder whose files repeat its name):**
@@ -307,19 +313,27 @@ export function Dialog({ kind, title, description, onConfirm, fields }: Props) {
 ```
 
 ```plaintext
-./app/components/invoice-table/
-├── invoice-table.tsx          ← no index, so the folder has no entry point
-├── invoice-table-row.tsx      ← the folder already said "invoice-table"
-└── invoice-table-header.tsx
+./app/components/invoice-list/
+├── invoice-list.tsx        ← the folder already said "invoice-list"
+├── invoice-list-item.tsx   ← and said it again
+└── (no barrel, so every importer reaches straight into the files and
+    nothing marks which of them was meant to be internal)
 ```
 
-**Correct (grouped folder with an index, internal files named for what they are):**
+**Correct (grouped folder, files named for what they are, barrel naming what is public):**
 
 ```plaintext
-./app/components/invoice-table/
-├── index.tsx    ← exports `InvoiceTable`
-├── row.tsx      ← exports `InvoiceRow`
-└── header.tsx   ← exports `InvoiceTableHeader`
+./app/components/invoice-list/
+├── index.ts    ← barrel: exports `InvoiceList` and nothing else
+├── list.tsx    ← exports `InvoiceList`
+└── item.tsx    ← exports `InvoiceItem`, rendered only by its sibling
+```
+
+```ts
+// ./app/components/invoice-list/index.ts
+
+// Good: the row is not here, so no route can import it by accident
+export { InvoiceList } from './list';
 ```
 
 **Correct (base and presets, because the variants render different children):**
@@ -381,7 +395,12 @@ type Props = {
 };
 
 // Good: the preset owns presentation only — every shared behavior is in the base
-export function ConfirmDialog({ title, description, trigger, onConfirm }: Props) {
+export function ConfirmDialog({
+  title,
+  description,
+  trigger,
+  onConfirm,
+}: Props) {
   return (
     <DialogContainer
       title={title}

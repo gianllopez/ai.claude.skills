@@ -20,12 +20,15 @@ tags: architecture, components
     - If exported, rename to `ComponentNameProps`
 3.  **File Structure Strategy:**
     - **Integral Component:** Single file (`components/my-component.tsx`) if it has no sub-components
-    - **Grouped Component:** Directory with `index.tsx` (main) and helper files (e.g., `item.tsx`). Helper components must have generic names internal to the folder but specific implementation details
+    - **Grouped Component:** Directory where every component has its own file (`list.tsx`, `item.tsx`) and an `index.ts` barrel states which of them are public. Never `index.tsx`: the barrel only re-exports, so it holds no JSX and no component lives inside it
     - **Complex Component (base/presets):** For components with multiple variants (e.g., _Buttons_, _Inputs_), strictly follow the respective pattern
       - `base/`: Contains the logic container (state, theme injection, layout). Uses `render` props to pass data to children
       - `presets/`: Contains visual implementations consuming the `base`
       - `index.ts`: Multiple barrel files to control visibility
-4.  **A file never repeats the folder that contains it:**
+4.  **Names stay singular, and never repeat the folder:**
+    - The entity in a component's name is singular whatever the component renders — `ProductList`, `ProductRow`, `ProductCard`. The suffix already carries the plurality, so `ProductsList` states it twice
+    - Singular is what keeps a family consistent: with a plural prefix the name changes shape depending on the suffix — `ProductsList` beside `ProductRow` — and there is no convention left, only a decision to make per component
+    - Domain folders are the opposite and stay plural: `core/api/products/` holds everything about the domain rather than one product
     - Inside `presets/`, the file is named after what distinguishes that variant and nothing else — `text.tsx`, `icon.tsx`, never `button-text.tsx`
     - The path already states the parent: `button/presets/text.tsx` reads the parent twice when the file carries the prefix, and every rename of the component turns into a rename of every file under it
     - Only the filename drops the prefix. The component it exports keeps its full name — `presets/text.tsx` exports `ButtonText`, because that name is read at the call site where no folder is in view
@@ -43,9 +46,10 @@ export default Button;
 **Correct (Integral & Grouped):**
 
 ```plaintext
-./components/products-list/
-├── index.tsx (Exports `ProductsList`)
-└── item.tsx  (Internal generic naming)
+./components/product-list/
+├── index.ts   (Barrel — exports `ProductList` and nothing else)
+├── list.tsx   (Exports `ProductList`)
+└── item.tsx   (Exports `ProductItem`, rendered only by its sibling)
 ```
 
 **Correct (Complex - Base/Presets Pattern):**

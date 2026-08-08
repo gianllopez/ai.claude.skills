@@ -17,10 +17,11 @@ tags: architecture, folders
     - `core/`: Contains all non-UI logic
 2.  **Core Organization (`core/`):**
     - Logic must be categorized by type: `api/`, `config/`, `constants/`, `hooks/`, `i18n/`, `lib/`, `store/`, `theme/`, `types/`, and `utils/`
-    - **Types:** All _TypeScript_ definitions reside in `core/types/` (grouped by domain like `entity`, `user`)
-    - **API:** _API_ services must be grouped by domain (e.g., `core/api/entity/`)
+    - **Types:** All _TypeScript_ definitions reside in `core/types/` (grouped by domain like `products`, `users`)
+    - **API:** _API_ services must be grouped by domain (e.g., `core/api/products/`)
+    - **Domain folders are plural:** they hold everything about the domain rather than one record, which is the opposite of the components that consume them (see the component-structure rule)
 3.  **Component Organization (`components/`):**
-    - **Feature Components:** Grouped by domain (e.g., `feature-sheet`, `entity-list`) containing their own sub-components if necessary
+    - **Feature Components:** Grouped by domain, and named with the entity in singular (e.g., `feature-sheet`, `product-list`) containing their own sub-components if necessary
     - **Atomic/Complex Components:** If a component has multiple variants, use the base/presets pattern:
       - `base/`: Logic and containers (e.g., `touchable.tsx`)
       - `presets/`: Visual variants (e.g., `primary.tsx`, `secondary.tsx`)
@@ -35,7 +36,7 @@ tags: architecture, folders
 // Bad: Defining API logic and Types inside a route
 import { View, Text } from 'react-native';
 
-interface Entity { id: string }
+interface Product { id: string }
 
 export default function Screen() {
   const fetchData = async () => { ... };
@@ -56,9 +57,9 @@ export default function Screen() {
 │   └── index.tsx  <-- Consumption only
 ./core/
 ├── api/
-│   └── entity/
+│   └── products/
 ├── types/
-│   └── entity/
+│   └── products/
 ./components/
 ├── complex-component/
 │   ├── base/
@@ -69,12 +70,12 @@ export default function Screen() {
 ```typescript
 // ./app/(tabs)/index.tsx
 
-import { EntityList } from '@/components/entity-list';
-import { useEntity } from '@/core/api/entity';
+import { ProductList } from '@/components/product-list';
+import { useProducts } from '@/core/api/products';
 
 export default function Screen() {
-  const { data } = useEntity();
+  const { data } = useProducts();
 
-  return <EntityList data={data} />;
+  return <ProductList data={data} />;
 }
 ```
