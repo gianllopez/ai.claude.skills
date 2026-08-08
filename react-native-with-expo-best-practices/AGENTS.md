@@ -49,10 +49,11 @@ Standard architectural guidelines for scalable _React Native_ (_Expo_) applicati
     - `core/`: Contains all non-UI logic
 2.  **Core Organization (`core/`):**
     - Logic must be categorized by type: `api/`, `config/`, `constants/`, `hooks/`, `i18n/`, `lib/`, `store/`, `theme/`, `types/`, and `utils/`
-    - **Types:** All _TypeScript_ definitions reside in `core/types/` (grouped by domain like `entity`, `user`)
-    - **API:** _API_ services must be grouped by domain (e.g., `core/api/entity/`)
+    - **Types:** All _TypeScript_ definitions reside in `core/types/` (grouped by domain like `products`, `users`)
+    - **API:** _API_ services must be grouped by domain (e.g., `core/api/products/`)
+    - **Domain folders are plural:** they hold everything about the domain rather than one record, which is the opposite of the components that consume them (see the component-structure rule)
 3.  **Component Organization (`components/`):**
-    - **Feature Components:** Grouped by domain (e.g., `feature-sheet`, `entity-list`) containing their own sub-components if necessary
+    - **Feature Components:** Grouped by domain, and named with the entity in singular (e.g., `feature-sheet`, `product-list`) containing their own sub-components if necessary
     - **Atomic/Complex Components:** If a component has multiple variants, use the base/presets pattern:
       - `base/`: Logic and containers (e.g., `touchable.tsx`)
       - `presets/`: Visual variants (e.g., `primary.tsx`, `secondary.tsx`)
@@ -67,7 +68,7 @@ Standard architectural guidelines for scalable _React Native_ (_Expo_) applicati
 // Bad: Defining API logic and Types inside a route
 import { View, Text } from 'react-native';
 
-interface Entity { id: string }
+interface Product { id: string }
 
 export default function Screen() {
   const fetchData = async () => { ... };
@@ -88,9 +89,9 @@ export default function Screen() {
 │   └── index.tsx  <-- Consumption only
 ./core/
 ├── api/
-│   └── entity/
+│   └── products/
 ├── types/
-│   └── entity/
+│   └── products/
 ./components/
 ├── complex-component/
 │   ├── base/
@@ -101,13 +102,13 @@ export default function Screen() {
 ```typescript
 // ./app/(tabs)/index.tsx
 
-import { EntityList } from '@/components/entity-list';
-import { useEntity } from '@/core/api/entity';
+import { ProductList } from '@/components/product-list';
+import { useProducts } from '@/core/api/products';
 
 export default function Screen() {
-  const { data } = useEntity();
+  const { data } = useProducts();
 
-  return <EntityList data={data} />;
+  return <ProductList data={data} />;
 }
 ```
 
@@ -559,12 +560,15 @@ Reference: [TypeScript Handbook - Object Types](https://www.typescriptlang.org/d
     - If exported, rename to `ComponentNameProps`
 3.  **File Structure Strategy:**
     - **Integral Component:** Single file (`components/my-component.tsx`) if it has no sub-components
-    - **Grouped Component:** Directory with `index.tsx` (main) and helper files (e.g., `item.tsx`). Helper components must have generic names internal to the folder but specific implementation details
+    - **Grouped Component:** Directory where every component has its own file (`list.tsx`, `item.tsx`) and an `index.ts` barrel states which of them are public. Never `index.tsx`: the barrel only re-exports, so it holds no JSX and no component lives inside it
     - **Complex Component (base/presets):** For components with multiple variants (e.g., _Buttons_, _Inputs_), strictly follow the respective pattern
       - `base/`: Contains the logic container (state, theme injection, layout). Uses `render` props to pass data to children
       - `presets/`: Contains visual implementations consuming the `base`
       - `index.ts`: Multiple barrel files to control visibility
-4.  **A file never repeats the folder that contains it:**
+4.  **Names stay singular, and never repeat the folder:**
+    - The entity in a component's name is singular whatever the component renders — `ProductList`, `ProductRow`, `ProductCard`. The suffix already carries the plurality, so `ProductsList` states it twice
+    - Singular is what keeps a family consistent: with a plural prefix the name changes shape depending on the suffix — `ProductsList` beside `ProductRow` — and there is no convention left, only a decision to make per component
+    - Domain folders are the opposite and stay plural: `core/api/products/` holds everything about the domain rather than one product
     - Inside `presets/`, the file is named after what distinguishes that variant and nothing else — `text.tsx`, `icon.tsx`, never `button-text.tsx`
     - The path already states the parent: `button/presets/text.tsx` reads the parent twice when the file carries the prefix, and every rename of the component turns into a rename of every file under it
     - Only the filename drops the prefix. The component it exports keeps its full name — `presets/text.tsx` exports `ButtonText`, because that name is read at the call site where no folder is in view
@@ -582,9 +586,10 @@ export default Button;
 **Correct (Integral & Grouped):**
 
 ```plaintext
-./components/products-list/
-├── index.tsx (Exports `ProductsList`)
-└── item.tsx  (Internal generic naming)
+./components/product-list/
+├── index.ts   (Barrel — exports `ProductList` and nothing else)
+├── list.tsx   (Exports `ProductList`)
+└── item.tsx   (Exports `ProductItem`, rendered only by its sibling)
 ```
 
 **Correct (Complex - Base/Presets Pattern):**
