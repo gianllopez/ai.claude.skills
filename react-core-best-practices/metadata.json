@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "author": "Gian López",
+  "date": "August 2026",
+  "abstract": "Standards for React itself — the parts that do not change when the renderer does. Ordered by what actually breaks under review: effects and state first, because a misplaced useEffect or a duplicated source of truth is a behavioral defect on any platform; then the architecture of a component, from where its files live to how its props are typed and composed; then data ownership, where a typed query layer holds the cache and components consume state instead of orchestrating requests; and finally the identity work the React Compiler does not reach. Every rule that reads differently on web and on React Native shows both, so it is never abstract for the reader applying it. What belongs to a renderer is deliberately absent: semantic HTML, TailwindCSS v4 and shadcn/ui live in react-best-practices, NativeWind and Expo configuration in react-native-with-expo-best-practices. A project loads this skill plus the one for its platform.",
+  "references": [
+    "https://react.dev/learn/you-might-not-need-an-effect",
+    "https://react.dev/learn/choosing-the-state-structure",
+    "https://react.dev/learn/sharing-state-between-components",
+    "https://react.dev/learn/rendering-lists",
+    "https://react.dev/learn/passing-props-to-a-component",
+    "https://react.dev/learn/importing-and-exporting-components",
+    "https://react.dev/learn/typescript",
+    "https://react.dev/learn/react-compiler",
+    "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+    "https://tanstack.com/query/latest/docs/framework/react/guides/queries",
+    "https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations",
+    "https://github.com/liaoliao666/react-query-kit",
+    "https://github.com/dcastil/tailwind-merge",
+    "https://cva.style/docs",
+    "https://zustand.docs.pmnd.rs/getting-started/introduction",
+    "https://www.nativewind.dev/docs/core-concepts/style-specificity",
+    "https://docs.expo.dev/router/introduction/",
+    "https://reactrouter.com/start/framework/route-module"
+  ]
+}
