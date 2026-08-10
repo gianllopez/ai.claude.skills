@@ -62,37 +62,52 @@ For these properties the live schema is the only source of truth — the table b
 their values. Fixed-scale properties (`Estado`, `Prioridad`, `Dificultad`) are stable and can be
 used as documented without re-validation.
 
-### 2. Gather the task data
+### 2. Read the team's people (mandatory for `Responsable`)
+
+`Responsable` is a person property, and its valid values are the workspace's members — a list that
+changes as people join or leave. Run `notion-get-users` to read it live, and keep only real people
+(discard bots and integrations). This list is what the `Responsable` question is built from in the
+next step; never assign a user ID that is not in it.
+
+### 3. Gather the task data
 
 From the user's request, infer as much as possible, then apply Directives 1 and 2: fill defaults,
 infer what can be inferred, and always confirm the mandatory fields (`Proyecto`, `Sprint`,
-`Módulo`, `Tipo`, `Prioridad`). Use `AskUserQuestion` to present closed-choice options.
+`Módulo`, `Tipo`, `Prioridad`, `Responsable`). Use `AskUserQuestion` to present closed-choice
+options.
 
-### 3. Check for duplicates
+For `Responsable`, build the question from the people read in step 2 (Directive 10): offer the
+team members as options with _Gian López_ first, marked as the recommended one, and allow more than
+one to be picked (`multiSelect: true`) since the property holds an array. Ask even when the user
+already named someone — confirm that person against the live list — and never fall back to a
+default without asking.
+
+### 4. Check for duplicates
 
 Before creating, query the data source for an existing task whose name is very similar (use
 `notion-query-data-sources` or `notion-search` scoped to the data source). If a likely duplicate
 is found, warn the user and ask whether to proceed.
 
-### 4. Preview and get approval
+### 5. Preview and get approval
 
 Show the user a summary of the task (all resolved `properties` plus the rendered body) and wait
 for explicit approval. Do not write to _Notion_ until the user approves.
 
-### 5. Create the task
+### 6. Create the task
 
 Use `notion-create-pages` with the data source `parent`, the `properties` mapped to the schema,
 the `content` in _Notion-flavored Markdown_ following the template, and `icon: "📝"`.
 
-### 6. Confirm
+### 7. Confirm
 
 Return the address of the created task and a summary of the assigned properties.
 
-### 7. Offer to calculate the dates
+### 8. Offer to calculate the dates
 
-Right after confirming, always ask the user with `AskUserQuestion` whether the dates should be
-computed now (Directive 7). If they accept, continue straight into _Operation B_ using the task
-just created — do not ask again for the task link. If they decline, stop here.
+_Operation A_ is not finished when the page exists — it is finished when this question has been
+asked. In the same turn that confirms the creation, call `AskUserQuestion` to ask whether the dates
+should be computed now (Directive 7). If they accept, continue straight into _Operation B_ using
+the task just created — do not ask again for the task link. If they decline, stop here.
 
 ## Property schema (valid values)
 
@@ -110,7 +125,7 @@ creation: formula fields are read-only, and `Fecha de Inicio`, `Fecha de Finaliz
 | `Dificultad`            | select       | `1 — TRIVIAL`, `2 — FÁCIL`, `3 — MEDIO`, `4 — COMPLEJO`, `5 — MUY COMPLEJO` |
 | `Módulo`                | select       | dynamic — read live options before assigning                                |
 | `Sprint`                | select       | dynamic — read live options before assigning                                |
-| `Responsable`           | person       | _JSON_ array of user IDs                                                    |
+| `Responsable`           | person       | _JSON_ array of user IDs — always asked from the live people list           |
 | `Notas`                 | text         | Free text                                                                   |
 | `Fecha de Inicio`       | date         | 🔒 Not set at creation — assigned by _Operation B_ (or manually).           |
 | `Fecha de Finalización` | date         | 🔒 Not set at creation — assigned by _Operation B_ (or manually).           |
@@ -130,7 +145,7 @@ creation: formula fields are read-only, and `Fecha de Inicio`, `Fecha de Finaliz
   "Dificultad": "4 — COMPLEJO",
   "Módulo": "<live `Módulo` option>",
   "Sprint": "<live `Sprint` option>",
-  "Responsable": "[\"a3c06894-0016-457e-8d4a-5ebce86eb8c0\"]"
+  "Responsable": "[\"<user ID chosen from the live people list>\"]"
 }
 ```
 
@@ -169,7 +184,9 @@ Se inicia la tarea con el objetivo de [contexto o punto de partida]
 >   `<mention-date>` set to the creation moment — current date in `start`, current time in
 >   `startTime`, and `timeZone="America/Bogota"`.
 > - **User:** always mention the task creator, _Gian López_
->   (`<mention-user url="user://a3c06894-0016-457e-8d4a-5ebce86eb8c0"/>`).
+>   (`<mention-user url="user://a3c06894-0016-457e-8d4a-5ebce86eb8c0"/>`). This is the creator, not
+>   the `Responsable` — the opening line records who registered the task, so it stays _Gian López_
+>   even when the task is assigned to someone else.
 
 > Each later update is appended inside a `<details>` block whose `<summary>` holds the date
 > (`<mention-date/>`) and the person (`<mention-user/>`), plus the status line described in
@@ -330,18 +347,19 @@ required by Directive 9 — never omit it, even on a record the user requested t
 
 # 🔧 User Directives
 
-> These blocks define the skill's _behavior_. Directives 1–5 govern _Operation A_ (task creation);
-> Directive 6 governs _Operation B_ (date calculation); Directive 7 chains _A_ into _B_; Directives 8
-> and 9 govern _Operation C_ (progress records). Directive 4 applies to every operation that writes
-> page content.
+> These blocks define the skill's _behavior_. Directives 1–5 and 10 govern _Operation A_ (task
+> creation); Directive 6 governs _Operation B_ (date calculation); Directive 7 chains _A_ into _B_;
+> Directives 8 and 9 govern _Operation C_ (progress records). Directive 4 applies to every operation
+> that writes page content.
 
 ## 🔧 Directive 1 — Default values
 
 When the user does not specify a value:
 
 - **Estado:** always `PENDIENTE` — a new task is created in this state, no exception
-- **Responsable:** default to _Gian López_ (`a3c06894-0016-457e-8d4a-5ebce86eb8c0`) unless another
-  person is explicitly named.
+- **Responsable:** never assume — always ask, offering the workspace's people (see Directives 2
+  and 10). _Gian López_ (`a3c06894-0016-457e-8d4a-5ebce86eb8c0`) is only the recommended option,
+  not a silent default.
 - **Prioridad:** never assume — always ask (see Directive 2)
 - **Dificultad:** infer from the described scope (e.g. several technical steps → `4 — COMPLEJO`)
   Do not ask.
@@ -359,6 +377,7 @@ live options with `AskUserQuestion`:
 - `Módulo`
 - `Tipo`
 - `Prioridad`
+- `Responsable` — from the live people list, never from memory (Directive 10)
 
 ## 🔧 Directive 3 — Task name convention
 
@@ -413,6 +432,15 @@ ask — with `AskUserQuestion`, never as a passing remark — whether to calcula
 
 Ask every time, even when the user did not mention dates, and never compute them without asking.
 
+**This question closes the turn.** The most common way to break this directive is to write the
+confirmation summary and stop, treating the ask as optional politeness — it is not. The turn that
+confirms the creation must end in the `AskUserQuestion` call, in that same turn: never on a
+sentence like _"¿Quieres que calcule las fechas?"_ typed in the reply, never deferred to the next
+turn, and never skipped because the user seemed to be in a hurry or asked for several tasks at once.
+
+When several tasks are created in one run, ask once per created task, or ask a single question
+listing the tasks — but do not let any created task end without the question having covered it.
+
 ## 🔧 Directive 8 — Status in a progress record
 
 Every record appended to _Registros_ (_Operation C_) ends with the status line, with no exceptions:
@@ -449,3 +477,24 @@ claro_ for `POR APROBAR`, _Gris claro_ for `PENDIENTE`.
 > This is a deliberate trade-off, not a workaround for a defect. Inline code plus a per-status text
 > color was chosen over a per-status background precisely because the background cannot coexist with
 > the tinted word inside a single run. Do not "fix" it by switching the span back to `_bg`.
+
+## 🔧 Directive 10 — The responsible person comes from the team list
+
+`Responsable` is decided by the user, from the people who actually exist in the workspace — not
+inferred from the task's subject matter and not defaulted to whoever created it:
+
+- **Read the list live:** call `notion-get-users` on every task creation (_Operation A_, step 2).
+  Membership changes, and a stale user ID assigns the task to the wrong person or fails the write.
+- **Only real people:** discard bots and integrations from the results — they cannot own a task
+- **Always ask:** present the members with `AskUserQuestion`, `multiSelect: true` (the property
+  holds an array, so a task may have more than one owner). Put _Gian López_ first, labelled as the
+  recommended option, and let the rest follow.
+- **More people than option slots:** a question takes at most four options. When the workspace has
+  more members, offer the four most plausible for this task — _Gian López_ plus whoever the request
+  points at — and rely on the automatic _Other_ choice for the remaining names.
+- **A named person is still confirmed:** if the user already said who is responsible, match that
+  name against the live list and confirm it; if the name matches nobody, say so and ask again with
+  the real members.
+
+The person chosen here fills `Responsable` only. The opening _Registros_ line still mentions the
+creator, _Gian López_ — see _Page content structure_.
