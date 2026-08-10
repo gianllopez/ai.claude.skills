@@ -6,9 +6,9 @@ _August 2026_
 
 > **Note:**  
 > This document is mainly for agents and LLMs to follow when maintaining,  
-> generating, or refactoring _React_ codebases, on the web and under  
-> _React Native_. Humans may also find it useful, but guidance here is  
-> optimized for automation and consistency by AI-assisted workflows.
+> generating, or refactoring _React_ codebases. Humans  
+> may also find it useful, but guidance here is optimized for automation  
+> and consistency by AI-assisted workflows.
 
 ---
 
@@ -27,14 +27,15 @@ Standards for _React_ itself — the parts that do not change when the renderer 
    - [1.4 List Keys & Component Identity](#14-list-keys--component-identity)
 2. [Component Architecture](#2-component-architecture) — `CRITICAL`
    - [2.1 Folder Structure & Layer Boundary](#21-folder-structure--layer-boundary)
-   - [2.2 Component File Structure](#22-component-file-structure)
-   - [2.3 Composition Over Configuration](#23-composition-over-configuration)
-   - [2.4 Component Extraction Threshold](#24-component-extraction-threshold)
-   - [2.5 Component Typing Conventions](#25-component-typing-conventions)
-   - [2.6 TypeScript Type System & Domain Organization](#26-typescript-type-system--domain-organization)
-   - [2.7 Core Utilities & Configuration](#27-core-utilities--configuration)
-   - [2.8 Syntax & Conciseness Conventions](#28-syntax--conciseness-conventions)
-   - [2.9 Class Composition & Conditional Classes](#29-class-composition--conditional-classes)
+   - [2.2 Minimal Markup Depth](#22-minimal-markup-depth)
+   - [2.3 Component File Structure](#23-component-file-structure)
+   - [2.4 Composition Over Configuration](#24-composition-over-configuration)
+   - [2.5 Component Extraction Threshold](#25-component-extraction-threshold)
+   - [2.6 Component Typing Conventions](#26-component-typing-conventions)
+   - [2.7 TypeScript Type System & Domain Organization](#27-typescript-type-system--domain-organization)
+   - [2.8 Core Utilities & Configuration](#28-core-utilities--configuration)
+   - [2.9 Syntax & Conciseness Conventions](#29-syntax--conciseness-conventions)
+   - [2.10 Class Composition & Conditional Classes](#210-class-composition--conditional-classes)
 3. [Data Flow](#3-data-flow) — `HIGH`
    - [3.1 Query Layer & Data Ownership](#31-query-layer--data-ownership)
    - [3.2 Pending, Empty & Error States](#32-pending-empty--error-states)
@@ -677,7 +678,7 @@ The renderer changes none of this. A screen is a route module on both platforms,
 6.  **Route modules compose, they do not fetch:**
     - A route module reads data through hooks and arranges components — that is its whole job
     - A route that declares a fetcher, or a component that reaches for `axios`, is in the wrong layer
-    - What the router calls that module, and what the view renders to, is the platform's business and not this rule's (see the folder-structure rule in your platform's skill)
+    - What the router calls that module, and what the view renders to, is the platform's business and not this rule's — the view-structure rule on the web, the app-directory rule under _Expo_
 
 **Incorrect (layers mixed, types inline, data access inside the view):**
 
@@ -809,7 +810,99 @@ export function InvoiceChart({ invoices }: Props) {
 
 Reference: [Thinking in React](https://react.dev/learn/thinking-in-react)
 
-### 2.2 Component File Structure
+### 2.2 Minimal Markup Depth
+
+**Impact (HIGH):** Utility classes make it cheap to add a wrapper, so wrappers accumulate. Each one is another node to render, another indentation level to read, and another place where a future style can be attached at the wrong depth. Most of them are removable: their classes belong on the element they wrap.
+
+The element changes with the renderer and the defect does not. A chain of `div`s that each add one class is the same chain of `View`s, costs the same extra nodes, and is removed the same way.
+
+**Guidelines:**
+
+1.  **A wrapper needs a job:**
+    - Justified when it creates a layout context (a `flex` parent), a positioning context (`relative`), an overflow clip, or a stacking context
+    - Not justified when its classes could sit on the child
+2.  **Fragments over structural noise:**
+    - Use `<>` when a wrapper exists only to satisfy a single-root requirement
+3.  **Spacing comes from the parent:**
+    - `gap-4` on the container, not a wrapper per child carrying `mb-4`. On the web `space-y-4` is the other spelling of the same idea
+    - Margins per child leak into every context where the child is reused: the child decides its own spacing, so a second call site inherits a decision it never made
+4.  **Margins flow in one direction:**
+    - When a margin is unavoidable, it goes on the element **above** as `mb-*`, never on the element below as `mt-*`
+    - One direction is what stops two elements from both claiming the same gap — `mb-4` above and `mt-4` below is eight units of space nobody asked for
+    - The web has a second reason on top of that: adjacent vertical margins collapse, and which of the two survives is a rule nobody recalls under pressure. Under _React Native_ they simply add, which makes the defect more predictable and no less wrong
+    - The exception is markup whose preceding sibling you do not control, which in practice only happens on the web — rich text from a _CMS_, where a heading has to reserve its own space above
+5.  **Centering is one element:**
+    - `items-center justify-center` on a single flex parent, or `mx-auto` on the child — not three nested containers, each contributing one axis
+6.  **Passthrough wrappers are removable:**
+    - A wrapper whose only class is `w-full` around a block element, or whose only class is `flex-1`, almost always belongs on the child instead
+
+**Incorrect (five levels of wrappers, per-child margins, nested centering):**
+
+```tsx
+export function EmptyState() {
+  return (
+    // Bad: wrapper chain, each level adding one class
+    <div className="w-full">
+      <div className="flex">
+        <div className="mx-auto">
+          <div className="flex flex-col items-center">
+            <div className="mb-2">
+              <h2 className="text-lg font-semibold">No reports yet</h2>
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-muted-foreground">
+                Create one to get started.
+              </p>
+            </div>
+            <div>
+              <Button>New report</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+**Correct (React DOM) — one layout container, gap for spacing, classes on the elements themselves:**
+
+```tsx
+export function EmptyState() {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <h2 className="text-lg font-semibold">No reports yet</h2>
+      {/* Good: the extra space before the button belongs to the element above it */}
+      <p className="mb-2 text-sm text-muted-foreground">
+        Create one to get started.
+      </p>
+      <Button>New report</Button>
+    </div>
+  );
+}
+```
+
+**Correct (React Native) — the same single container, the same one-directional margin:**
+
+```tsx
+export function EmptyState() {
+  return (
+    <View className="items-center gap-2">
+      <Text className="text-lg font-semibold">No reports yet</Text>
+      {/* Good: same convention, and here the two margins would have added up
+          rather than collapsed — the wrong version is simply eight units */}
+      <Text className="mb-2 text-sm text-muted-foreground">
+        Create one to get started.
+      </Text>
+      <Button>New report</Button>
+    </View>
+  );
+}
+```
+
+Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-with-utilities)
+
+### 2.3 Component File Structure
 
 **Impact (HIGH):** The folder-structure rule decides where a component lives in the project; this one decides what happens inside its own folder. Left undecided, the same component arrives in three different shapes across a codebase — a four-hundred-line file that should have been split, a folder of six siblings with no entry point, and a variant matrix expressed as a chain of conditionals — and every reader has to open the folder to find out which one they got. The shape is also what makes a diff reviewable: a new file under `presets/` is a new variant, and that is legible before reading a line of it.
 
@@ -1035,7 +1128,7 @@ export function ButtonText({ children, ...rest }: Props) {
 
 Reference: [Importing and exporting components](https://react.dev/learn/importing-and-exporting-components)
 
-### 2.3 Composition Over Configuration
+### 2.4 Composition Over Configuration
 
 **Impact (HIGH):** A component configured by flags grows one prop per request until its signature encodes every screen that ever used it, and its body becomes a chain of conditionals nobody can change safely. Composition moves that variation to the call site, where it is visible in the markup, and leaves the component with a single job. The test is simple: if adding a screen means adding a prop, the component is configured rather than composed.
 
@@ -1206,7 +1299,7 @@ type Props =
 
 Reference: [Passing JSX as children](https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children)
 
-### 2.4 Component Extraction Threshold
+### 2.5 Component Extraction Threshold
 
 **Impact (HIGH):** Utility CSS trades CSS duplication for markup duplication — that trade is only worth it if the markup is extracted at the right moment. Extract too early and the codebase fills with single-use wrappers that add indirection without removing anything. Extract too late and a design change means editing the same string in eleven files, missing two.
 
@@ -1347,7 +1440,7 @@ export function StatusPill({ status, size, className, ...props }: Props) {
 
 Reference: [Managing duplication](https://tailwindcss.com/docs/styling-with-utilities#managing-duplication)
 
-### 2.5 Component Typing Conventions
+### 2.6 Component Typing Conventions
 
 **Impact (HIGH):** A component's props are its _API_. Hand-written prop types inevitably forget `id`, `onBlur`, or `data-*`, forcing every caller to patch around the component; independent optional booleans let the compiler accept combinations the component cannot render. Deriving the type from the element and modelling exclusivity turns those into compile errors instead of review comments.
 
@@ -1462,7 +1555,7 @@ export function Button({ variant, size, className, ...props }: Props) {
 
 Reference: [TypeScript with React components](https://react.dev/learn/typescript#typescript-with-react-components)
 
-### 2.6 TypeScript Type System & Domain Organization
+### 2.7 TypeScript Type System & Domain Organization
 
 **Impact (HIGH):** A structured type system prevents circular dependencies and naming collisions. Separating external library overrides (`typings`) from business logic definitions (`types`) ensures that the application's contract remains clear. Enforcing `import type` and `export type` aids the compiler in tree-shaking and type erasure.
 
@@ -1548,7 +1641,7 @@ import type { Product } from '~/core/types/products';
 
 Reference: [TypeScript Handbook — Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)
 
-### 2.7 Core Utilities & Configuration
+### 2.8 Core Utilities & Configuration
 
 **Impact (MEDIUM):** Two small habits decide whether `core/` stays useful. A helper written as a class with `static` methods drags the whole class into every bundle that touches one of its methods, because a class is a single binding and nothing can tree-shake half of it. And a key written inline — `'@session/jwt/token'` at the call site — is a value with no definition: the day it changes, correctness depends on a find-and-replace catching every copy, and a typo produces a miss rather than an error.
 
@@ -1637,7 +1730,7 @@ const token = storage.getString(STORAGE.SESSION.JSON_WEB_TOKEN);
 
 Reference: [Tree shaking](https://developer.mozilla.org/en-US/docs/Glossary/Tree_shaking)
 
-### 2.8 Syntax & Conciseness Conventions
+### 2.9 Syntax & Conciseness Conventions
 
 **Impact (LOW):** Improves conciseness and reduces visual noise in high-frequency patterns, while enforcing explicit control flow in conditionals to prevent logic bugs and rendering accidents.
 
@@ -2048,7 +2141,7 @@ export function AttachmentRow({ file }: Props) {
 
 Reference: [TypeScript Handbook - Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)
 
-### 2.9 Class Composition & Conditional Classes
+### 2.10 Class Composition & Conditional Classes
 
 **Impact (CRITICAL):** _TailwindCSS_ scans source files as plain text — it never executes them. A class assembled at runtime (`bg-${color}-500`) does not exist at build time, so the CSS is never generated and the element ships unstyled. The failure is invisible in development with a cached stylesheet and shows up in production. Separately, string concatenation produces conflicting utilities whose winner is decided by stylesheet order, not by which class was written last: `"p-2" + " p-4"` is not reliably `p-4`.
 
@@ -2190,7 +2283,7 @@ Reference: [tailwind-merge](https://github.com/dcastil/tailwind-merge) · [Nativ
     - Query keys follow `'@<domain>/<hook-name>'`, declared in the hook itself — a bare `['invoices']` written at a call site is how two components end up with two caches of the same data
     - Invalidate with the owning hook's `getKey()`, never a hand-written copy of the key
 3.  **The client and the middlewares are configured once:**
-    - The _Axios_ instance, the query client, and the mutation middlewares are configured library instances, so they live where the structure rule puts them: `core/lib/`
+    - The _Axios_ instance, the query client, and the mutation middlewares are configured library instances, so they live where the folder-structure rule puts them: `core/lib/`
     - Nothing outside that folder constructs one of these; the rest of the codebase imports the already-configured instance, so there is exactly one cache and one interceptor chain per process
 4.  **Types at the boundary, in request order:**
     - Declare `Variables`, then `Response`, then `Data` — the order follows the request's own direction: what goes out, what comes back, what the _UI_ consumes

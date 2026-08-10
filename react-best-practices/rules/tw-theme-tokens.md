@@ -25,7 +25,7 @@ tags: tailwind, theme, tokens
 3.  **Turn on the switch that makes all of this real:**
     - `components.json` decides what the generator writes: with `cssVariables: false` every component it installs arrives with the palette baked in — `bg-neutral-900` instead of `bg-primary` — and the semantic layer stops existing
     - `baseColor` picks the neutral ramp those variables are seeded from, and it is read at generation time, so changing it later rewrites nothing that already exists
-    - Both belong to the structure, not to the setup ceremony (see the folder-structure rule)
+    - Both belong to the structure, not to the setup ceremony (see the view-structure rule)
 4.  **Reach for the token that names the role:**
     - Muted text is `text-muted-foreground`; a hover or selected row is `bg-accent`; an error message is `text-destructive`. A step off the neutral ramp standing in for any of them is the finding
     - The palette is not arbitrary — every ramp step is a real theme token — which is exactly why this slips through: it looks tokenised and still hardcodes a decision the semantic layer already owns

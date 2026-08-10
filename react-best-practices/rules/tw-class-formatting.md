@@ -17,7 +17,7 @@ tags: tailwind, tooling, formatting
     - Set `tailwindStylesheet` to the main CSS entry point (v4 replaced the `tailwindConfig` option)
     - List helpers in `tailwindFunctions` (`cn`, `cva`) and custom attributes in `tailwindAttributes`, otherwise those strings go unsorted
     - Load it last in `plugins`: it rewrites what the plugins before it produced, and anything registered after it leaves the classes unsorted
-    - `core/lib/shadcn/` stays in `.prettierignore`, so the formatter never rewrites generated code and any diff there is a deliberate edit (see the folder-structure rule)
+    - `core/lib/shadcn/` stays in `.prettierignore`, so the formatter never rewrites generated code and any diff there is a deliberate edit (see the view-structure rule)
 3.  **The plugin's distribution is the distribution:**
     - Never regroup a sorted string by hand into blocks of layout, spacing and colour — the plugin sorts inside each string literal and never across two, so splitting one literal into several is how a hand-made order survives review disguised as readability
     - What earns its own argument is meaning, not appearance: base classes in the first, conditionals after them

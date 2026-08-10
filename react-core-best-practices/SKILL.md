@@ -52,6 +52,7 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 
 - `arch-folder-structure` - `core/` owns logic and data, the view composes it; imports flow one direction, and a `core/lib/` module waits for its second consumer
 - `arch-components-structure` - One file, a folder with an `index.ts` barrel, or base and presets; names stay singular and never repeat their folder
+- `arch-markup-minimalism` - Delete wrappers that only carry classes; spacing comes from the parent, margins flow one way
 - `arch-composition-patterns` - Slots and children over a boolean per screen; compound components for structure, render props only for internal state
 - `arch-component-extraction` - When repeated markup becomes a component, and how `cva` exposes its variants
 - `arch-typing-conventions` - `ComponentProps` over hand-rolled props; unions over impossible boolean combinations

@@ -62,8 +62,8 @@ importOrder:
   - '^react$'
   - '^@?expo(.*)$'
   - '<THIRD_PARTY_MODULES>'
-  - '@/components'
-  - '@/core'
+  - '~/components'
+  - '~/core'
   - '^[./]'
 plugins:
   - '@trivago/prettier-plugin-sort-imports'

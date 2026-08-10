@@ -20,12 +20,17 @@ tags: tailwind, state, jsx
     - Do not prop-drill a boolean whose only purpose is styling
 3.  **Structural conditions:**
     - `has-*` styles a parent from its children (`has-[:checked]:border-primary`), removing wrappers that existed only to receive a class
-    - `not-*` inverts without a second branch; `group` and `peer` are relationship variants and live in the responsive-and-variants rule
+    - `not-*` inverts without a second branch; `group` and `peer` are relationship variants and live in the variants-and-responsive rule
 4.  **Never mutate classes imperatively:**
     - `element.classList.add(...)` or assigning `className` in an effect puts design state outside the render output
 5.  **Boolean data attributes must be absent, not `"false"`:**
     - `data-active="false"` still matches the `data-active:` variant — the variant tests for presence
     - Render `data-active={isActive || undefined}` so the attribute disappears when false
+6.  **An arbitrary variant is a selector living in a class attribute:**
+    - `[&>*:nth-child(3)]:mt-0` styles by position, so it breaks the moment an element is inserted, and nothing in the markup says why the third child is special
+    - The legitimate case is a slot this component does not render — `[&_svg]:size-4` on a button that accepts any icon
+    - A cluster of them on one element is a structural finding: the child needs a component or a prop, not a longer selector
+    - This is the same defect as styling from an effect, one level down: the rule lives in the class attribute instead of in the markup, so nothing at the call site says why it applies
 
 **Incorrect (class toggling in an effect, prop-drilled styling boolean, data-active="false"):**
 
