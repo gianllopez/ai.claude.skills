@@ -22,15 +22,17 @@ The skill exposes three operations.
 
 1. **Re-validates the schema** - reads the live data source to get current options for the
    dynamic catalog properties.
-2. **Gathers the task data** - infers what it can, applies defaults, and always confirms the
-   mandatory fields with the user.
-3. **Checks for duplicates** - warns if a very similar active task already exists
-4. **Previews and gets approval** - shows the full task (properties + body) and waits for an
+2. **Reads the team's people** - lists the workspace members live, so `Responsable` is picked from
+   who actually exists there.
+3. **Gathers the task data** - infers what it can, applies defaults, and always confirms the
+   mandatory fields with the user — including who is responsible.
+4. **Checks for duplicates** - warns if a very similar active task already exists
+5. **Previews and gets approval** - shows the full task (properties + body) and waits for an
    explicit "go" before writing.
-5. **Creates the task** - under the correct data source, with the `📝` icon and the default
+6. **Creates the task** - under the correct data source, with the `📝` icon and the default
    template body.
-6. **Confirms** - returns the created task's address
-7. **Offers the date calculation** - always asks whether to run _Operation B_ right away on the
+7. **Confirms** - returns the created task's address
+8. **Offers the date calculation** - always asks whether to run _Operation B_ right away on the
    task just created.
 
 **Operation B — Calculate & Set Task Dates**
@@ -56,7 +58,8 @@ from the _API_ — so the skill closes every record by telling the user how to a
 The skill's behavior is defined by the user directives section of `SKILL.md`:
 
 1. **Default values** - what to assume when the user does not specify a value
-2. **Fields that must always be confirmed** - `Proyecto`, `Sprint`, `Módulo`, `Tipo`, `Prioridad`
+2. **Fields that must always be confirmed** - `Proyecto`, `Sprint`, `Módulo`, `Tipo`, `Prioridad`,
+   `Responsable`
 3. **Task name convention** - uppercase, infinitive verb, no trailing period
 4. **Content tone and style** - _Spanish_, one-paragraph objective, 3–5 action items, no trailing
    period on any list item, and _italics_ for technical terms, acronyms, and proper nouns.
@@ -64,11 +67,15 @@ The skill's behavior is defined by the user directives section of `SKILL.md`:
    collaborators how to log progress.
 6. **Working schedule** - business hours, effective daily hours, and the holiday rule used by
    _Operation B_ to compute dates.
-7. **Date-calculation prompt** - after creating a task, always ask whether to compute its dates now
+7. **Date-calculation prompt** - after creating a task, always ask whether to compute its dates
+   now — as a real question that closes the turn, not a remark in the confirmation text.
 8. **Status in a progress record** - the status line is mandatory, always confirmed with the user,
    and colored from the `Estado` text-color mapping.
 9. **Background tint handoff** - every appended record ends by telling the user that tinting the
    status backdrop is a manual step in the _Notion UI_, and how to do it without losing the color.
+10. **Responsible from the team list** - `Responsable` is always asked, offering the workspace's
+    people read live from the connector; _Gian López_ is the recommended option, never a silent
+    default.
 
 To change how the skill behaves, edit these directives — not the execution protocol.
 
