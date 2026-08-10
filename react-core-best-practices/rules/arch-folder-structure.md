@@ -48,7 +48,7 @@ The renderer changes none of this. A screen is a route module on both platforms,
 6.  **Route modules compose, they do not fetch:**
     - A route module reads data through hooks and arranges components — that is its whole job
     - A route that declares a fetcher, or a component that reaches for `axios`, is in the wrong layer
-    - What the router calls that module, and what the view renders to, is the platform's business and not this rule's (see the folder-structure rule in your platform's skill)
+    - What the router calls that module, and what the view renders to, is the platform's business and not this rule's — the view-structure rule on the web, the app-directory rule under _Expo_
 
 **Incorrect (layers mixed, types inline, data access inside the view):**
 

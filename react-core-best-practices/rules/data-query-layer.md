@@ -18,7 +18,7 @@ tags: data, react-query, architecture
     - Query keys follow `'@<domain>/<hook-name>'`, declared in the hook itself — a bare `['invoices']` written at a call site is how two components end up with two caches of the same data
     - Invalidate with the owning hook's `getKey()`, never a hand-written copy of the key
 3.  **The client and the middlewares are configured once:**
-    - The _Axios_ instance, the query client, and the mutation middlewares are configured library instances, so they live where the structure rule puts them: `core/lib/`
+    - The _Axios_ instance, the query client, and the mutation middlewares are configured library instances, so they live where the folder-structure rule puts them: `core/lib/`
     - Nothing outside that folder constructs one of these; the rest of the codebase imports the already-configured instance, so there is exactly one cache and one interceptor chain per process
 4.  **Types at the boundary, in request order:**
     - Declare `Variables`, then `Response`, then `Data` — the order follows the request's own direction: what goes out, what comes back, what the _UI_ consumes

@@ -25,7 +25,7 @@ tags: semantics, content, jsx
 4.  **Dates carry both values:**
     - Dates and durations use `time` with a `dateTime` attribute — the formatted string is the child, the _ISO_ value is the attribute
     - Every human-facing date string comes from `dayjs`, never from `toLocaleDateString` or hand-assembled formatting, so format and locale are decided in one place instead of per component
-    - The configured instance — plugins and locale — lives in `core/lib/dayjs.ts`, and components import that rather than the package (see the folder-structure rule)
+    - The configured instance — plugins and locale — lives in `core/lib/dayjs.ts`, and components import that rather than the package (see the folder-structure rule in `react-core-best-practices`, which decides when a library earns a module there)
 
 **Incorrect (div grid imitating a table, div list, unformatted date):**
 

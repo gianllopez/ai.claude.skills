@@ -21,10 +21,11 @@ tags: tailwind, css, layers
 3.  **Real primitives use `@utility`:**
     - A custom utility declared with `@utility` participates in variants (`hover:`, `md:`, `dark:`) and in merge ordering
     - A plain `@layer components` class does neither, which is why it eventually needs the important flag
+    - Register it with `tailwind-merge` or the merge stops working for it. `tailwind-merge` only knows _Tailwind_'s own conflict groups, so a custom `@utility` is invisible to it and two conflicting ones both survive — `extendTailwindMerge` in the same file that declares `cn()` is what teaches it the new group
 4.  **Never win with the important flag:**
     - In v4 it is a suffix (`bg-red-500!`, not `!bg-red-500`)
     - Its presence in a diff signals a composition problem — usually a component that ignores `className`, or an `@apply` class outranking a utility
-    - Against a generated component it signals the same thing and has a different fix: pass the utility through `className` and let `tailwind-merge` resolve it, never edit the file under `core/lib/shadcn/` and never add a defeating class beside it (see the folder-structure rule)
+    - Against a generated component it signals the same thing and has a different fix: pass the utility through `className` and let `tailwind-merge` resolve it, never edit the file under `core/lib/shadcn/` and never add a defeating class beside it (see the view-structure rule)
 5.  **`@reference` in separate stylesheets:**
     - `@apply` inside a _CSS_ module needs `@reference "…/app.css"` so the theme resolves; without it the build fails or silently drops the styles
 
@@ -72,9 +73,9 @@ tags: tailwind, css, layers
     @apply bg-background text-foreground antialiased;
   }
 
-  /* Good: the only markup we cannot restructure — CMS rich text. mt-8 is the
-     declared exception to the mb-* convention: the preceding sibling is not
-     ours to space */
+  /* Good: the only markup we cannot restructure — CMS rich text. mt-8 is the declared
+     exception to the mb-* convention in `react-core-best-practices`: the
+     preceding sibling is not ours to space */
   .prose-cms h2 {
     @apply mt-8 text-xl font-semibold;
   }

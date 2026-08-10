@@ -91,16 +91,12 @@ export function SignupForm() {
     },
   });
 
-  const handleSubmit = (values: FormValues) => {
-    createAccount.mutate(values);
-  };
-
   return (
     <Form {...form}>
       {/* Good: noValidate hands every message to the form library */}
       <form
         noValidate
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={form.handleSubmit((values) => createAccount.mutate(values))}
         className="space-y-4"
       >
         <FormField

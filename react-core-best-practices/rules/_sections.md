@@ -13,6 +13,7 @@ description: Index of all enforced best practices for React itself, independent 
 ## Component Architecture
 
 - **Structure:** [Folder Structure & Layer Boundary](./arch-folder-structure.md)
+- **Depth:** [Minimal Markup Depth](./arch-markup-minimalism.md)
 - **Files:** [Component File Structure](./arch-components-structure.md)
 - **Composition:** [Composition Over Configuration](./arch-composition-patterns.md)
 - **Reuse:** [Component Extraction Threshold](./arch-component-extraction.md)

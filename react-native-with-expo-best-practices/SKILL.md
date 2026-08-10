@@ -1,6 +1,6 @@
 ---
 name: react-native-with-expo-best-practices
-description: Expo and React Native architectural guidelines. This skill defines the standards for the mobile front-end, focusing on separation of concerns, type safety, atomic component composition, and efficient data handling.
+description: Standards for what React renders to on mobile — NativeWind styling over StyleSheet, the Expo Router directory and what may live in it, and native configuration through app.json plugins. Use when reviewing, writing, or refactoring screens under app/, className attributes in a React Native project, theme colors, or Expo configuration and build scripts. Everything independent of the renderer — effects, state, the query layer, component composition, file structure and typing — lives in react-core-best-practices, which an Expo project loads alongside this one.
 license: MIT
 metadata:
   author: gianllopez
@@ -9,48 +9,43 @@ metadata:
 
 # React Native & Expo Best Practices
 
-Comprehensive guide for _Expo_ and _React Native_ development using _TypeScript_. Contains rules prioritized by impact on maintainability, performance, and scalability.
+Standards for the part of a _React_ application that only exists on mobile: the router directory whose filenames are the navigation graph, the styling layer _NativeWind_ provides, and the native configuration _Expo_ generates from `app.json`.
+
+Everything that does not change with the renderer — effect and state discipline, the typed query layer, component composition, file structure and typing — is in `react-core-best-practices`. **An Expo project loads both.** This skill assumes that one is present and never restates it.
+
+**Scope:** _Expo_ and _React Native_ with _TypeScript_. What the platform dictates, and nothing that _React_ already decides.
 
 ## When to Apply
 
 Reference these guidelines when:
 
-- Structuring the project folders or adding new features (`app/` vs `core/` vs `components/`)
-- Creating UI components, deciding between integral or base/presets patterns
-- Implementing data fetching logic using `react-query-kit` and `axios`
-- Defining _TypeScript_ interfaces or segregating domain types from library typings
-- Styling components using _NativeWind_ (`className`) and handling conditional styles
-- Configuring _Expo_ plugins, environment variables, or native directories
-- Writing functional helpers or configuring global store hooks
+- Adding a screen, a layout, or a route group under `app/`
+- Styling with `className`, or deciding whether a value belongs in the `style` prop instead
+- Adding a colour to the theme, or reaching for a raw hex in a component
+- Configuring `app.json` — plugins, identifiers, splash screen, fonts, adaptive icons
+- Setting up _Prettier_ import ordering, or the clean-install scripts
 
 ## Rule Categories by Priority
 
-| Priority | Category                      | Impact      | Prefix  |
-| :------- | :---------------------------- | :---------- | :------ |
-| 1        | Architecture & Core Structure | CRITICAL    | `arch-` |
-| 2        | Project Configuration         | MEDIUM-HIGH | `conf-` |
+| Priority | Category           | Peak impact | Prefix  |
+| :------- | :----------------- | :---------- | :------ |
+| 1        | Project Structure  | HIGH        | `arch-` |
+| 2        | UI & Design System | HIGH        | `arch-` |
+| 3        | Environment        | HIGH        | `conf-` |
 
 ## Quick Reference
 
-### 1. Architecture & Core Structure (HIGH)
+### 1. Project Structure (HIGH)
 
-- `arch-folder-structure` - Enforce strict separation of `app` (_Expo Router_), `core` (Logic), and `components` (UI)
-- `arch-components-structure` - Standards for Integral components vs the base/presets pattern for variants
-- `arch-typing-system` - Segregate domain `types` from library `typings` using explicit imports
-- `arch-core-utilities` - Functional helpers, centralized config constants, and library adapters
+- `arch-app-directory` - `app/` is the navigation graph, not a folder; components group by domain; imports resolve through `~/`
 
-### 2. UI Engineering & Styling (HIGH)
+### 2. UI & Design System (HIGH)
 
-- `arch-style-nativewind` - Use `className` with _NativeWind_ and `classnames` for conditional logic
+- `arch-style-nativewind` - `className` over `StyleSheet`; the `style` prop only for what utilities cannot express; colours come from the theme
 
-### 3. Data & Configuration (MEDIUM-HIGH)
+### 3. Environment (HIGH)
 
-- `arch-api-data-layer` - Centralized _Axios_ and `react-query-kit` with safe return patterns
-- `conf-expo` - Native config via plugins, strict _Prettier_ sorting, and clean-state scripts
-
-### 4. Coding Standards (LOW)
-
-- `arch-syntax-conventions` - Short-hand iterators (`u` vs `user`), single-line type definitions, event handler naming (`handle*` vs `on*`), and explicit conditional syntax (braces + ternary in JSX)
+- `conf-expo` - Native capabilities through `app.json` plugins, strict import sorting, and clean-install scripts
 
 ## How to Use
 

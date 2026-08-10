@@ -71,7 +71,7 @@ Reference: [Link to documentation or resource](https://example.com)
 ## File Naming Convention
 
 - Files starting with `_` are special (metadata or templates)
-- Rule files: `prefix-description.md` (e.g., `arch-folder-structure.md`)
+- Rule files: `prefix-description.md` (e.g., `arch-app-directory.md`)
 - Rules are categorized by their filename prefix
 
 ## Impact Levels
