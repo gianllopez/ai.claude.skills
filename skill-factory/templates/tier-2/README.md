@@ -5,10 +5,9 @@
 ## Structure
 
 - `SKILL.md` - Instructions and when-to-use
-- `metadata.json` - Version, author, abstract, references
+- `metadata.json` - Version, author, abstract, reference links
 - `README.md` - This overview
 - `scripts/` - Optional executable helpers
-- `references/` - Optional on-demand guides
 
 ## Usage
 

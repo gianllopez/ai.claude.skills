@@ -26,8 +26,4 @@ metadata:
 
 <If you bundle executable helpers, describe them and how they are invoked, e.g. `scripts/<tool>.py`. Delete this section if unused>
 
-## Reference Material (load as needed)
-
-- `references/<topic>.md` — <what it covers>
-
-<Delete the references section if unused>
+<Note for the author, delete this line: keep the whole procedure in this file — a Tier 2 skill never splits its instructions across side documents>
