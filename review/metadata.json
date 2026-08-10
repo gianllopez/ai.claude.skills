@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "author": "Gian López",
+  "date": "August 2026",
+  "abstract": "The review process itself, held constant across every technology. This skill owns what gets reviewed, which standards apply to it, what earns the name finding, and how a finding is written — and deliberately owns no language rules, taking those instead from the best-practices skills already installed and from the repository's own conventions. It is built around one constraint: a review must be cheap enough to run on every change. The scope is taken from the argument rather than guessed, and the standards from the paths it touches; those standards load as a rule index plus the few rules the scope actually needs, never as a compiled document. It carries no defect taxonomy of its own — what counts as wrong is what a loaded rule says is wrong — and every candidate finding passes a three-part contract: an anchor in the scope, a rule as ground, and a minimal patch, or it is dropped. What remains is ranked by the impact its rule already declared, written as one block each, and closed with a single question about what to do next",
+  "references": [
+    "https://google.github.io/eng-practices/review/",
+    "https://google.github.io/eng-practices/review/reviewer/looking-for.html",
+    "https://google.github.io/eng-practices/review/reviewer/speed.html",
+    "https://google.github.io/eng-practices/review/reviewer/comments.html",
+    "https://conventionalcomments.org/",
+    "https://owasp.org/www-project-top-ten/",
+    "https://git-scm.com/docs/git-diff",
+    "https://cli.github.com/manual/gh_pr_diff",
+    "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview"
+  ]
+}
