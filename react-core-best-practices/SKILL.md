@@ -64,7 +64,7 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 ### 3. Data Flow (HIGH)
 
 - `data-query-layer` - Typed `react-query-kit` hooks per domain; keys declared once; auth in interceptors, not components
-- `data-async-states` - Pending, empty, error, and success are four branches, not one
+- `data-async-states` - Every outcome the query can produce is answered; empty exists only for collections, and the surface decides whether the answer is a branch or a property
 
 ### 4. Performance & Robustness (MEDIUM)
 

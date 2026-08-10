@@ -26,9 +26,9 @@ The renderer changes none of this. A screen is a route module on both platforms,
     - `core/types/<domain>/` — domain types, one folder per domain with an `index.ts` barrel (see the type-system rule)
     - `core/typings/` — augmentations for third-party libraries, which are not ours and do not belong beside the domains
     - `core/config/` — the constants the project agrees on, and nothing that has to be computed (see the core-utilities rule)
-    - `core/helpers/` — own pure functions, with no third-party dependency
+    - `core/helpers/` — our own functions, which use what is already configured instead of configuring it. Importing a third-party package is fine; owning its setup is what sends a module to `lib/`
     - `shared/types/` — the shapes no domain owns: the API's response envelope, pagination, generic utilities. `core/types/` segments by domain, so filing these under `core/types/shared/` invents a domain called "shared" — which is the thing this folder exists to avoid
-    - The line between `lib/` and `helpers/`: `lib/` wraps something external, `helpers/` depends on nothing
+    - The line between `lib/` and `helpers/`: `lib/` owns a library's configuration, `helpers/` consumes it. Neither is decided by whether the file imports a package
 3.  **A module under `core/lib/` earns its place with a second consumer:**
     - The folder is where a third-party library is initialized, not where every third-party library gets a file of its own — when a single hook is the only place the package is ever touched, a module that sets a global and re-exports it is a boundary around a boundary
     - Until there is a second consumer — or an initialization that has to be guaranteed before either of two modules runs — the side effects live at the top of the one module that owns the library: the access token, the stylesheet, the locale
