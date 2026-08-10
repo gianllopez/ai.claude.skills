@@ -94,7 +94,7 @@ grounded in a failure scenario are scored, by a fixed ladder in `SKILL.md`.
   `description` of every installed `SKILL.md`, so nothing here needs editing
 - **A new closing action** — add it to _Step 6_ and its mechanics to _Closing Actions_
 - **Everything lives in `SKILL.md`.** The skill is deliberately three files — the Tier 2 minimum. Do
-  not split content back out into `references/`
+  not split content back out into side documents
 
 ## Related skills
 
