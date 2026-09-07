@@ -9,7 +9,7 @@ description: Index of the React Native and Expo specific best practices; everyth
 
 ## UI & Design System
 
-- **Styling:** [NativeWind Styling Standards](./arch-style-nativewind.md)
+- **Styling:** [NativeWind Styling Standards](./style-nativewind.md)
 
 ## Environment
 

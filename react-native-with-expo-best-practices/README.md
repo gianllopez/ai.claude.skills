@@ -22,8 +22,9 @@ A structured repository for creating and maintaining _Expo_ & _React Native_ Bes
 
 1. Copy `rules/_template.md` to `rules/category-name.md`
 2. Choose the appropriate category prefix:
-   - `arch-` for Architecture, Core Utilities, Typing, Folder Structure, Components & Styling
-   - `conf-` for Expo Configuration, Environment & Tooling
+   - `arch-` for project structure: the _Expo Router_ directory and how components are grouped
+   - `style-` for the UI and design system: _NativeWind_ styling and theme colours
+   - `conf-` for the environment: _Expo_ configuration and tooling
 3. Fill in the frontmatter (`title`, `impact`, `description`, `tags`)
 4. Ensure you have clear _Incorrect_ vs _Correct_ examples
 5. Register the rule in `rules/_sections.md` (section + order)
@@ -39,48 +40,48 @@ Each rule file should follow this strict frontmatter and structure:
 
 ````markdown
 ---
-title: \<title>
-impact: \<impact>
-description: \<description>
-tags: \<tags>
+title: <Title>
+impact: <CRITICAL | HIGH | MEDIUM | LOW>
+description: <One-line summary of the rule>
+tags: <comma, separated, tags>
 ---
 
-## \<title>
+## <Title>
 
-**Impact (\<impact: LOW, MEDIUM, HIGH>):** \<description>
+**Impact (<LEVEL>):** <Why this matters — the concrete cost of getting it wrong>
 
-Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications.
+**Guidelines:**
 
-**Incorrect (description of what's wrong):**
+1. <guideline>
+2. <guideline>
 
-```typescript
-// Bad code example here
-export const bad = () => {};
+**Incorrect (<description of what's wrong>):**
+
+```<lang>
+<bad example>
 ```
 
-**Correct (description of what's right):**
+**Correct (<description of what's right>):**
 
-```typescript
-// Good code example here
-export const good = () => {};
+```<lang>
+<good example>
 ```
 
-Reference: [Link to documentation or resource](https://example.com)
+Reference: [<label>](url)
 ````
 
 ## File Naming Convention
 
 - Files starting with `_` are special (metadata or templates)
-- Rule files: `prefix-description.md` (e.g., `arch-app-directory.md`)
+- Rule files: `prefix-description.md` (e.g., `style-nativewind.md`)
 - Rules are categorized by their filename prefix
 
 ## Impact Levels
 
-- **CRITICAL** - Security risks or system-breaking patterns (e.g., safe return patterns)
-- **HIGH** - Major architectural decisions or strict naming conventions
-- **MEDIUM-HIGH** - Standardization that prevents technical debt
-- **MEDIUM** - Optimizations for performance or readability
-- **LOW** - Stylistic preferences
+- **CRITICAL** - Breaks behavior, ships broken output, or exposes a security risk
+- **HIGH** - Wrong ownership or strategy, or standardization that prevents technical debt; costly to unwind later
+- **MEDIUM** - Optimizations for build output or runtime behavior
+- **LOW** - Stylistic preferences, usually enforced by tooling
 
 ## Acknowledgments
 

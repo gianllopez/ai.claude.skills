@@ -14,7 +14,7 @@ Accessibility auditing is intentionally out of scope. Semantic rules are justifi
   - `category-rule-name.md` - Individual rule definitions
 - `metadata.json` - Document metadata (version, author, abstract, references)
 - `AGENTS.md` - **Generated** compiled output (all rules expanded); never hand-edit
-- `SKILL.md` - Skill definition, review triage guide, and trigger mapping for AI agents
+- `SKILL.md` - Skill definition and trigger mapping for AI agents
 
 ## Workflow
 
@@ -54,46 +54,34 @@ Each rule file should follow this strict frontmatter and structure:
 
 ````markdown
 ---
-title: \<title>
-impact: \<impact>
-description: \<description>
-tags: \<tags>
+title: <Title>
+impact: <CRITICAL | HIGH | MEDIUM | LOW>
+description: <One-line summary of the rule>
+tags: <comma, separated, tags>
 ---
 
-## \<title>
+## <Title>
 
-**Impact (\<impact: LOW, MEDIUM, HIGH, CRITICAL>):** \<description>
-
-Brief explanation of the rule and why it matters. This should be clear and concise, explaining what breaks when the rule is ignored.
+**Impact (<LEVEL>):** <Why this matters — the concrete cost of getting it wrong>
 
 **Guidelines:**
 
-1.  **\<Topic>:**
-    - \<directive>
+1. <guideline>
+2. <guideline>
 
-**Incorrect (description of what's wrong):**
+**Incorrect (<description of what's wrong>):**
 
-```tsx
-// Bad code example here
-export function Bad() {
-  return <div onClick={save}>Save</div>;
-}
+```<lang>
+<bad example>
 ```
 
-**Correct (description of what's right):**
+**Correct (<description of what's right>):**
 
-```tsx
-// Good code example here
-export function Good() {
-  return (
-    <button type="button" onClick={save}>
-      Save
-    </button>
-  );
-}
+```<lang>
+<good example>
 ```
 
-Reference: [Link to documentation or resource](https://example.com)
+Reference: [<label>](url)
 ````
 
 ## File Naming Convention

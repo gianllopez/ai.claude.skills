@@ -88,4 +88,4 @@ class UserCreateSerializer(DelegateRepresentationMixin, serializers.ModelSeriali
         representation = UserRetrieveSerializer
 ```
 
-Reference: [DRF Customizing Serialization](https://www.google.com/search?q=https://www.django-rest-framework.org/api-guide/serializers/%23customizing-serialization)
+Reference: [DRF Customizing Serialization](https://www.django-rest-framework.org/api-guide/serializers/#customizing-serialization)

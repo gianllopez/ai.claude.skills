@@ -7,7 +7,7 @@ metadata:
   version: 1.0.0
 ---
 
-# Django REST API Best Practices
+# Django REST Framework Best Practices
 
 Comprehensive guide for _Django_ and _Django REST Framework_ development. Contains rules prioritized by impact on database performance, response times, and security.
 
@@ -28,24 +28,34 @@ Reference these guidelines when:
 
 ## Rule Categories by Priority
 
-| Priority | Category                        | Impact | Prefix  |
-| -------- | ------------------------------- | ------ | ------- |
-| 1        | Architecture & Design Patterns  | HIGH   | `arch-` |
-| 2        | Project Configuration & Tooling | MEDIUM | `conf-` |
+| Priority | Category                 | Peak impact | Prefix  |
+| :------- | :----------------------- | :---------- | :------ |
+| 1        | Architecture & Structure | HIGH        | `arch-` |
+| 2        | Configuration & DevOps   | HIGH        | `conf-` |
+| 3        | ORM & Database           | HIGH        | `arch-` |
+| 4        | API & Serialization      | HIGH        | `arch-` |
+
+Priority orders where to look first; peak impact is the strongest rule in the section, matching the table of contents in `AGENTS.md`. They disagree on purpose — a section can hold one blocking rule and several that only ever produce suggestions.
 
 ## Quick Reference
 
-### 1. Architecture & Data Integrity (HIGH)
+### 1. Architecture & Structure (HIGH)
 
 - `arch-app-structure` - Enforces `apps/` directory and package-based models/views
-- `arch-orm-model-structure` - One model per file, strict meta options, and typing
-- `arch-api-serializer-definition` - Action-based naming, explicit field declaration ordered by model, and representation delegation
 
-### 2. Configuration & DevOps (MEDIUM)
+### 2. Configuration & DevOps (HIGH)
 
 - `conf-settings-structure` - Modular settings (base/development/production) and secure secrets
-- `conf-env-dependencies` - Segregated `.venv` and split requirement files
 - `conf-deployment-topology` - Layered _Compose_ overlays, _Caddy_ reverse proxy, non-root image with a release entrypoint, _gunicorn_, and _systemd_ timers
+- `conf-env-dependencies` - Segregated `.venv` and split requirement files
+
+### 3. ORM & Database (HIGH)
+
+- `arch-orm-model-structure` - One model per file, strict meta options, and typing
+
+### 4. API & Serialization (HIGH)
+
+- `arch-api-serializer-definition` - Action-based naming, explicit field declaration ordered by model, and representation delegation
 - `arch-view-definition` - Generic views usage, strict _APIView_ typing, and explicit security declaration
 
 ## How to Use

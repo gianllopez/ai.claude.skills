@@ -5,3 +5,14 @@ yarn.lock
 
 # os
 .DS_Store
+
+# TODO: Crear nueva "skill" [`astro-best-practices` (SEO, accesibilidad, uso de `@astrojs/react`, separación de componentes a partir de la complejidad de sus interacciones)].
+# TODO: Crear nueva "skill" [`figma` (nombres de capas, regla de 4px, uso de colores de la marca)].
+# TODO: Los tokens semanticos solo deben ser agregados cuando aporten valor real [`react-best-practices/rules/tw-theme-tokens.md`].
+# TODO: Agregar la operación del cálculo de las horas reales [`notion`].
+# TODO: Crear una "skill" de Docker y Docker Compose (Redes y volúmenes nombrados).
+# TODO: Crear una "skill" de modelo proxy para despliegue de proyectos en el mismo servidor.
+# TODO: Agregar una regla del orden de los "props", "hooks" y cualquier miembro de una pantalla, componente, etc. [`react-core-best-practices`].
+# TODO: Agregar directriz de orden de las urls para los registros en Django (agrupar por dominio).
+# TODO: Corregir directriz de Django que dice que siempre se tiene que usar `DelegateRepresentationMixin`, solamente cuando se necesite cambiar las representaciones al menos tres (3) veces.
+# TODO: Nueva directriz de los nombres de las consultas (`queryKey`): `queryKey: ['@inventory', 'products', 'balances']`.

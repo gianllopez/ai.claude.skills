@@ -61,10 +61,7 @@ export function SignupForm() {
         Basic
         <input type="radio" value="pro" onChange={() => setPlan('pro')} /> Pro
       </div>
-      <button
-        onClick={submitForm}
-        className="rounded-md bg-primary px-4 py-2"
-      >
+      <button onClick={submitForm} className="rounded-md bg-primary px-4 py-2">
         Continue
       </button>
     </div>
