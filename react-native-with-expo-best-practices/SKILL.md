@@ -27,11 +27,13 @@ Reference these guidelines when:
 
 ## Rule Categories by Priority
 
-| Priority | Category           | Peak impact | Prefix  |
-| :------- | :----------------- | :---------- | :------ |
-| 1        | Project Structure  | HIGH        | `arch-` |
-| 2        | UI & Design System | HIGH        | `arch-` |
-| 3        | Environment        | HIGH        | `conf-` |
+| Priority | Category           | Peak impact | Prefix   |
+| :------- | :----------------- | :---------- | :------- |
+| 1        | Project Structure  | HIGH        | `arch-`  |
+| 2        | UI & Design System | HIGH        | `style-` |
+| 3        | Environment        | HIGH        | `conf-`  |
+
+Priority orders where to look first; peak impact is the strongest rule in the section, matching the table of contents in `AGENTS.md`. They disagree on purpose — a section can hold one blocking rule and several that only ever produce suggestions.
 
 ## Quick Reference
 
@@ -41,7 +43,7 @@ Reference these guidelines when:
 
 ### 2. UI & Design System (HIGH)
 
-- `arch-style-nativewind` - `className` over `StyleSheet`; the `style` prop only for what utilities cannot express; colours come from the theme
+- `style-nativewind` - `className` over `StyleSheet`; the `style` prop only for what utilities cannot express; colours come from the theme
 
 ### 3. Environment (HIGH)
 

@@ -38,48 +38,48 @@ Each rule file should follow this strict frontmatter and structure:
 
 ````markdown
 ---
-title: \<title>
-impact: \<impact>
-description: \<description>
-tags: \<tags>
+title: <Title>
+impact: <CRITICAL | HIGH | MEDIUM | LOW>
+description: <One-line summary of the rule>
+tags: <comma, separated, tags>
 ---
 
-## \<title>
+## <Title>
 
-**Impact (\<impact: LOW, MEDIUM, HIGH>):** \<description>
+**Impact (<LEVEL>):** <Why this matters — the concrete cost of getting it wrong>
 
-Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications.
+**Guidelines:**
 
-**Incorrect (description of what's wrong):**
+1. <guideline>
+2. <guideline>
 
-```python
-// Bad code example here
-bad = example();
+**Incorrect (<description of what's wrong>):**
+
+```<lang>
+<bad example>
 ```
 
-**Correct (description of what's right):**
+**Correct (<description of what's right>):**
 
-```python
-// Good code example here
-good = example();
+```<lang>
+<good example>
 ```
 
-Reference: [Link to documentation or resource](https://example.com)
+Reference: [<label>](url)
 ````
 
 ## File Naming Convention
 
 - Files starting with `_` are special (metadata or templates)
-- Rule files: `prefix-description.md` (e.g., `orm-model-structure.md`)
+- Rule files: `prefix-description.md` (e.g., `arch-orm-model-structure.md`)
 - Rules are categorized by their filename prefix
 
 ## Impact Levels
 
-- **CRITICAL** - Security risks or system-breaking patterns (e.g., exposing keys)
-- **HIGH** - Major architectural decisions or strict naming conventions
-- **MEDIUM-HIGH** - Standardization that prevents technical debt
-- **MEDIUM** - Optimizations for performance or readability
-- **LOW** - Stylistic preferences
+- **CRITICAL** - Breaks behavior, ships broken output, or exposes a security risk
+- **HIGH** - Wrong ownership or strategy, or standardization that prevents technical debt; costly to unwind later
+- **MEDIUM** - Optimizations for build output or runtime behavior
+- **LOW** - Stylistic preferences, usually enforced by tooling
 
 ## Acknowledgments
 

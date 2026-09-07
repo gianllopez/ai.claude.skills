@@ -1,28 +1,29 @@
 ---
-title: \<title>
-impact: \<impact>
-description: \<description>
-tags: \<tags>
+title: <Title>
+impact: <CRITICAL | HIGH | MEDIUM | LOW>
+description: <One-line summary of the rule>
+tags: <comma, separated, tags>
 ---
 
-## \<title>
+## <Title>
 
-**Impact (\<impact: LOW, MEDIUM, HIGH>):** \<description>
+**Impact (<LEVEL>):** <Why this matters — the concrete cost of getting it wrong>
 
-Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications.
+**Guidelines:**
 
-**Incorrect (description of what's wrong):**
+1. <guideline>
+2. <guideline>
 
-```python
-// Bad code example here
-bad = example();
+**Incorrect (<description of what's wrong>):**
+
+```<lang>
+<bad example>
 ```
 
-**Correct (description of what's right):**
+**Correct (<description of what's right>):**
 
-```python
-// Good code example here
-good = example();
+```<lang>
+<good example>
 ```
 
-Reference: [Link to documentation or resource](https://example.com)
+Reference: [<label>](url)
