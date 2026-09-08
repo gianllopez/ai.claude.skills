@@ -1,6 +1,6 @@
 ---
 name: notion
-description: Creates tasks in the Notion "Control" database, computes their start/finish dates from the company's working hours, and appends progress records to a task's "Registros" log, respecting the default template and property schema.
+description: Creates tasks in the Notion "Control" database, computes their start/finish dates from the company's working hours, appends progress records to a task's "Registros" log, and closes a task by computing its real hours and handing it to review. Use when creating or registering a task, scheduling one, logging progress or a blocker, or closing a finished task ("cerrar la tarea", "registrar las horas", "¿cuántas horas me tomó?").
 allowed-tools:
   - mcp__claude_ai_Notion__notion-fetch
   - mcp__claude_ai_Notion__notion-create-pages
@@ -11,15 +11,20 @@ allowed-tools:
 license: MIT
 metadata:
   author: gianllopez
-  version: 1.1.0
+  version: 1.3.0
 ---
 
 # Notion Task Management
 
-Manages tasks in the user's _Notion_ database. It provides three operations: A — Create a Task
+Manages tasks in the user's _Notion_ database. It provides four operations: A — Create a Task
 (following the default template and property schema), B — Calculate & Set Task Dates
-(computing `Fecha de Inicio` and `Fecha de Finalización` from the company's working hours), and
-C — Add a Progress Record (appending an entry to a task's _Registros_ log).
+(computing `Fecha de Inicio` and `Fecha de Finalización` from the company's working hours),
+C — Add a Progress Record (appending an entry to a task's _Registros_ log), and D — Close a Task
+(computing `Horas (Reales)` and handing the task to review).
+
+Operations B and D are the two halves of the company's hour-control scheme: B writes the plan from
+the estimate, D writes what actually happened. Both read the same working schedule, so a task's
+estimate and its real cost are measured on one calendar.
 
 ## When to Apply
 
@@ -29,6 +34,8 @@ C — Add a Progress Record (appending an entry to a task's _Registros_ log).
 - The user asks to _"calculate the dates"_, _"set the start/finish dates"_, or _"schedule"_ a task (_Operation B_)
 - The user asks to _"add a record"_, _"log progress"_, _"registrar un avance"_, or to note a blocker
   or an update on an existing task (_Operation C_).
+- The user asks to _"cerrar la tarea"_, _"close the task"_, _"registrar las horas"_, _"¿cuántas
+  horas me tomó?"_, or to move a finished task to review (_Operation D_).
 
 ## Fixed workspace references (do not change between runs)
 
@@ -76,7 +83,7 @@ infer what can be inferred, and always confirm the mandatory fields (`Proyecto`,
 `Módulo`, `Tipo`, `Prioridad`, `Responsable`). Use `AskUserQuestion` to present closed-choice
 options.
 
-For `Responsable`, build the question from the people read in step 2 (Directive 10): offer the
+For `Responsable`, build the question from the people read in step 2 (Directive 9): offer the
 team members as options with _Gian López_ first, marked as the recommended one, and allow more than
 one to be picked (`multiSelect: true`) since the property holds an array. Ask even when the user
 already named someone — confirm that person against the live list — and never fall back to a
@@ -115,6 +122,10 @@ Map each property exactly to these names and options. Fields marked 🔒 are nev
 creation: formula fields are read-only, and `Fecha de Inicio`, `Fecha de Finalización`, and
 `Horas (Reales)` are filled in later as the task progresses — omit them from `properties`.
 
+The table below is the whole schema. A property that is not in it does not exist in the data
+source, and writing one fails the request — re-read the live schema rather than trusting memory
+when a field seems to be missing.
+
 | Property                | Type         | Options / Format                                                            |
 | :---------------------- | :----------- | :-------------------------------------------------------------------------- |
 | `Tarea`                 | title (text) | Task name                                                                   |
@@ -126,10 +137,9 @@ creation: formula fields are read-only, and `Fecha de Inicio`, `Fecha de Finaliz
 | `Módulo`                | select       | dynamic — read live options before assigning                                |
 | `Sprint`                | select       | dynamic — read live options before assigning                                |
 | `Responsable`           | person       | _JSON_ array of user IDs — always asked from the live people list           |
-| `Notas`                 | text         | Free text                                                                   |
 | `Fecha de Inicio`       | date         | 🔒 Not set at creation — assigned by _Operation B_ (or manually).           |
 | `Fecha de Finalización` | date         | 🔒 Not set at creation — assigned by _Operation B_ (or manually).           |
-| `Horas (Reales)`        | number       | 🔒 Not set on creation — filled when the task is completed. Do not assign.  |
+| `Horas (Reales)`        | number       | 🔒 Not set at creation — assigned by _Operation D_ when the task closes.    |
 | `Horas (Estimadas)`     | formula      | 🔒 Read-only — do not assign                                                |
 | `Varianza (Horas)`      | formula      | 🔒 Read-only — do not assign                                                |
 
@@ -173,7 +183,7 @@ Se inicia la tarea con el objetivo de [contexto o punto de partida]
 <details>
 <summary>**[Día de la tarea (DD de MM)] — [[Mención de la persona]]**</summary>
 	[Describe qué se realizó, avance obtenido o bloqueo identificado]
-	**Estado: **<span color="gray">**`[Estado]`**</span>
+	**[Campo]: **[valor]
 </details>
 ```
 
@@ -189,42 +199,27 @@ Se inicia la tarea con el objetivo de [contexto o punto de partida]
 >   even when the task is assigned to someone else.
 
 > Each later update is appended inside a `<details>` block whose `<summary>` holds the date
-> (`<mention-date/>`) and the person (`<mention-user/>`), plus the status line described in
-> _Status line_ below. Appending those updates is _Operation C_.
+> (`<mention-date/>`) and the person (`<mention-user/>`), plus the closing field described in
+> _Closing field_ below. Appending those updates is _Operation C_.
 
 > If you need more advanced block syntax, first read the MCP resource
 > `notion://docs/enhanced-markdown-spec` before generating the content.
 
-## Status line (last line of every record)
+## Closing field (last line of every record)
 
-Every record in _Registros_ ends with a status line. It is never omitted, and the status word is
-inline code carrying a text color (no `_bg` suffix), so it reads as a monospaced token tinted to
-match the color _Notion_ gives that option in the `Estado` select:
+Every record in _Registros_ ends with one closing field: a key and its value. It is never omitted.
 
 ```markdown
-**Estado: **<span color="red">**`BLOQUEADO`**</span>
+**<Campo>: **<valor>
 ```
 
-| `Estado`      | `<span>` color |
-| :------------ | :------------- |
-| `PENDIENTE`   | `gray`         |
-| `EN PROGRESO` | `blue`         |
-| `BLOQUEADO`   | `red`          |
-| `POR APROBAR` | `yellow`       |
-| `TERMINADO`   | `green`        |
+Both halves are placeholders. What the record closes on is decided per record, from what it is
+actually about — the state the task is left in, the hours it took, the module it touched, the person
+it now waits on. There is no default: the skill asks, and writes what the user answers.
 
-> **Never use the `_bg` variants here.** A rich text run in _Notion_ has a single color slot holding
-> either a text color or a background color, never both. On a run that is also inline code, a
-> background color wins the slot and leaves _Notion's_ own fixed red on the letters — every status
-> then renders with the same red word, only the backdrop changing. A text color instead overrides
-> that red, which is what gives each status its own tint. This was verified by rendering all five
-> statuses both ways.
-
-> Never invent a color outside this table; if a status has no row, read the live option colors from
-> the data source before rendering.
-
-The token keeps the pale grey backdrop that _Notion_ gives all inline code — the same for all five
-statuses. Tinting that backdrop per status is a manual step for the user, covered by Directive 9.
+Keep it to one field. Two facts worth closing on are two records, or a longer description. The
+record's own description carries the detail; the closing field carries the one fact the reader is
+scanning for, and it is written as plain text.
 
 ## Operation B — Calculate & Set Task Dates
 
@@ -284,12 +279,13 @@ Return the task address and the dates written.
 ## Operation C — Add a Progress Record
 
 Appends one entry to an existing task's _Registros_ section: what happened, who logged it, when,
-and the status the task is left in.
+and the one field the record closes on.
 
 ### 1. Identify the target task
 
 The user provides the task by link or mention (a _Notion_ URL or page ID). Run `notion-fetch` on it
-to read its current `Estado` and its existing _Registros_ entries.
+to read its current properties and its existing _Registros_ entries — the properties are what a
+closing key is offered live options from, and what step 7 compares against.
 
 ### 2. Gather the record data
 
@@ -300,11 +296,12 @@ to read its current `Estado` and its existing _Registros_ entries.
 - **Description:** one short paragraph in _Spanish_ describing what was done, the progress made, or
   the blocker found (Directive 4).
 
-### 3. Resolve and present the status
+### 3. Resolve the closing field
 
-The record's status is never silently inferred. Always ask the user with `AskUserQuestion`,
-offering the five `Estado` options and marking the task's current one, then render it with its text
-color from the _Status line_ table (Directive 8).
+The record's closing field is never silently inferred — neither half of it. Ask the user with
+`AskUserQuestion` for the key and its value, proposing the ones the record's own content points at
+(Directive 8). Where the key is a property of the task, offer that property's live options as the
+value rather than free text.
 
 ### 4. Render the record
 
@@ -312,13 +309,12 @@ color from the _Status line_ table (Directive 8).
 <details>
 <summary>**<mention-date start="<YYYY-MM-DD>" startTime="<HH:mm>" timeZone="America/Bogota"/> — <mention-user url="user://<user-id>"/>**</summary>
 	[Descripción del avance, resultado o bloqueo]
-	**Estado: **<span color="green">**`TERMINADO`**</span>
+	**[Campo]: **[valor]
 </details>
 ```
 
-The status line above is a filled-in example. Replace the label and the `color` value with the row
-the resolved status matches in the _Status line_ table (Directive 8), taking the color cell verbatim
-— `green`, `red`, `gray`, and so on. Never append `_bg`.
+Replace both placeholders with what step 3 resolved — the key and its value, as plain text
+(Directive 8).
 
 ### 5. Preview and get approval
 
@@ -332,25 +328,102 @@ entry lands at the bottom of _Registros_. If the placeholder `<details>` block f
 still the last block, keep it: insert the real record and leave the placeholder in place
 (Directive 5).
 
-### 7. Sync the `Estado` property
+### 7. Sync the matching property
 
-If the record's status differs from the task's current `Estado`, ask the user whether to update the
-property too. On a yes, run `notion-update-page` with `command: "update_properties"` setting
-`Estado`.
+When the record closed on a key that is also a property of the task, and the value differs from what
+the property currently holds, ask the user whether to update the property too. On a yes, run
+`notion-update-page` with `command: "update_properties"` setting it. A record closing on anything
+that is not a property leaves the task untouched.
 
-### 8. Confirm and hand off the background tint
+### 8. Confirm
 
-Return the task address and a summary of the appended record, and close with the manual-tint notice
-required by Directive 9 — never omit it, even on a record the user requested tersely.
+Return the task address and a summary of the appended record, including the closing field it
+carries.
+
+## Operation D — Close a Task
+
+Writes the second layer of the company's hour-control scheme: what the task actually cost, and the
+handover to review. `Horas (Reales)` is the only number in the system nobody can derive from the
+estimate — it is what makes `Varianza (Horas)` mean anything.
+
+### 1. Identify the target task
+
+The user provides the task by link or mention (a _Notion_ URL or page ID). Run `notion-fetch` on it
+to read `Fecha de Inicio`, `Dificultad`, `Estado`, and whatever `Horas (Reales)` already holds.
+
+Two states stop the operation before any calculation: a task with no `Fecha de Inicio` has no
+anchor to measure from, so ask for the start instant instead of guessing one; and a task that
+already carries `Horas (Reales)` is being re-closed, so show the current value and ask whether to
+replace it.
+
+### 2. Resolve the closing instant
+
+Default to the current time in _America/Bogota_ (e.g. `TZ="America/Bogota" date`), rounded **down**
+to the completed hour — the mirror of _Operation B_, which rounds up to start. If the task was
+finished earlier, or outside working hours, use the instant the user gives instead.
+
+### 3. Compute the elapsed working hours
+
+From `Fecha de Inicio` to the closing instant, count only the time inside working blocks, skipping
+lunch, nights, weekends, and _Colombian_ holidays (Directive 6). This is the same schedule
+_Operation B_ consumes hours across, walked in the opposite direction.
+
+**What this number is:** the working time the task was open. It is an upper bound on effort, not a
+measurement of it — the developer may have worked on other tasks in between. That is exactly why it
+is proposed rather than written (Directive 11).
+
+### 4. Read the estimate for comparison
+
+Resolve `Horas (Estimadas)` from `Dificultad` through the `⚙️ Sistema` page, the same way
+_Operation B_ does (step 2 there). The estimate is not used to compute anything here; it is shown
+beside the elapsed time so the user confirms the real hours against what was planned, and sees the
+variance the write will produce.
+
+### 5. Ask for the real hours
+
+Never write a number the user has not confirmed. Ask with `AskUserQuestion`, offering:
+
+- The **elapsed working hours** just computed, marked as the recommended option
+- The **estimate**, for the common case where the task landed on plan
+- The automatic _Other_ choice, for any figure the user types
+
+The property is a number and accepts decimals, so half-hours are valid answers.
+
+### 6. Preview and get approval
+
+Show the task, the resolved `Horas (Reales)`, the estimate, the resulting variance, and the
+`Estado` transition to `POR APROBAR`. Wait for explicit approval. Do not write to _Notion_ until
+the user approves.
+
+### 7. Write the close
+
+One `notion-update-page` call with `command: "update_properties"`, setting both fields together
+(Directive 11):
+
+- `Horas (Reales)` = the confirmed number
+- `Estado` = `POR APROBAR`
+
+### 8. Offer the closing record
+
+A close that leaves no trace in _Registros_ is invisible to whoever audits the task on Friday. In
+the same turn that confirms the write, call `AskUserQuestion` to offer appending a closing record
+through _Operation C_, proposing `Estado` / `POR APROBAR` as the field it closes on — the transition
+this operation just wrote. If they accept, continue straight into _Operation C_ using the same task
+— do not ask again for the link.
+
+### 9. Confirm
+
+Return the task address, the hours written, and the variance against the estimate.
 
 ---
 
 # 🔧 User Directives
 
-> These blocks define the skill's _behavior_. Directives 1–5 and 10 govern _Operation A_ (task
-> creation); Directive 6 governs _Operation B_ (date calculation); Directive 7 chains _A_ into _B_;
-> Directives 8 and 9 govern _Operation C_ (progress records). Directive 4 applies to every operation
-> that writes page content.
+> These blocks define the skill's _behavior_. Directives 1–5 and 9 govern _Operation A_ (task
+> creation); Directive 6 governs the working schedule both _Operation B_ (date calculation) and
+> _Operation D_ (task closing) measure on; Directive 7 chains _A_ into _B_; Directive 8 governs
+> _Operation C_ (progress records); Directives 10 and 11 govern _Operation D_. Directive 4 applies
+> to every operation that writes page content.
 
 ## 🔧 Directive 1 — Default values
 
@@ -377,7 +450,7 @@ live options with `AskUserQuestion`:
 - `Módulo`
 - `Tipo`
 - `Prioridad`
-- `Responsable` — from the live people list, never from memory (Directive 10)
+- `Responsable` — from the live people list, never from memory (Directive 9)
 
 ## 🔧 Directive 3 — Task name convention
 
@@ -403,14 +476,14 @@ On creation, generate:
 1. The opening line — date via the `@now` equivalent + the _Gian López_ mention, followed by
    `Se inicia la tarea con el objetivo de …`.
 2. An empty placeholder `<details>` block (with bracketed placeholders for date, person,
-   description, and status) so collaborators know how to log their progress updates.
+   description, and the closing field) so collaborators know how to log their progress updates.
 
 Keep the placeholder block with its bracketed placeholders — do not fill it with a real
 update and do not remove it. Real updates are appended below it by _Operation C_.
 
-## 🔧 Directive 6 — Working schedule (for _Operation B_)
+## 🔧 Directive 6 — Working schedule (for _Operations B_ and _D_)
 
-Used to compute task dates in _Operation B_:
+Used to compute task dates in _Operation B_, and the elapsed working hours in _Operation D_:
 
 - **Working days:** Monday to Friday
 - **Working blocks:** 08:30–12:00 and 13:30–17:00 → 7 effective hours per day (the 12:00–13:30
@@ -441,44 +514,22 @@ turn, and never skipped because the user seemed to be in a hurry or asked for se
 When several tasks are created in one run, ask once per created task, or ask a single question
 listing the tasks — but do not let any created task end without the question having covered it.
 
-## 🔧 Directive 8 — Status in a progress record
+## 🔧 Directive 8 — Every record closes on one field
 
-Every record appended to _Registros_ (_Operation C_) ends with the status line, with no exceptions:
+Every record appended to _Registros_ (_Operation C_) ends with its closing field, with no exceptions:
 
-- **Always present:** a record without its `Estado` line is incomplete — never omit it
-- **Always presented to the user:** show the resolved status in the preview before writing, so the
-  user sees which state the task is being left in and can correct it.
-- **Never inferred silently:** ask with `AskUserQuestion`, offering the five `Estado` options with
-  the task's current one marked.
-- **Color copied verbatim:** take the color cell of the _Status line_ table exactly as written, so
-  `BLOQUEADO` reads in red, `TERMINADO` in green, and so on. These are text colors — never append
-  `_bg`, which would flatten all five to the same red word.
+- **Always present:** a record without it is incomplete — never omit it
+- **No default key:** what the record closes on comes from what the record is about, never from a
+  fixed word the skill carries
+- **One field only:** two facts worth closing on are two records, or a longer description
+- **Never inferred silently:** ask with `AskUserQuestion` for both halves, proposing what the
+  record's content points at; where the key is a property of the task, offer its live options as the
+  value
+- **Always presented to the user:** show the resolved key and value in the preview before writing,
+  so the user sees what the record asserts and can correct it
+- **Plain text:** the value carries no formatting of its own
 
-## 🔧 Directive 9 — Hand off the background tint
-
-The status word carries a text color, so its backdrop stays the pale grey _Notion_ gives all inline
-code. The tint that makes a task's state readable at a glance has to be applied by hand in the
-_Notion UI_, and the _API_ cannot do it — so every time a record is appended (_Operation C_, step 8),
-tell the user, in _Spanish_, that the step is pending. Never leave it implied.
-
-The notice states three things:
-
-1. The record was written and which status it carries.
-2. That its background is still untinted, and tinting it is manual.
-3. **How to do it without destroying the status color:** select the whole line — the block, not just
-   the word — and apply the background from _Notion's_ color menu. A rich text run holds one color
-   at a time, so applying a background to the highlighted word alone replaces its text color and the
-   status loses its tint. The block's color is a separate slot and coexists with it.
-
-Name the background to pick, using the label from _Notion's_ own color menu in _Spanish_ — _Rojo
-claro_ for `BLOQUEADO`, _Verde claro_ for `TERMINADO`, _Azul claro_ for `EN PROGRESO`, _Amarillo
-claro_ for `POR APROBAR`, _Gris claro_ for `PENDIENTE`.
-
-> This is a deliberate trade-off, not a workaround for a defect. Inline code plus a per-status text
-> color was chosen over a per-status background precisely because the background cannot coexist with
-> the tinted word inside a single run. Do not "fix" it by switching the span back to `_bg`.
-
-## 🔧 Directive 10 — The responsible person comes from the team list
+## 🔧 Directive 9 — The responsible person comes from the team list
 
 `Responsable` is decided by the user, from the people who actually exist in the workspace — not
 inferred from the task's subject matter and not defaulted to whoever created it:
@@ -498,3 +549,29 @@ inferred from the task's subject matter and not defaulted to whoever created it:
 
 The person chosen here fills `Responsable` only. The opening _Registros_ line still mentions the
 creator, _Gian López_ — see _Page content structure_.
+
+## 🔧 Directive 10 — Real hours are calculated, then confirmed
+
+`Horas (Reales)` is the one figure in the system that cannot be derived, and the whole audit layer
+depends on it being honest:
+
+- **Always compute first:** the elapsed working hours between `Fecha de Inicio` and the close are
+  an anchor, so the answer is corrected from a number instead of recalled from memory.
+- **Never write what was not confirmed:** the computed value is the recommended option in the
+  question, never the value written without asking. A close that skips the question is a guess
+  wearing the costume of a calculation.
+- **Never derive them from the estimate:** copying `Horas (Estimadas)` into `Horas (Reales)` makes
+  `Varianza (Horas)` zero by construction, which is worse than leaving the field empty — it reports
+  a perfect estimate to the Friday audit and quietly poisons every future estimate drawn from it.
+- **Elapsed is not effort:** state it when proposing the number. A task open for two days that took
+  four hours of work is normal, and the user is the only one who knows the difference.
+
+## 🔧 Directive 11 — The close is atomic
+
+`Horas (Reales)` and `Estado` → `POR APROBAR` are written in the same call, never one without the
+other. The system's own rule is _"sin horas reales = no se aprueba"_: a task in `POR APROBAR` with
+an empty hours field is invisible to the audit that reads variance, and hours written without the
+state change leave the task looking active while nobody is working on it.
+
+If the user wants only one of the two, that is a property edit they are asking for explicitly — not
+_Operation D_, and it does not get the operation's confirmation flow.

@@ -1,6 +1,6 @@
 # React Core Best Practices
 
-**Version 1.0.0**  
+**Version 1.2.0**  
 _Gian López_  
 _August 2026_
 
@@ -36,6 +36,7 @@ Standards for _React_ itself — the parts that do not change when the renderer 
    - [2.8 Core Utilities & Configuration](#28-core-utilities--configuration)
    - [2.9 Syntax & Conciseness Conventions](#29-syntax--conciseness-conventions)
    - [2.10 Class Composition & Conditional Classes](#210-class-composition--conditional-classes)
+   - [2.11 Prop & Member Ordering](#211-prop--member-ordering)
 3. [Data Flow](#3-data-flow) — `HIGH`
    - [3.1 Query Layer & Data Ownership](#31-query-layer--data-ownership)
    - [3.2 Pending, Empty & Error States](#32-pending-empty--error-states)
@@ -2266,13 +2267,254 @@ export function Alert({ tone, size, className, ...props }: Props) {
 
 Reference: [tailwind-merge](https://github.com/dcastil/tailwind-merge) · [NativeWind style specificity](https://www.nativewind.dev/docs/core-concepts/style-specificity)
 
+### 2.11 Prop & Member Ordering
+
+**Impact (LOW):** A component's surface is read far more often than it is written, and with no order there is nothing to read it against: finding whether a component reports anything back means scanning every line of its type, and a prop added in review lands wherever the diff happened to open. The same component then appears in one order in its declaration, another in its signature, and a third at each call site, so no two of them can be compared. None of this breaks at runtime — which is why it never gets fixed unless a rule can be pointed at.
+
+**Guidelines:**
+
+1.  **Four groups, ordered by the direction each one flows:**
+    - **Data** — the domain values the component renders: `invoice`, `customer`
+    - **Configuration** — what modulates that rendering with a value: `variant`, `size`, `tone`, `placeholder`
+    - **Boolean state** — what only toggles: `isDisabled`, `isLoading`, `isPending`
+    - **Callbacks** — the one group that flows outward: `onSelect`, `onPress`, `onConfirm`
+    - The sequence is the request's own direction, the same argument that fixes `Variables` → `Response` → `Data` in the query-layer rule. A component is identified by its data, qualified by its configuration, toggled by its flags, and only then reports back
+2.  **`children` closes the type:**
+    - It is written as real JSX children rather than an attribute, so it has no position at a call site and only ever appears in the declaration
+    - Placing it last keeps the four groups contiguous instead of splitting the data group around a prop no caller ever writes by name
+3.  **Alphabetical inside each group:**
+    - The groups carry the meaning; alphabetical is only the tiebreaker, and it exists so the order is fully determined rather than left to whoever typed first
+    - Without it the rule stops halfway: two components with the same four groups still list them differently, and review has nothing to point at
+4.  **The same order in all three places:**
+    - The `Props` type, the destructuring in the signature, and the attributes at every call site
+    - No blank lines anywhere: the type, the signature and the JSX are each one continuous list. A blank line between groups is a second grouping signal competing with the order itself, which is the same reason the syntax-conventions rule keeps them out of JSX
+    - `key` and `ref` are not props and never reach the component, so they lead the attribute list, ahead of the data group
+5.  **Only the object literal is ordered:**
+    - When the type is an intersection — `React.ComponentProps<'button'> & VariantProps<typeof BUTTON_VARIANTS>` — there is no list of ours to sort, and the typing-conventions rule already requires that shape
+    - The order applies to the properties written by hand, wherever they appear in the intersection
+6.  **One axis of this is enforceable, and the project must turn it on:**
+    - `react/jsx-sort-props` ships with `eslint-plugin-react` but is off by default. Declare it as `['error', { callbacksLast: true, noSortAlphabetically: true }]`, and confirm it is actually active before trusting any of it — an unconfigured project enforces none of this, and the rule is silently review-only
+    - That is the only setting that does not contradict this rule. `callbacksLast` maps exactly: the implementation detects a callback as `/^on[A-Z]/`, which is the outward group and nothing else
+    - `shorthandLast` does not reach the flag group, so it stays off. Shorthand there means an attribute carrying no value at all — `<Button isDisabled />` — and `isDisabled={!canEdit}` is an ordinary prop to the rule, sorted among the data and configuration ones
+    - Alphabetical is off for the same reason: it cannot be scoped to a group, and left on it rejects the correct examples below, wanting `isDisabled` between `invoice` and `size`
+    - `reservedFirst` stays off too: it hoists `children` to the front, contradicting the second guideline
+    - Nothing checks the type declaration at all. With the callbacks automated, review owns the remaining three groups and the whole of the declaration
+7.  **Inside the body, the same outside-in reading:**
+    - **Hooks**, in the order of what owns the value: the environment first (router params, context), then queries and mutations, then local `useState` and `useRef`, and `useEffect` last — the only one that acts instead of reading
+    - **Guards** — the early returns for the outcomes the query can produce. They sit immediately after the hooks because every hook must run before any return
+    - **Derived values**, after the guards and not before: the guards are what narrow the query result, so a derived value written above them carries a fallback that is dead one line down (see the async-states rule)
+    - **Handlers** — the `handle*` implementations, when there are any. A one-expression body stays inline at its prop, so this group is often empty by design (see the syntax-conventions rule)
+    - **The `return`**
+
+**Incorrect (three orders for one component, and nothing that says where the next prop goes):**
+
+```tsx
+// ./app/components/invoice-row/index.tsx
+
+// Bad: a callback between two data props, the toggles scattered through the
+// list, and `children` buried in the middle
+type Props = {
+  onArchive: () => void;
+  invoice: Invoice;
+  isLoading?: boolean;
+  size: 'sm' | 'lg';
+  children: React.ReactNode;
+  customer: Customer;
+  onSelect: (id: string) => void;
+  isDisabled?: boolean;
+  variant: 'ghost' | 'solid';
+};
+
+// Bad: the signature reorders them again, so the type is no longer a map of it
+export function InvoiceRow({
+  invoice,
+  onSelect,
+  isDisabled,
+  size,
+  customer,
+  variant,
+  onArchive,
+  isLoading,
+  children,
+}: Props) {
+```
+
+```tsx
+// Bad: and the call site invents a third order — this cannot be read against
+// either of the two above
+<InvoiceRow
+  isDisabled={!canEdit}
+  invoice={invoice}
+  onSelect={handleSelect}
+  size="sm"
+  customer={invoice.customer}
+  onArchive={() => archive.mutate(invoice.id)}
+  variant="ghost"
+/>
+```
+
+**Correct (the four groups, alphabetical within each, `children` last):**
+
+```tsx
+// ./app/components/invoice-row/index.tsx
+
+type Props = {
+  customer: Customer;
+  invoice: Invoice;
+  size: 'sm' | 'lg';
+  variant: 'ghost' | 'solid';
+  isDisabled?: boolean;
+  isLoading?: boolean;
+  onArchive: () => void;
+  onSelect: (id: string) => void;
+  children: React.ReactNode;
+};
+
+// Good: the signature is the type read straight down, in the same order
+export function InvoiceRow({
+  customer,
+  invoice,
+  size,
+  variant,
+  isDisabled,
+  isLoading,
+  onArchive,
+  onSelect,
+  children,
+}: Props) {
+```
+
+**Correct (React DOM) — the same order at the call site, with `key` ahead of it:**
+
+```tsx
+{
+  invoices.map((i) => (
+    <InvoiceRow
+      key={i.id}
+      customer={i.customer}
+      invoice={i}
+      size="sm"
+      variant="ghost"
+      isDisabled={!canEdit}
+      onArchive={() => archive.mutate(i.id)}
+      onSelect={handleSelect}
+    >
+      <InvoiceStatus status={i.status} />
+    </InvoiceRow>
+  ));
+}
+```
+
+**Correct (React Native) — the group is defined by the direction, not by the prop's name, so `onPress` sorts with the rest:**
+
+```tsx
+{
+  invoices.map((i) => (
+    <InvoiceRow
+      key={i.id}
+      customer={i.customer}
+      invoice={i}
+      size="sm"
+      variant="ghost"
+      isDisabled={!canEdit}
+      onLongPress={() => setSelected(i.id)}
+      onPress={() => handleSelect(i.id)}
+    >
+      <InvoiceStatus status={i.status} />
+    </InvoiceRow>
+  ));
+}
+```
+
+**Incorrect (a body with no reading order):**
+
+```tsx
+export function InvoiceListScreen() {
+  // Bad: a handler declared before anything it closes over exists
+  const handleArchive = async (id: string) => {
+    await archive.mutateAsync(id);
+    toast.success('Invoice archived');
+  };
+
+  // Bad: the effect sits above the state it is here to synchronize
+  useEffect(() => {
+    const subscription = listenForInvoicePushes();
+
+    return () => subscription.remove();
+  }, []);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const archive = useArchiveInvoice();
+
+  // Bad: derived above the guards, so it carries a fallback for a state that
+  // cannot reach this line once the guards exist
+  const total = invoices.data?.reduce((acc, i) => acc + i.amount, 0) ?? 0;
+
+  const { status } = useSearchParams();
+  const invoices = useInvoices({ variables: { status } });
+
+  if (invoices.isPending) {
+    return <InvoiceListSkeleton />;
+  }
+
+  return <InvoiceTable invoices={invoices.data} total={total} />;
+}
+```
+
+**Correct (hooks outside-in, guards, derived, handlers, return):**
+
+```tsx
+export function InvoiceListScreen() {
+  const { status } = useSearchParams();
+
+  const invoices = useInvoices({ variables: { status } });
+  const archive = useArchiveInvoice();
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const subscription = listenForInvoicePushes();
+
+    return () => subscription.remove();
+  }, []);
+
+  if (invoices.isPending) {
+    return <InvoiceListSkeleton />;
+  }
+
+  if (invoices.isError) {
+    return <InvoiceListError onRetry={invoices.refetch} />;
+  }
+
+  // Good: the guards already narrowed `data`, so there is nothing to fall back to
+  const total = invoices.data.reduce((acc, i) => acc + i.amount, 0);
+
+  const handleArchive = async (id: string) => {
+    await archive.mutateAsync(id);
+    toast.success('Invoice archived');
+  };
+
+  return (
+    <InvoiceTable
+      invoices={invoices.data}
+      selectedId={selectedId}
+      total={total}
+      onArchive={handleArchive}
+      onSelect={setSelectedId}
+    />
+  );
+}
+```
+
+Reference: [react/jsx-sort-props](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-sort-props.md)
+
 ---
 
 ## 3. Data Flow
 
 ### 3.1 Query Layer & Data Ownership
 
-**Impact (HIGH):** A component that fetches takes on a problem it cannot finish: caching, deduplication, cancellation, retry, and invalidation. Spread across components, each one solves a different subset, and the same endpoint ends up requested three times per screen under three different key strings. A typed query layer answers all of that once and leaves the component consuming state instead of orchestrating requests.
+**Impact (HIGH):** A component that fetches takes on a problem it cannot finish: caching, deduplication, cancellation, retry, and invalidation. Spread across components, each one solves a different subset, and the same endpoint ends up requested three times per screen under three different keys. A typed query layer answers all of that once and leaves the component consuming state instead of orchestrating requests.
 
 **Guidelines:**
 
@@ -2280,7 +2522,9 @@ Reference: [tailwind-merge](https://github.com/dcastil/tailwind-merge) · [Nativ
     - Every request goes through `createQuery` / `createMutation` from `react-query-kit`; components never call `useQuery`, `useMutation`, or `axios` directly
 2.  **Structure by domain, keys declared once:**
     - Hooks live under `core/api/<domain>/`, named `use-<members|action>.ts` (see the folder-structure rule)
-    - Query keys follow `'@<domain>/<hook-name>'`, declared in the hook itself — a bare `['invoices']` written at a call site is how two components end up with two caches of the same data
+    - Query keys are hierarchical arrays — `['@<domain>', '<resource>', …]` — declared in the hook itself: the domain prefix first, then the resource narrowing one segment at a time. A bare `['invoices']` written at a call site is how two components end up with two caches of the same data
+    - The form is fixed at domain plus resource minimum, even when the two share a name (`['@invoices', 'invoices']`). Collapsing that repetition would make the listing hook's key identical to the domain prefix, so the domain could never be swept without also naming that one query
+    - Variables are never part of the declared key: `createQuery` appends them, which is why `getKey()` returns a prefix and not a cache entry
     - Invalidate with the owning hook's `getKey()`, never a hand-written copy of the key
 3.  **The client and the middlewares are configured once:**
     - The _Axios_ instance, the query client, and the mutation middlewares are configured library instances, so they live where the folder-structure rule puts them: `core/lib/`
@@ -2304,9 +2548,10 @@ Reference: [tailwind-merge](https://github.com/dcastil/tailwind-merge) · [Nativ
 9.  **Mutations invalidate through a middleware:**
     - Compose invalidation with `use` on `createMutation`, so it is declared beside the mutation instead of hand-written into every `onSuccess`
     - Pass the keys the mutation actually affects; a mutation that invalidates everything is a cache with extra steps
+    - Matching is by prefix, so pass the `getKey()` of the hook that owns the broadest affected branch and every narrower query beneath it goes with it. Enumerating those narrower hooks by hand is what breaks the next time someone adds one
     - Calling a query's `refetch()` from a mutation, or writing the response into local state, forks the cache
 
-**Incorrect (inline query, hand-written key, swallowed error, effect that redirects, needless waterfall):**
+**Incorrect (inline query, unmatchable keys, swallowed error, effect that redirects, needless waterfall):**
 
 ```tsx
 // ./app/routes/invoices.tsx
@@ -2347,6 +2592,17 @@ export default function InvoicesRoute() {
 }
 ```
 
+```ts
+// ./app/core/api/invoices/use-invoices.ts
+
+export const useInvoices = createQuery<Data, Variables>({
+  // Bad: one opaque string identifies the query but cannot be matched partially,
+  // so nothing invalidates the domain without listing every hook inside it
+  queryKey: ['@invoices/use-invoices'],
+  fetcher: request,
+});
+```
+
 **Correct (typed hook per domain, types in request order, key declared once):**
 
 ```ts
@@ -2363,7 +2619,7 @@ type Response = Invoice[];
 type Data = Response;
 
 export const useInvoices = createQuery<Data, Variables>({
-  queryKey: ['@invoices/use-invoices'],
+  queryKey: ['@invoices', 'invoices'],
   fetcher: request,
 });
 
@@ -2421,7 +2677,7 @@ type Response = Paginated<Invoice>;
 type Data = Response;
 
 export const useInvoicePage = createQuery<Data, Variables>({
-  queryKey: ['@invoices/use-invoice-page'],
+  queryKey: ['@invoices', 'invoices', 'page'],
   fetcher: request,
   // Good: the previous page stays on screen instead of blanking the table
   placeholderData: keepPreviousData,
@@ -2479,7 +2735,8 @@ type Data = Response;
 
 export const useMarkPaid = createMutation<Data, Variables>({
   mutationFn: request,
-  // Good: invalidation declared beside the mutation, with the key its owner exposes
+  // Good: ['@invoices', 'invoices'] is a prefix of the page hook's key, so this one
+  // entry clears the listing and every page of it
   use: [withInvalidation(useInvoices.getKey())],
 });
 

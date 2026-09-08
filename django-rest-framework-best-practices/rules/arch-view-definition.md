@@ -1,13 +1,13 @@
 ---
-title: View Selection, Typing & Registration
+title: View Selection, Typing & Security
 impact: MEDIUM
-description: Enforces generic views usage, strict typing for APIViews, explicit declaration of authentication and permission classes, and module-level imports for views registration.
+description: Enforces generic views usage, strict typing for APIViews, and explicit declaration of authentication and permission classes on every view.
 tags: django-rest-framework, views
 ---
 
-## View Selection, Typing & Registration
+## View Selection, Typing & Security
 
-**Impact (MEDIUM):** Standardization prevents boilerplate code. Using generic views reduces maintenance. Purposeful typing in _APIViews_ improves IDE support and communicates intent. Explicit declaration of `authentication_classes` and `permission_classes` prevents relying on implicit global defaults, making the security contract of every view self-documenting. Module-level imports in `urls.py` prevent naming conflicts and circular dependencies.
+**Impact (MEDIUM):** Standardization prevents boilerplate code. Using generic views reduces maintenance. Purposeful typing in _APIViews_ improves IDE support and communicates intent. Explicit declaration of `authentication_classes` and `permission_classes` prevents relying on implicit global defaults, making the security contract of every view self-documenting.
 
 **Guidelines:**
 
@@ -18,13 +18,12 @@ tags: django-rest-framework, views
     - Always type-hint `request` as `Request` — it adds real value by enabling IDE autocompletion and making the parameter contract explicit
     - Omit return type annotations when the `return` statement is self-documenting (e.g., `return Response(...)`); add them only when branching logic makes the return type non-obvious
     - Use explicit imports (e.g., `from rest_framework.request import Request`)
-3.  **URL Registration:**
-    - In `urls.py`, import the views module relatively: `from . import views`
-    - Register paths referencing the module: `views.MyClassName.as_view()`
-4.  **Security Declaration:**
+3.  **Security Declaration:**
     - Every view (_APIView_, _Generic View_, or _ViewSet_) must explicitly declare both `authentication_classes` and `permission_classes`
     - When a view requires no authentication or permissions, declare empty lists explicitly — never rely on implicit global defaults
     - The two attributes must be declared together, separated from `queryset` and `serializer_class` by a blank line
+
+How these views are then registered in `urls.py` is covered by `arch-url-registration`.
 
 **Incorrect (Implicit security — relies on global defaults):**
 
@@ -83,17 +82,7 @@ class UserProfileListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 ```
 
-**Incorrect (Direct imports & Missing Types):**
-
-```python
-# ./apps/users/urls.py
-
-from .views import UserLoginAPIView # Potential name conflict
-
-urlpatterns = [
-    path("login/", UserLoginAPIView.as_view()),
-]
-```
+**Incorrect (Missing Types):**
 
 ```python
 # ./apps/users/views/login.py
@@ -104,7 +93,7 @@ class UserLoginAPIView(APIView):
         return Response({})
 ```
 
-**Correct (Context-Aware Selection & Module Import):**
+**Correct (Context-Aware Selection & Explicit Typing):**
 
 ```python
 # ./apps/users/views/login.py
@@ -121,19 +110,6 @@ class UserLoginAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         # ... logic ...
         return Response({"foo": "bar"})
-```
-
-```python
-# ./apps/users/urls.py
-
-from django.urls import path
-
-# Standard: Import the module, not the class
-from . import views
-
-urlpatterns = [
-    path("login/", views.UserLoginAPIView.as_view()),
-]
 ```
 
 Reference: [Django REST Framework Class-based Views](https://www.django-rest-framework.org/api-guide/views)

@@ -1,13 +1,13 @@
 ---
 title: Query Layer & Data Ownership
 impact: HIGH
-description: Encapsulates every server request in a typed react-query-kit hook grouped by domain, and keeps fetching, caching, and auth out of components.
+description: Encapsulates every server request in a typed react-query-kit hook grouped by domain, declares hierarchical query keys once, and keeps fetching, caching, and auth out of components.
 tags: data, react-query, architecture
 ---
 
 ## Query Layer & Data Ownership
 
-**Impact (HIGH):** A component that fetches takes on a problem it cannot finish: caching, deduplication, cancellation, retry, and invalidation. Spread across components, each one solves a different subset, and the same endpoint ends up requested three times per screen under three different key strings. A typed query layer answers all of that once and leaves the component consuming state instead of orchestrating requests.
+**Impact (HIGH):** A component that fetches takes on a problem it cannot finish: caching, deduplication, cancellation, retry, and invalidation. Spread across components, each one solves a different subset, and the same endpoint ends up requested three times per screen under three different keys. A typed query layer answers all of that once and leaves the component consuming state instead of orchestrating requests.
 
 **Guidelines:**
 
@@ -15,7 +15,9 @@ tags: data, react-query, architecture
     - Every request goes through `createQuery` / `createMutation` from `react-query-kit`; components never call `useQuery`, `useMutation`, or `axios` directly
 2.  **Structure by domain, keys declared once:**
     - Hooks live under `core/api/<domain>/`, named `use-<members|action>.ts` (see the folder-structure rule)
-    - Query keys follow `'@<domain>/<hook-name>'`, declared in the hook itself — a bare `['invoices']` written at a call site is how two components end up with two caches of the same data
+    - Query keys are hierarchical arrays — `['@<domain>', '<resource>', …]` — declared in the hook itself: the domain prefix first, then the resource narrowing one segment at a time. A bare `['invoices']` written at a call site is how two components end up with two caches of the same data
+    - The form is fixed at domain plus resource minimum, even when the two share a name (`['@invoices', 'invoices']`). Collapsing that repetition would make the listing hook's key identical to the domain prefix, so the domain could never be swept without also naming that one query
+    - Variables are never part of the declared key: `createQuery` appends them, which is why `getKey()` returns a prefix and not a cache entry
     - Invalidate with the owning hook's `getKey()`, never a hand-written copy of the key
 3.  **The client and the middlewares are configured once:**
     - The _Axios_ instance, the query client, and the mutation middlewares are configured library instances, so they live where the folder-structure rule puts them: `core/lib/`
@@ -39,9 +41,10 @@ tags: data, react-query, architecture
 9.  **Mutations invalidate through a middleware:**
     - Compose invalidation with `use` on `createMutation`, so it is declared beside the mutation instead of hand-written into every `onSuccess`
     - Pass the keys the mutation actually affects; a mutation that invalidates everything is a cache with extra steps
+    - Matching is by prefix, so pass the `getKey()` of the hook that owns the broadest affected branch and every narrower query beneath it goes with it. Enumerating those narrower hooks by hand is what breaks the next time someone adds one
     - Calling a query's `refetch()` from a mutation, or writing the response into local state, forks the cache
 
-**Incorrect (inline query, hand-written key, swallowed error, effect that redirects, needless waterfall):**
+**Incorrect (inline query, unmatchable keys, swallowed error, effect that redirects, needless waterfall):**
 
 ```tsx
 // ./app/routes/invoices.tsx
@@ -82,6 +85,17 @@ export default function InvoicesRoute() {
 }
 ```
 
+```ts
+// ./app/core/api/invoices/use-invoices.ts
+
+export const useInvoices = createQuery<Data, Variables>({
+  // Bad: one opaque string identifies the query but cannot be matched partially,
+  // so nothing invalidates the domain without listing every hook inside it
+  queryKey: ['@invoices/use-invoices'],
+  fetcher: request,
+});
+```
+
 **Correct (typed hook per domain, types in request order, key declared once):**
 
 ```ts
@@ -98,7 +112,7 @@ type Response = Invoice[];
 type Data = Response;
 
 export const useInvoices = createQuery<Data, Variables>({
-  queryKey: ['@invoices/use-invoices'],
+  queryKey: ['@invoices', 'invoices'],
   fetcher: request,
 });
 
@@ -156,7 +170,7 @@ type Response = Paginated<Invoice>;
 type Data = Response;
 
 export const useInvoicePage = createQuery<Data, Variables>({
-  queryKey: ['@invoices/use-invoice-page'],
+  queryKey: ['@invoices', 'invoices', 'page'],
   fetcher: request,
   // Good: the previous page stays on screen instead of blanking the table
   placeholderData: keepPreviousData,
@@ -214,7 +228,8 @@ type Data = Response;
 
 export const useMarkPaid = createMutation<Data, Variables>({
   mutationFn: request,
-  // Good: invalidation declared beside the mutation, with the key its owner exposes
+  // Good: ['@invoices', 'invoices'] is a prefix of the page hook's key, so this one
+  // entry clears the listing and every page of it
   use: [withInvalidation(useInvoices.getKey())],
 });
 
