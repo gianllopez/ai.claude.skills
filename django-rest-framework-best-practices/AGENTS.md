@@ -1,6 +1,6 @@
 # Django REST Framework Best Practices
 
-**Version 1.0.0**  
+**Version 1.2.0**  
 _Gian López_  
 _January 2026_
 
@@ -30,7 +30,8 @@ A comprehensive configuration for _Django_ and _Django REST Framework_ developme
    - 3.1 [Standard Model Definition](#31-standard-model-definition)
 4. [API & Serialization](#4-api--serialization) — `HIGH`
    - 4.1 [Serializer Definition, Naming & Delegation](#41-serializer-definition-naming--delegation)
-   - 4.2 [View Selection, Typing & Registration](#42-view-selection-typing--registration)
+   - 4.2 [View Selection, Typing & Security](#42-view-selection-typing--security)
+   - 4.3 [URL Registration, Grouping & Ordering](#43-url-registration-grouping--ordering)
 
 ---
 
@@ -666,7 +667,7 @@ Reference: [Django Model Meta Options](https://docs.djangoproject.com/en/6.0/ref
 
 ### 4.1 Serializer Definition, Naming & Delegation
 
-**Impact (HIGH):** Separating serializers by action (Read vs. Write) prevents leaky abstractions. Using a delegation mixin for write operations ensures that responses contain rich data without code duplication or manual `to_representation` overrides.
+**Impact (HIGH):** Separating serializers by action (Read vs. Write) prevents leaky abstractions. Response delegation is worth abstracting only once repetition proves it: a lone write serializer that reshapes its response reads better with a local `to_representation`, while a third copy of that override turns the mechanism, rather than the mapping, into what the project maintains.
 
 **Guidelines:**
 
@@ -678,8 +679,10 @@ Reference: [Django Model Meta Options](https://docs.djangoproject.com/en/6.0/ref
     - `*RetrieveSerializer`: Detailed single-object read
     - `*CreateSerializer` / `*UpdateSerializer`: For write operations
 3.  **Response Delegation (Write Operations):**
-    - When a write serializer (`Create`/`Update`) needs to return a different representation than its input (e.g., return the full `UserRetrieveSerializer` structure after creating a user), must inherit from `DelegateRepresentationMixin`
-    - Define the target serializer in `Meta.representation`
+    - A write serializer (`Create`/`Update`) that must return a representation different from its input (e.g., the full `UserRetrieveSerializer` structure after creating a user) overrides `to_representation` locally while the project holds fewer than three such serializers
+    - At the third one, extract `DelegateRepresentationMixin` into `apps/common/mixins` and migrate every delegating serializer to it — the count is project-wide and independent of which serializer each one targets, because the mixin factors out the mechanism and not the mapping
+    - Once the mixin exists it is the only accepted form: a manual override left behind is exactly the duplication the extraction removed
+    - Declare the target serializer in `Meta.representation`
 4.  **Field Declaration:**
     - `Meta.fields` must always be an explicit list `[...]`. Never use `"__all__"` or any other shorthand
     - The order of fields in the list must match the order in which they are defined in the model
@@ -710,48 +713,85 @@ class UserRetrieveSerializer(ModelSerializer):
         fields = ["id", "phone", "name", "role"]  # Matches model field order
 ```
 
-**Incorrect (Manual override or returning incomplete data):**
+**Incorrect (Abstraction without repetition, or repetition without abstraction):**
 
 ```python
-# Bad: Manually overriding to_representation (Repeated logic)
+# ./apps/users/serializers/user_create_serializer.py — the only delegating serializer
+
+from apps.common.mixins import DelegateRepresentationMixin
+
+# Bad: a shared mixin in apps/common/ carrying a single call site.
+# The indirection costs more than the three lines it replaces
+class UserCreateSerializer(DelegateRepresentationMixin, serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["identification", "name", "phone"]
+        representation = UserRetrieveSerializer
+```
+
+```python
+# ./apps/invoices/serializers/invoice_create_serializer.py — the third override of its kind
+
+class InvoiceCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invoice
+        fields = ["number", "customer", "total"]
+
+    # Bad: UserCreateSerializer and PaymentCreateSerializer already carry these
+    # same lines. The delegation mechanism is now what the project maintains
+    def to_representation(self, instance):
+        from .invoice_retrieve_serializer import InvoiceRetrieveSerializer
+
+        return InvoiceRetrieveSerializer(instance, context=self.context).data
+```
+
+**Correct (Local override below the threshold, extracted mixin at it):**
+
+```python
+# ./apps/users/serializers/user_create_serializer.py — one of two delegating serializers
+
+from rest_framework import serializers
+
+from apps.users.models import User
+
 class UserCreateSerializer(serializers.ModelSerializer):
-    code = serializers.CharField(write_only=True)
+    code = serializers.CharField(max_length=6, write_only=True)
 
     class Meta:
         model = User
-        fields = ["name", "code"]
+        fields = ["identification", "name", "phone", "code"]
 
-    # This logic is fragile and repetitive across the project
+    # Local, obvious, and cheap to delete once a mixin replaces it.
+    # The import is deferred to break the circular reference between serializers
     def to_representation(self, instance):
         from .user_retrieve_serializer import UserRetrieveSerializer
+
         return UserRetrieveSerializer(instance, context=self.context).data
 ```
 
-**Correct (Mixin Delegation):**
-
 ```python
+# ./apps/invoices/serializers/invoice_create_serializer.py — the third one: extract and migrate
+
 from rest_framework import serializers
 
 from apps.common.mixins import DelegateRepresentationMixin
-from apps.users.models import User
-from apps.users.serializers.user_retrieve_serializer import UserRetrieveSerializer
+from apps.invoices.models import Invoice
+from apps.invoices.serializers.invoice_retrieve_serializer import InvoiceRetrieveSerializer
 
 # Inherits from Mixin + Serializer
-class UserCreateSerializer(DelegateRepresentationMixin, serializers.ModelSerializer):
-    code = serializers.CharField(max_length=6)
-
+class InvoiceCreateSerializer(DelegateRepresentationMixin, serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ["identification", "name", "phone", "sid", "code"]
-        # Magic: Automatically transforms the response using the Retrieve serializer
-        representation = UserRetrieveSerializer
+        model = Invoice
+        fields = ["number", "customer", "total"]
+        # Transforms the response using the Retrieve serializer
+        representation = InvoiceRetrieveSerializer
 ```
 
 Reference: [DRF Customizing Serialization](https://www.django-rest-framework.org/api-guide/serializers/#customizing-serialization)
 
-### 4.2 View Selection, Typing & Registration
+### 4.2 View Selection, Typing & Security
 
-**Impact (MEDIUM):** Standardization prevents boilerplate code. Using generic views reduces maintenance. Purposeful typing in _APIViews_ improves IDE support and communicates intent. Explicit declaration of `authentication_classes` and `permission_classes` prevents relying on implicit global defaults, making the security contract of every view self-documenting. Module-level imports in `urls.py` prevent naming conflicts and circular dependencies.
+**Impact (MEDIUM):** Standardization prevents boilerplate code. Using generic views reduces maintenance. Purposeful typing in _APIViews_ improves IDE support and communicates intent. Explicit declaration of `authentication_classes` and `permission_classes` prevents relying on implicit global defaults, making the security contract of every view self-documenting.
 
 **Guidelines:**
 
@@ -762,13 +802,12 @@ Reference: [DRF Customizing Serialization](https://www.django-rest-framework.org
     - Always type-hint `request` as `Request` — it adds real value by enabling IDE autocompletion and making the parameter contract explicit
     - Omit return type annotations when the `return` statement is self-documenting (e.g., `return Response(...)`); add them only when branching logic makes the return type non-obvious
     - Use explicit imports (e.g., `from rest_framework.request import Request`)
-3.  **URL Registration:**
-    - In `urls.py`, import the views module relatively: `from . import views`
-    - Register paths referencing the module: `views.MyClassName.as_view()`
-4.  **Security Declaration:**
+3.  **Security Declaration:**
     - Every view (_APIView_, _Generic View_, or _ViewSet_) must explicitly declare both `authentication_classes` and `permission_classes`
     - When a view requires no authentication or permissions, declare empty lists explicitly — never rely on implicit global defaults
     - The two attributes must be declared together, separated from `queryset` and `serializer_class` by a blank line
+
+How these views are then registered in `urls.py` is covered by `arch-url-registration`.
 
 **Incorrect (Implicit security — relies on global defaults):**
 
@@ -827,17 +866,7 @@ class UserProfileListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 ```
 
-**Incorrect (Direct imports & Missing Types):**
-
-```python
-# ./apps/users/urls.py
-
-from .views import UserLoginAPIView # Potential name conflict
-
-urlpatterns = [
-    path("login/", UserLoginAPIView.as_view()),
-]
-```
+**Incorrect (Missing Types):**
 
 ```python
 # ./apps/users/views/login.py
@@ -848,7 +877,7 @@ class UserLoginAPIView(APIView):
         return Response({})
 ```
 
-**Correct (Context-Aware Selection & Module Import):**
+**Correct (Context-Aware Selection & Explicit Typing):**
 
 ```python
 # ./apps/users/views/login.py
@@ -867,17 +896,108 @@ class UserLoginAPIView(APIView):
         return Response({"foo": "bar"})
 ```
 
+Reference: [Django REST Framework Class-based Views](https://www.django-rest-framework.org/api-guide/views)
+
+### 4.3 URL Registration, Grouping & Ordering
+
+**Impact (MEDIUM):** _Django_ resolves `urlpatterns` top-down and returns the first match, so ordering is not only a matter of readability: a detail route carrying a permissive converter placed above a literal sibling silently swallows it, and the shadowed endpoint fails in a way no test of the view itself can catch. Grouping by domain keeps a growing routing table navigable, a fixed action order makes a missing endpoint visible by its absence, and one argument per line keeps diffs limited to the line that actually changed.
+
+**Guidelines:**
+
+1.  **Module Import:** In `urls.py`, import the views module relatively — `from . import views` — and register paths referencing the module: `views.MyClassName.as_view()`. Never import the view classes directly; module-level imports prevent naming conflicts and circular dependencies
+2.  **Grouping by Domain:** Within a single `urlpatterns` list, all routes belonging to the same domain are contiguous, and consecutive domains are separated by a blank line. Never interleave domains
+3.  **Ordering by Action:** Inside a domain group, routes are ordered **creation, listing, detail** — in that order. Literal segments therefore precede converter segments, which is what keeps a permissive converter from shadowing its siblings
+4.  **Project-Level Registration:** The root urlconf registers one `include()` per app, never an individual view. Infrastructure entries (e.g. `admin/`) come first, followed by the app domains in a deliberate, stable order
+5.  **Exploded Call Layout:** Every `path()` is written with one argument per line and a trailing comma after the last one, regardless of how short the call is. The trailing comma is what pins the layout: any _Black_-compatible formatter keeps an exploded call exploded once it is present, so the list stays uniform instead of collapsing the short entries
+
+**Incorrect (direct imports, interleaved domains, shadowed route, collapsed calls):**
+
 ```python
-# ./apps/users/urls.py
+# ./apps/config/urls.py
 
 from django.urls import path
 
-# Standard: Import the module, not the class
-from . import views
+# Bad: direct class imports — name conflicts and circular import risk
+from .views import (
+    ConfigGroupCreateAPIView,
+    ConfigGroupListAPIView,
+    ConfigItemCreateAPIView,
+    ConfigItemListAPIView,
+    ConfigItemRetrieveAPIView,
+)
 
 urlpatterns = [
-    path("login/", views.UserLoginAPIView.as_view()),
+    # Bad: detail route first — "<str:code>" matches "new", so the creation
+    # route below is unreachable
+    path("items/<str:code>/", ConfigItemRetrieveAPIView.as_view()),
+    # Bad: domains interleaved, and no action order within them
+    path("groups/", ConfigGroupListAPIView.as_view()),
+    path("items/", ConfigItemListAPIView.as_view()),
+    path("items/new/", ConfigItemCreateAPIView.as_view()),
+    path("groups/new/", ConfigGroupCreateAPIView.as_view()),
 ]
 ```
 
-Reference: [Django REST Framework Class-based Views](https://www.django-rest-framework.org/api-guide/views)
+**Correct (module import, one domain per group, create → list → detail, exploded):**
+
+```python
+# ./apps/config/urls.py
+
+from django.urls import path
+
+# Standard: import the module, not the class
+from . import views
+
+urlpatterns = [
+    path(
+        "items/new/",
+        views.ConfigItemCreateAPIView.as_view(),
+    ),
+    path(
+        "items/",
+        views.ConfigItemListAPIView.as_view(),
+    ),
+    path(
+        "items/<str:code>/",
+        views.ConfigItemRetrieveAPIView.as_view(),
+    ),
+
+    path(
+        "groups/new/",
+        views.ConfigGroupCreateAPIView.as_view(),
+    ),
+    path(
+        "groups/",
+        views.ConfigGroupListAPIView.as_view(),
+    ),
+    path(
+        "groups/<int:pk>/",
+        views.ConfigGroupRetrieveAPIView.as_view(),
+    ),
+]
+```
+
+```python
+# ./project/urls.py
+
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path(
+        "admin/",
+        admin.site.urls,
+    ),
+
+    path(
+        "api/users/",
+        include("apps.users.urls"),
+    ),
+    path(
+        "api/config/",
+        include("apps.config.urls"),
+    ),
+]
+```
+
+Reference: [Django URL Dispatcher](https://docs.djangoproject.com/en/6.0/topics/http/urls)

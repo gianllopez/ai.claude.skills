@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.2.0",
   "author": "Gian López",
   "date": "August 2026",
   "abstract": "Standards for React itself — the parts that do not change when the renderer does. Ordered by what actually breaks under review: effects and state first, because a misplaced useEffect or a duplicated source of truth is a behavioral defect on any platform; then the architecture of a component, from where its files live to how its props are typed and composed; then data ownership, where a typed query layer holds the cache and components consume state instead of orchestrating requests; and finally the identity work the React Compiler does not reach. Every rule that reads differently on web and on React Native shows both, so it is never abstract for the reader applying it. What belongs to a renderer is deliberately absent: semantic HTML, TailwindCSS v4 and shadcn/ui live in react-best-practices, NativeWind and Expo configuration in react-native-with-expo-best-practices. A project loads this skill plus the one for its platform.",
@@ -21,6 +21,7 @@
     "https://zustand.docs.pmnd.rs/getting-started/introduction",
     "https://www.nativewind.dev/docs/core-concepts/style-specificity",
     "https://docs.expo.dev/router/introduction/",
-    "https://reactrouter.com/start/framework/route-module"
+    "https://reactrouter.com/start/framework/route-module",
+    "https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-sort-props.md"
   ]
 }

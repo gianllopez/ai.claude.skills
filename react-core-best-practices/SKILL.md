@@ -4,7 +4,7 @@ description: React standards that hold on any platform — effect and state disc
 license: MIT
 metadata:
   author: gianllopez
-  version: 1.0.0
+  version: 1.2.0
 ---
 
 # React Core Best Practices
@@ -60,10 +60,11 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 - `arch-core-utilities` - Functional helpers over static classes; constants centralized instead of scattered as magic strings
 - `arch-syntax-conventions` - Short-hand iterators, `handle*` implementations, `function` for components and hand-written hooks, braces on every conditional, ternary over `&&`
 - `arch-class-composition` - `cn()` with `tailwind-merge`; never build class names by interpolation
+- `arch-member-ordering` - Props ordered by the direction they flow — data, configuration, flags, callbacks — with `children` last and the body read outside-in
 
 ### 3. Data Flow (HIGH)
 
-- `data-query-layer` - Typed `react-query-kit` hooks per domain; keys declared once; auth in interceptors, not components
+- `data-query-layer` - Typed `react-query-kit` hooks per domain; hierarchical keys declared once; auth in interceptors, not components
 - `data-async-states` - Every outcome the query can produce is answered; empty exists only for collections, and the surface decides whether the answer is a branch or a property
 
 ### 4. Performance & Robustness (MEDIUM)

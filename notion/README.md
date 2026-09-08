@@ -16,7 +16,7 @@ in full and executed in order. Its structure is intentionally flat.
 
 ## What it does
 
-The skill exposes three operations.
+The skill exposes four operations.
 
 **Operation A — Create a Task**
 
@@ -46,12 +46,24 @@ writes both dates to the task.
 **Operation C — Add a Progress Record**
 
 Given a task (by link or mention), it appends an entry to the page's _Registros_ log: date, author,
-a short description of the progress or blocker, and a closing status line. The status is always
-asked for and shown in the preview, and it renders as a monospaced token tinted with the color
-_Notion_ gives that option in the `Estado` select (`BLOQUEADO` in red, `TERMINADO` in green, …). If
-the status differs from the task's current `Estado`, the skill offers to update the property too.
-Because a _Notion_ text run holds one color at a time, the token's backdrop cannot also be tinted
-from the _API_ — so the skill closes every record by telling the user how to apply it by hand.
+a short description of the progress or blocker, and a closing field — one key and its value. Both
+halves are decided per record, from what the record is actually about; there is no fixed field the
+skill always writes. It is always asked for and shown in the preview. When the key happens to be a
+property of the task and the value differs from what it holds, the skill offers to update the
+property too.
+
+**Operation D — Close a Task**
+
+Given a task (by link or mention), it computes the working hours elapsed between `Fecha de Inicio`
+and the moment the task was finished — the same schedule _Operation B_ spends hours across, walked
+backwards — and offers that figure as the recommended answer to "how long did it take?". The number
+the user confirms is written to `Horas (Reales)` together with the `Estado` transition to
+`POR APROBAR`, in one call, because the workspace's own rule is that a task without real hours is
+not approved. It closes by offering to append the matching record through _Operation C_.
+
+The elapsed time is an anchor, never the answer: a task can sit open for two days and cost four
+hours of work, and only the developer knows the difference. What the skill removes is having to
+recall the figure from memory.
 
 ## Behavior configuration
 
@@ -69,21 +81,25 @@ The skill's behavior is defined by the user directives section of `SKILL.md`:
    _Operation B_ to compute dates.
 7. **Date-calculation prompt** - after creating a task, always ask whether to compute its dates
    now — as a real question that closes the turn, not a remark in the confirmation text.
-8. **Status in a progress record** - the status line is mandatory, always confirmed with the user,
-   and colored from the `Estado` text-color mapping.
-9. **Background tint handoff** - every appended record ends by telling the user that tinting the
-   status backdrop is a manual step in the _Notion UI_, and how to do it without losing the color.
-10. **Responsible from the team list** - `Responsable` is always asked, offering the workspace's
-    people read live from the connector; _Gian López_ is the recommended option, never a silent
-    default.
+8. **Every record closes on one field** - a key and its value, decided per record with no default,
+   always confirmed, never inferred, and never more than one.
+9. **Responsible from the team list** - `Responsable` is always asked, offering the workspace's
+   people read live from the connector; _Gian López_ is the recommended option, never a silent
+   default.
+10. **Real hours are calculated, then confirmed** - the elapsed working time anchors the answer,
+    the user confirms it, and the estimate is never copied into it.
+11. **The close is atomic** - `Horas (Reales)` and the `POR APROBAR` transition are written
+    together, never one without the other.
 
 To change how the skill behaves, edit these directives — not the execution protocol.
 
 ## Scope
 
-This skill currently covers task creation (_Operation A_), date calculation (_Operation B_), and
-progress records (_Operation C_). If it grows further (closing tasks, reporting), keep splitting it
-**by operation**, not into a `rules/` catalog.
+This skill currently covers task creation (_Operation A_), date calculation (_Operation B_),
+progress records (_Operation C_), and closing a task (_Operation D_). Together, B and D implement
+the workspace's hour-control scheme: the estimated plan and the real cost, measured on one
+calendar. If it grows further (approval, reporting), keep splitting it **by operation**, not into a
+`rules/` catalog.
 
 ## Acknowledgments
 

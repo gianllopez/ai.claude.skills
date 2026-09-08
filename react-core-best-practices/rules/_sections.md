@@ -22,6 +22,7 @@ description: Index of all enforced best practices for React itself, independent 
 - **Utilities:** [Core Utilities & Configuration](./arch-core-utilities.md)
 - **Syntax:** [Syntax & Conciseness Conventions](./arch-syntax-conventions.md)
 - **Classes:** [Class Composition & Conditional Classes](./arch-class-composition.md)
+- **Ordering:** [Prop & Member Ordering](./arch-member-ordering.md)
 
 ## Data Flow
 

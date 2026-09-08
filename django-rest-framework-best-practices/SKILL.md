@@ -4,7 +4,7 @@ description: Django and Django REST Framework optimization guidelines. This skil
 license: MIT
 metadata:
   author: gianllopez
-  version: 1.0.0
+  version: 1.2.0
 ---
 
 # Django REST Framework Best Practices
@@ -55,8 +55,9 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 
 ### 4. API & Serialization (HIGH)
 
-- `arch-api-serializer-definition` - Action-based naming, explicit field declaration ordered by model, and representation delegation
+- `arch-api-serializer-definition` - Action-based naming, explicit field declaration ordered by model, and representation delegation extracted at the third serializer that needs it
 - `arch-view-definition` - Generic views usage, strict _APIView_ typing, and explicit security declaration
+- `arch-url-registration` - Module-level view imports, domain grouping, create/list/detail ordering, and exploded `path()` calls
 
 ## How to Use
 

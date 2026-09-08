@@ -20,4 +20,5 @@ description: Index of all enforced best practices for the Django project.
 ## API & Serialization
 
 - [Serializer Definition, Naming & Delegation](./arch-api-serializer-definition.md)
-- [View Selection, Typing & Registration](./arch-view-definition.md)
+- [View Selection, Typing & Security](./arch-view-definition.md)
+- [URL Registration, Grouping & Ordering](./arch-url-registration.md)
