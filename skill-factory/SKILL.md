@@ -271,7 +271,7 @@ _<Date>_
 ## Table of Contents
 
 1. [<Section>](#1-section) — `<IMPACT>`
-   - 1.1 [<Rule Title>](#11-rule-title)
+   - [1.1 <Rule Title>](#11-rule-title)
    ...
 
 ---
@@ -301,7 +301,7 @@ Build it from `metadata.json` and `SKILL.md`; do not keep a separate header file
 
 - Number the sections in `rules/_sections.md` order (`N`), and the rules within each section (`N.M`)
 - Section line: `N. [<Section>](#<anchor>) — ` + the strongest impact among its rules in backticks (rank `CRITICAL > HIGH > MEDIUM > LOW`)
-- Rule line (indented three spaces): `- N.M [<Rule Title>](#<anchor>)`
+- Rule line (indented three spaces): `- [N.M <Rule Title>](#<anchor>)`
 - Anchor = the heading's visible text (including its number) lowercased, with every character that is not a letter, digit, space, or hyphen removed, then spaces turned into hyphens. Examples: `## 2. Configuration & DevOps` → `#2-configuration--devops`; `### 2.2 Deployment Topology` → `#22-deployment-topology`
 
 #### 3 · Body (expanded rules)
