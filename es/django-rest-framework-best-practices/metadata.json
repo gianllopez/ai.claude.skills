@@ -1,0 +1,19 @@
+{
+  "version": "1.3.0",
+  "author": "Gian López",
+  "date": "Enero de 2026",
+  "abstract": "Una configuración integral para el desarrollo con Django y Django REST Framework, optimizada para flujos de trabajo impulsados por IA. Este montaje define patrones arquitectónicos estrictos para la separación de la capa de servicio, la optimización de consultas del ORM (prevención de N+1) y protocolos robustos de validación de datos. Aporta un marco estructurado para la generación automatizada de código, la refactorización y las pruebas unitarias, garantizando sistemas de back-end de alto rendimiento mediante restricciones técnicas precisas",
+  "references": [
+    "https://docs.djangoproject.com/en/6.0/ref/applications",
+    "https://docs.djangoproject.com/en/6.0/ref/settings",
+    "https://docs.docker.com/develop/develop-images/dockerfile_best-practices",
+    "https://caddyserver.com/docs/quick-starts/reverse-proxy",
+    "https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html",
+    "https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/",
+    "https://docs.python.org/3/library/venv.html",
+    "https://docs.djangoproject.com/en/6.0/ref/models/options",
+    "https://www.django-rest-framework.org/api-guide/serializers/#customizing-serialization",
+    "https://www.django-rest-framework.org/api-guide/views",
+    "https://docs.djangoproject.com/en/6.0/topics/http/urls"
+  ]
+}
