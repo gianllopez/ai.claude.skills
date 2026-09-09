@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "author": "Gian López",
+  "date": "Septiembre de 2026",
+  "abstract": "Estándares para construir sitios web de producción con Astro 7, donde la decisión determinante es cuán poco de la página llega al navegador como JavaScript. La salida estática es el valor por defecto y el renderizado bajo demanda es la excepción que tiene que justificarse; un componente es un componente .astro hasta que la interactividad demuestre lo contrario, y una isla lleva la directiva de hidratación que su posición se gana en lugar de client:load en todas partes. El contenido es una colección tipada a través de la Content Layer API, porque un esquema es el único lugar donde un campo obligatorio se convierte en un fallo de compilación en vez de una etiqueta ausente en producción. El SEO se trata como un sistema generado desde ese esquema — una regla de canonical, una convención de barra final, un sitemap que solo lista URLs indexables, JSON-LD derivado del modelo de contenido — nunca compuesto página por página. Los recursos, las tipografías, los scripts de terceros y la navegación siguen las APIs integradas que ya los resuelven, los estilos se resuelven mediante tokens de tema de TailwindCSS v4 declarados en CSS, y la configuración cubre el mínimo de versión, la frontera del entorno y la política de seguridad de contenido que las fuentes omiten. La versión de referencia es Astro 7; cada regla que nombra una clave de configuración o una ruta de importación lleva la versión a la que pertenece. La dirección de diseño visual y la auditoría de accesibilidad quedan fuera de alcance por diseño",
+  "references": [
+    "https://docs.astro.build/en/basics/rendering-modes/",
+    "https://docs.astro.build/en/guides/on-demand-rendering/",
+    "https://docs.astro.build/en/concepts/islands/",
+    "https://docs.astro.build/en/reference/directives-reference/",
+    "https://docs.astro.build/en/basics/astro-components/",
+    "https://docs.astro.build/en/basics/astro-syntax/",
+    "https://docs.astro.build/en/basics/project-structure/",
+    "https://docs.astro.build/en/guides/content-collections/",
+    "https://docs.astro.build/en/guides/markdown-content/",
+    "https://docs.astro.build/en/guides/images/",
+    "https://docs.astro.build/en/guides/fonts/",
+    "https://docs.astro.build/en/guides/styling/",
+    "https://docs.astro.build/en/guides/prefetch/",
+    "https://docs.astro.build/en/guides/view-transitions/",
+    "https://docs.astro.build/en/guides/internationalization/",
+    "https://docs.astro.build/en/guides/integrations-guide/sitemap/",
+    "https://docs.astro.build/en/guides/rss/",
+    "https://docs.astro.build/en/guides/routing/",
+    "https://docs.astro.build/en/guides/environment-variables/",
+    "https://docs.astro.build/en/guides/deploy/",
+    "https://docs.astro.build/en/guides/typescript/",
+    "https://docs.astro.build/en/reference/configuration-reference/",
+    "https://tailwindcss.com/docs/installation/framework-guides/astro",
+    "https://quotyai.com/blog/22-astro-best-practices",
+    "https://agnitestudio.com/blog/astro-best-practices"
+  ]
+}
