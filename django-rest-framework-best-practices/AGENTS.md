@@ -21,17 +21,17 @@ A comprehensive configuration for _Django_ and _Django REST Framework_ developme
 ## Table of Contents
 
 1. [Architecture & Structure](#1-architecture--structure) — `HIGH`
-   - 1.1 [Modular App Structure & Configuration](#11-modular-app-structure--configuration)
+   - [1.1 Modular App Structure & Configuration](#11-modular-app-structure--configuration)
 2. [Configuration & DevOps](#2-configuration--devops) — `HIGH`
-   - 2.1 [Modular Settings Configuration](#21-modular-settings-configuration)
-   - 2.2 [Deployment Topology & Containerization](#22-deployment-topology--containerization)
-   - 2.3 [Environment & Dependency Segregation](#23-environment--dependency-segregation)
+   - [2.1 Modular Settings Configuration](#21-modular-settings-configuration)
+   - [2.2 Deployment Topology & Containerization](#22-deployment-topology--containerization)
+   - [2.3 Environment & Dependency Segregation](#23-environment--dependency-segregation)
 3. [ORM & Database](#3-orm--database) — `HIGH`
-   - 3.1 [Standard Model Definition](#31-standard-model-definition)
+   - [3.1 Standard Model Definition](#31-standard-model-definition)
 4. [API & Serialization](#4-api--serialization) — `HIGH`
-   - 4.1 [Serializer Definition, Naming & Delegation](#41-serializer-definition-naming--delegation)
-   - 4.2 [View Selection, Typing & Security](#42-view-selection-typing--security)
-   - 4.3 [URL Registration, Grouping & Ordering](#43-url-registration-grouping--ordering)
+   - [4.1 Serializer Definition, Naming & Delegation](#41-serializer-definition-naming--delegation)
+   - [4.2 View Selection, Typing & Security](#42-view-selection-typing--security)
+   - [4.3 URL Registration, Grouping & Ordering](#43-url-registration-grouping--ordering)
 
 ---
 
