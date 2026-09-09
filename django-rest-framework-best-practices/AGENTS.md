@@ -1,6 +1,6 @@
 # Django REST Framework Best Practices
 
-**Version 1.2.0**  
+**Version 1.3.0**  
 _Gian López_  
 _January 2026_
 
@@ -686,8 +686,9 @@ Reference: [Django Model Meta Options](https://docs.djangoproject.com/en/6.0/ref
 4.  **Field Declaration:**
     - `Meta.fields` must always be an explicit list `[...]`. Never use `"__all__"` or any other shorthand
     - The order of fields in the list must match the order in which they are defined in the model
+    - Every field goes on its own line, with a trailing comma after the last one, however short the list is. The trailing comma is what pins that layout: any _Black_-compatible formatter keeps an exploded literal exploded once it is present, so a two-field serializer does not collapse back onto one line while a five-field one stays expanded
 
-**Incorrect (Implicit fields or arbitrary order):**
+**Incorrect (Implicit fields, arbitrary order, or a collapsed list):**
 
 ```python
 class UserRetrieveSerializer(ModelSerializer):
@@ -700,7 +701,21 @@ class UserRetrieveSerializer(ModelSerializer):
 class UserRetrieveSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["name", "id", "phone"]  # Bad: Order does not match model definition
+        # Bad: Order does not match model definition
+        fields = [
+            "name",
+            "id",
+            "phone",
+        ]
+```
+
+```python
+class InvoiceListSerializer(ModelSerializer):
+    class Meta:
+        model = Invoice
+        # Bad: short enough to fit on one line, so it reads differently from
+        # every longer serializer, and the next field added rewrites this line
+        fields = ["id", "number"]
 ```
 
 **Correct (Explicit list ordered by model definition):**
@@ -710,7 +725,13 @@ class UserRetrieveSerializer(ModelSerializer):
 class UserRetrieveSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "phone", "name", "role"]  # Matches model field order
+        # Matches model field order
+        fields = [
+            "id",
+            "phone",
+            "name",
+            "role",
+        ]
 ```
 
 **Incorrect (Abstraction without repetition, or repetition without abstraction):**
@@ -725,7 +746,11 @@ from apps.common.mixins import DelegateRepresentationMixin
 class UserCreateSerializer(DelegateRepresentationMixin, serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["identification", "name", "phone"]
+        fields = [
+            "identification",
+            "name",
+            "phone",
+        ]
         representation = UserRetrieveSerializer
 ```
 
@@ -735,7 +760,11 @@ class UserCreateSerializer(DelegateRepresentationMixin, serializers.ModelSeriali
 class InvoiceCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
-        fields = ["number", "customer", "total"]
+        fields = [
+            "number",
+            "customer",
+            "total",
+        ]
 
     # Bad: UserCreateSerializer and PaymentCreateSerializer already carry these
     # same lines. The delegation mechanism is now what the project maintains
@@ -759,7 +788,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["identification", "name", "phone", "code"]
+        fields = [
+            "identification",
+            "name",
+            "phone",
+            "code",
+        ]
 
     # Local, obvious, and cheap to delete once a mixin replaces it.
     # The import is deferred to break the circular reference between serializers
@@ -782,7 +816,11 @@ from apps.invoices.serializers.invoice_retrieve_serializer import InvoiceRetriev
 class InvoiceCreateSerializer(DelegateRepresentationMixin, serializers.ModelSerializer):
     class Meta:
         model = Invoice
-        fields = ["number", "customer", "total"]
+        fields = [
+            "number",
+            "customer",
+            "total",
+        ]
         # Transforms the response using the Retrieve serializer
         representation = InvoiceRetrieveSerializer
 ```
