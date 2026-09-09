@@ -21,36 +21,36 @@ Standards for building production websites with _Astro_ 7, where the defining de
 ## Table of Contents
 
 1. [Rendering & Hydration](#1-rendering--hydration) — `CRITICAL`
-   - 1.1 [Static Output by Default](#11-static-output-by-default)
-   - 1.2 [.astro Components Before Framework Components](#12-astro-components-before-framework-components)
-   - 1.3 [Hydration Directives & Island Boundaries](#13-hydration-directives--island-boundaries)
+   - [1.1 Static Output by Default](#11-static-output-by-default)
+   - [1.2 .astro Components Before Framework Components](#12-astro-components-before-framework-components)
+   - [1.3 Hydration Directives & Island Boundaries](#13-hydration-directives--island-boundaries)
 2. [Content Model](#2-content-model) — `CRITICAL`
-   - 2.1 [Content Collections Through the Content Layer API](#21-content-collections-through-the-content-layer-api)
-   - 2.2 [The Schema Is the Publishing Contract](#22-the-schema-is-the-publishing-contract)
-   - 2.3 [Markdown, MDX & the Code Component](#23-markdown-mdx--the-code-component)
+   - [2.1 Content Collections Through the Content Layer API](#21-content-collections-through-the-content-layer-api)
+   - [2.2 The Schema Is the Publishing Contract](#22-the-schema-is-the-publishing-contract)
+   - [2.3 Markdown, MDX & the Code Component](#23-markdown-mdx--the-code-component)
 3. [SEO System](#3-seo-system) — `CRITICAL`
-   - 3.1 [Site URL, Metadata & Canonicals](#31-site-url-metadata--canonicals)
-   - 3.2 [URL Hygiene, Redirects & Migration](#32-url-hygiene-redirects--migration)
-   - 3.3 [Sitemap & Feed Hygiene](#33-sitemap--feed-hygiene)
-   - 3.4 [Structured Data Generated From Content](#34-structured-data-generated-from-content)
+   - [3.1 Site URL, Metadata & Canonicals](#31-site-url-metadata--canonicals)
+   - [3.2 URL Hygiene, Redirects & Migration](#32-url-hygiene-redirects--migration)
+   - [3.3 Sitemap & Feed Hygiene](#33-sitemap--feed-hygiene)
+   - [3.4 Structured Data Generated From Content](#34-structured-data-generated-from-content)
 4. [Assets & Performance](#4-assets--performance) — `HIGH`
-   - 4.1 [Image Handling & Layout Stability](#41-image-handling--layout-stability)
-   - 4.2 [Fonts Through the Built-in API](#42-fonts-through-the-built-in-api)
-   - 4.3 [Third-Party Scripts & Embeds](#43-third-party-scripts--embeds)
-   - 4.4 [Prefetching & View Transitions](#44-prefetching--view-transitions)
+   - [4.1 Image Handling & Layout Stability](#41-image-handling--layout-stability)
+   - [4.2 Fonts Through the Built-in API](#42-fonts-through-the-built-in-api)
+   - [4.3 Third-Party Scripts & Embeds](#43-third-party-scripts--embeds)
+   - [4.4 Prefetching & View Transitions](#44-prefetching--view-transitions)
 5. [Project Structure](#5-project-structure) — `HIGH`
-   - 5.1 [Route Responsibility, Layouts & Slots](#51-route-responsibility-layouts--slots)
-   - 5.2 [Reusable & Page-Specific Components](#52-reusable--page-specific-components)
-   - 5.3 [TypeScript Path Aliases](#53-typescript-path-aliases)
-   - 5.4 [Markup Discipline Under the v7 Compiler](#54-markup-discipline-under-the-v7-compiler)
+   - [5.1 Route Responsibility, Layouts & Slots](#51-route-responsibility-layouts--slots)
+   - [5.2 Reusable & Page-Specific Components](#52-reusable--page-specific-components)
+   - [5.3 TypeScript Path Aliases](#53-typescript-path-aliases)
+   - [5.4 Markup Discipline Under the v7 Compiler](#54-markup-discipline-under-the-v7-compiler)
 6. [Styling](#6-styling) — `HIGH`
-   - 6.1 [TailwindCSS v4 Setup & Theme Tokens](#61-tailwindcss-v4-setup--theme-tokens)
-   - 6.2 [Scoped Component Styles](#62-scoped-component-styles)
+   - [6.1 TailwindCSS v4 Setup & Theme Tokens](#61-tailwindcss-v4-setup--theme-tokens)
+   - [6.2 Scoped Component Styles](#62-scoped-component-styles)
 7. [Build & Configuration](#7-build--configuration) — `HIGH`
-   - 7.1 [Internationalization on Day One](#71-internationalization-on-day-one)
-   - 7.2 [Structured Build Logging](#72-structured-build-logging)
-   - 7.3 [Typed Environment & Content Security Policy](#73-typed-environment--content-security-policy)
-   - 7.4 [Deployment Target & Toolchain Floor](#74-deployment-target--toolchain-floor)
+   - [7.1 Internationalization on Day One](#71-internationalization-on-day-one)
+   - [7.2 Structured Build Logging](#72-structured-build-logging)
+   - [7.3 Typed Environment & Content Security Policy](#73-typed-environment--content-security-policy)
+   - [7.4 Deployment Target & Toolchain Floor](#74-deployment-target--toolchain-floor)
 
 ---
 
