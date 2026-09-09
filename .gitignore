@@ -6,7 +6,12 @@ yarn.lock
 # os
 .DS_Store
 
-# TODO: Crear nueva "skill" [`astro-best-practices` (SEO, accesibilidad, uso de `@astrojs/react`, separación de componentes a partir de la complejidad de sus interacciones)].
+# claude
+.claude/worktrees/
+
+# TODO: Ampliar la "skill" [`astro-best-practices`] con lo que quedó fuera de la v1.0.0:
+# accesibilidad (excluida por consistencia con `react-best-practices`) y la integración
+# `@astrojs/react` (hoy solo se cubre cuándo un componente de framework se justifica y cómo hidrata).
 # https://quotyai.com/blog/22-astro-best-practices/
 # https://lobehub.com/skills/affaan-m-everything-claude-code-frontend-design?activeTab=skill
 # https://agnitestudio.com/blog/astro-best-practices/
