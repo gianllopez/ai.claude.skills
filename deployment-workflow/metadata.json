@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "author": "Gian López",
+  "date": "September 2026",
+  "abstract": "A security-first, standardized workflow for deploying a project's services to a server over SSH. It resolves the target strictly from SSH configuration that already exists, runs a read-only preflight before touching anything, clones private repositories with a Deploy Key scoped to that repository alone, brings the service up under Docker Compose attached to the server's shared Caddy reverse-proxy network, and registers its subdomain with that proxy following the proxy repository's own contract. Every identifier — directories, container names, SSH aliases — follows reverse domain naming, and every action that cannot be undone is confirmed with the user before it runs rather than assumed from the request that started the deployment.",
+  "references": [
+    "https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys",
+    "https://caddyserver.com/docs/automatic-https",
+    "https://docs.docker.com/compose/networking/",
+    "https://docs.docker.com/reference/cli/docker/network/inspect/"
+  ]
+}
