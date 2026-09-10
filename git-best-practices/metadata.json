@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "author": "Gian López",
+  "date": "September 2026",
+  "abstract": "Version-control conventions for projects, covering both what a commit message looks like and what a branch is called before a single line of it is written. Commit messages follow Conventional Commits: a typed, scoped header, a single plain-prose paragraph, backticked references to code members and libraries, and a mandatory attribution footer. Branch names follow the Conventional Branch specification: a purpose-built type vocabulary (feature/feat, bugfix/fix, hotfix, release, chore) distinct from the commit type set, a hyphen-and-dot character grammar, and an agent-source prefix family (claude/, ai/, codex/, copilot/, cursor/) for branches an AI agent creates. The `/commit` command is the actionable entry point: it analyzes staged changes and executes a commit that already satisfies the message rule. The rule catalog is deliberately built to grow — merge strategy, tagging, and pull-request conventions are the next precedents to add here rather than in a separate skill.",
+  "references": [
+    "https://www.conventionalcommits.org/en/v1.0.0/#specification",
+    "https://conventionalbranch.org"
+  ]
+}
