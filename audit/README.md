@@ -24,21 +24,25 @@ Like the other procedural skills in this repository, this is a small, linear ski
    refuses to touch anything marked `done` unless the user explicitly overrides
 4. **Sets status** — on an explicit request, moves files between `pending` and `done`, appending to
    each file's history exactly as the plugin does
+5. **Tags origin/production** — on an explicit request (or, for `origin=ai`, right after generating
+   a file), records `origin` (`ai`/`human`) and `production` (deployed or not) on the entry, without
+   touching `status` or `history`
 
 ## The plugin's storage contract (shared with `scripts/audit.py`)
 
 The plugin stores each project's database in a single file, `<git-root>/.git/audit.json`, which this
 skill reads and writes directly.
 
-| Aspect         | Value                                                                     |
-| :------------- | :------------------------------------------------------------------------ |
-| Database       | `<git-root>/.git/audit.json`                                              |
-| `project_root` | nearest ancestor directory containing `.git`                              |
-| Keys           | _POSIX_ paths relative to the root (matching `git ls-files`)              |
-| Entry          | `{ "status": "pending" \| "done", "history": [{ "status", "at" }, ...] }` |
-| Timestamps     | `at` is UTC, `%Y-%m-%dT%H:%M:%SZ`, appended on every status change        |
-| Encoding       | compact _JSON_, no spaces (what `vim.json.encode` emits)                  |
-| Statuses       | `pending` ⏳ · `done` ✅ · _absent_ = unaudited                           |
+| Aspect         | Value                                                                                                                      |
+| :------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| Database       | `<git-root>/.git/audit.json`                                                                                               |
+| `project_root` | nearest ancestor directory containing `.git`                                                                               |
+| Keys           | _POSIX_ paths relative to the root (matching `git ls-files`)                                                               |
+| Entry          | `{ "status": "pending" \| "done", "history": [{ "status", "at" }, ...], "origin"?: "ai" \| "human", "production"?: bool }` |
+| Timestamps     | `at` is UTC, `%Y-%m-%dT%H:%M:%SZ`, appended on every status change                                                         |
+| Encoding       | compact _JSON_, no spaces (what `vim.json.encode` emits)                                                                   |
+| Statuses       | `pending` ⏳ · `done` ✅ · _absent_ = unaudited                                                                            |
+| Tags           | `origin`: `ai` 🤖 · `human` 🧑 — `production`: `true` 🚀 · `false` 🧪 — both optional, additive, and unknown to the plugin |
 
 ## Usage
 
@@ -57,6 +61,12 @@ python3 ~/.claude/skills/audit/scripts/audit.py set done src/auth.py
 
 # Bulk selections come from Git, mirroring the plugin's `bulk_set_*` commands
 python3 ~/.claude/skills/audit/scripts/audit.py set pending $(git diff-tree --no-commit-id -r --name-only HEAD)
+
+# Tag authorship and deployment state (independent of status, no history entry)
+python3 ~/.claude/skills/audit/scripts/audit.py tag src/auth.py --origin ai --production false
+
+# Filter by tag, alone or combined with --status
+python3 ~/.claude/skills/audit/scripts/audit.py list --origin ai --production true
 ```
 
 ## Why it writes the database directly
