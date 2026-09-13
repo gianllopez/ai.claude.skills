@@ -4,7 +4,7 @@ description: Django and Django REST Framework optimization guidelines. This skil
 license: MIT
 metadata:
   author: gianllopez
-  version: 1.3.0
+  version: 1.5.0
 ---
 
 # Django REST Framework Best Practices
@@ -34,6 +34,7 @@ Reference these guidelines when:
 | 2        | Configuration & DevOps   | HIGH        | `conf-` |
 | 3        | ORM & Database           | HIGH        | `arch-` |
 | 4        | API & Serialization      | HIGH        | `arch-` |
+| 5        | Testing & Verification   | HIGH        | `test-` |
 
 Priority orders where to look first; peak impact is the strongest rule in the section, matching the table of contents in `AGENTS.md`. They disagree on purpose — a section can hold one blocking rule and several that only ever produce suggestions.
 
@@ -58,6 +59,10 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 - `arch-api-serializer-definition` - Action-based naming, explicit field declaration ordered by model and one field per line, and representation delegation extracted at the third serializer that needs it
 - `arch-view-definition` - Generic views usage, strict _APIView_ typing, and explicit security declaration
 - `arch-url-registration` - Module-level view imports, domain grouping, create/list/detail ordering, and exploded `path()` calls
+
+### 5. Testing & Verification (HIGH)
+
+- `test-scoped-verification` - Ties the verification method to the change surface (model, serializer, view, its security contract, or a signal/receiver) and forbids writing automated test files unless explicitly requested
 
 ## How to Use
 
