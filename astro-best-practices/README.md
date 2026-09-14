@@ -19,14 +19,14 @@ This skill owns the framework and what it emits: rendering mode, island boundari
 Two things are deliberately excluded:
 
 - **What happens inside a framework island.** A project rendering _React_ islands loads `react-core-best-practices` alongside this skill, which owns effects, state, the query layer, composition and typing. This skill owns only whether the island should exist and how it hydrates
-- **Visual design direction and accessibility auditing.** Neither is verifiable against a diff, which is the bar every rule here meets. Semantic and structural guidance is justified on machine-readability and maintainability instead — the same call `react-best-practices` makes
+- **Visual design direction and accessibility auditing.** Neither is verifiable against a diff, which is the bar every rule here meets. Semantic and structural guidance is justified on machine-readability and maintainability instead — the same call `html-best-practices` makes
 
 ## Rule Categories
 
 | Priority | Category              | Peak impact | Prefix     | Rules |
 | :------- | :-------------------- | :---------- | :--------- | ----: |
 | 1        | Rendering & Hydration | CRITICAL    | `isl-`     |     3 |
-| 2        | Content Model         | CRITICAL    | `content-` |     3 |
+| 2        | Content Model         | CRITICAL    | `content-` |     4 |
 | 3        | SEO System            | CRITICAL    | `seo-`     |     4 |
 | 4        | Assets & Performance  | HIGH        | `perf-`    |     4 |
 | 5        | Project Structure     | HIGH        | `arch-`    |     4 |
