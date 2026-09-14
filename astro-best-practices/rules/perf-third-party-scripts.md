@@ -28,6 +28,7 @@ tags: performance, scripts, embeds, analytics, layout
 5.  **A tag manager is a delegation of this rule, not an exemption from it:**
     - It is one script that can load arbitrarily many more, none of which pass through review
     - If one is required, the constraint has to be enforced where the container is edited, and the site's own performance budget is what it is measured against
+    - `@astrojs/partytown` is the tool for the ones that genuinely cannot be trimmed — _Google Tag Manager_, _GA4_, _Facebook Pixel_ — relocating their execution to a web worker so they stop competing with the main thread
 6.  **Review flags:**
     - A `<script src>` pointing at another origin, added to a layout rather than a page
     - An iframe with no width, height or aspect ratio

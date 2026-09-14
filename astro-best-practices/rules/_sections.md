@@ -14,6 +14,7 @@ description: Index of the Astro 7 best practices; framework-agnostic semantic HT
 - **Collections:** [Content Collections Through the Content Layer API](./content-collections-required.md)
 - **Schema:** [The Schema Is the Publishing Contract](./content-schema-contract.md)
 - **Authoring:** [Markdown, MDX & the Code Component](./content-authoring-format.md)
+- **External Data:** [External API Requests at Build Time](./content-external-data.md)
 
 ## SEO System
 

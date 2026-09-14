@@ -6,15 +6,10 @@ yarn.lock
 # os
 .DS_Store
 
-# claude
-.claude/worktrees/
-
-# TODO: Ampliar la "skill" [`astro-best-practices`] con lo que quedó fuera de la v1.0.0:
-# accesibilidad (excluida por consistencia con `react-best-practices`) y la integración
-# `@astrojs/react` (hoy solo se cubre cuándo un componente de framework se justifica y cómo hidrata).
-# https://quotyai.com/blog/22-astro-best-practices/
-# https://lobehub.com/skills/affaan-m-everything-claude-code-frontend-design?activeTab=skill
-# https://agnitestudio.com/blog/astro-best-practices/
-
-# TODO: Crear una "skill" de modelo proxy para despliegue de proyectos en el mismo servidor.
-# TODO: Crear nueva "skill" [`figma` (nombres de capas, regla de 4px, uso de colores de la marca)].
+# ----- Pending ⌛ -----
+# ----- Done ✅ --------
+# DONE: Agregar pruebas automatizadas de las implementaciones [`django-rest-framework-best-practices`].
+# DONE: Agregar comentarios en inglés y con estructura estandar [`django-rest-framework-best-practices`].
+# DONE: Modificar para que no se incluya el enlace de la sesión de Claude Code en el mensaje de "commit" [`git-best-practices`].
+# DONE: Eliminar las "trailling commas" en `fields` de los serializadores [`django-rest-framework-best-practices`].
+# DONE: Crear "skill" para despliegues automatizados [`deployment-workflow`].

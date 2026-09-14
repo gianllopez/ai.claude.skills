@@ -4,7 +4,7 @@ description: Standards for production Astro 7 websites — static output by defa
 license: MIT
 metadata:
   author: gianllopez
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # Astro Best Practices
@@ -60,6 +60,7 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 - `content-collections-required` - Content Layer API: `src/content.config.ts`, every collection with a `loader`, entries keyed by `id`
 - `content-schema-contract` - The schema is where a required field becomes a build failure; validation at build time, not a missing tag in production
 - `content-authoring-format` - Markdown for text, MDX only when components are needed; `<Code />` for build-time-dynamic code; the processor configured for v7
+- `content-external-data` - Every frontmatter fetch bounded by a timeout, validated against a schema, and explicit about what a failure does to the build
 
 ### 3. SEO System (CRITICAL)
 

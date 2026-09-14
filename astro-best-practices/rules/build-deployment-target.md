@@ -13,6 +13,7 @@ tags: deployment, adapter, cdn, node, toolchain
 
 1.  **Deploy static output to an edge platform:**
     - _Cloudflare Pages_, _Netlify_ and _Vercel_ all build and serve _Astro_ with no configuration, and the output is files
+    - _Hostinger_ has two different products here, and only one qualifies on its own: _Web Apps Hosting_ builds from a connected repository, auto-detects _Astro_ (static or with a _Node_ adapter), and ships an in-house global _CDN_ on every plan, no add-on required. Its older, traditional shared hosting is the opposite case — `dist/` uploaded by hand through _hPanel_ or _FTP_, with no build step and no edge distribution unless its separate _Cloudflare_ _CDN_ integration is turned on
     - The choice among them is an operational one — this rule only requires that the target serves from an edge network rather than a single origin
 2.  **The adapter follows the rendering decision, not the other way round:**
     - A fully prerendered site with no on-demand routes and no server islands needs no adapter
@@ -25,6 +26,7 @@ tags: deployment, adapter, cdn, node, toolchain
 4.  **Build the way the platform builds:**
     - Run `astro build` in _CI_ on the same _Node_ version the host uses, and treat a warning-free local build on a different major as unverified
     - `astro check` in the same pipeline catches the type and template errors that a build alone can let through
+    - On a platform that already builds from the connected repository — _Hostinger Web Apps Hosting_ among them — this _CI_ run is not the deploy step, the host's own build is. Its job is to fail fast on a pull request, before a broken commit ever reaches the host's build queue; a separate workflow that duplicates the actual deploy is the thing to skip
 5.  **Keep the deploy output reviewable:**
     - The build emits `dist/`; nothing should be edited there, and nothing generated should be committed
     - Where a host needs headers, redirects or a routing file, generate it from configuration — the redirect map already lives in `astro.config.mjs`
@@ -63,7 +65,7 @@ export default defineConfig({
   "engines": {
     "node": ">=22.12.0"
   },
-  "packageManager": "yarn@4.5.0",
+  "packageManager": "bun@1.4.2",
   "scripts": {
     "build": "astro check && astro build",
     "preview": "astro preview"
@@ -85,17 +87,18 @@ export default defineConfig({
 ```
 
 ```yaml
-# .github/workflows/deploy.yml — the same floor the host uses
+# .github/workflows/ci.yml — verifies pull requests on the same floor the host
+# uses; the host's own connected-repository build is what actually deploys
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: '22.12.0'
-      - run: yarn install --immutable
-      - run: yarn build
+          bun-version: '1.4.2'
+      - run: bun install --frozen-lockfile
+      - run: bun run build
 ```
 
 Reference: [Deploy your Astro site](https://docs.astro.build/en/guides/deploy/)

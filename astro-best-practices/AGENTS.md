@@ -1,6 +1,6 @@
 # Astro Best Practices
 
-**Version 1.1.0**  
+**Version 1.2.0**  
 _Gian López_  
 _September 2026_
 
@@ -14,7 +14,7 @@ _September 2026_
 
 ## Abstract
 
-Standards for building production websites with _Astro_ 7, where the defining decision is how little of the page reaches the browser as _JavaScript_. Static output is the default and on-demand rendering is the exception that has to justify itself; a component is an `.astro` component until interactivity proves otherwise, and an island carries the hydration directive its position earns rather than `client:load` everywhere. Content is a typed collection through the Content Layer API, because a schema is the only place a required field becomes a build failure instead of a missing tag in production. SEO is treated as a system generated from that schema — one canonical rule, one trailing-slash convention, a sitemap that lists only indexable URLs, JSON-LD derived from the content model — never assembled page by page. Assets, fonts, third-party scripts and navigation follow the built-in APIs that already solve them, _TailwindCSS_ v4 is installed through the _Vite_ plugin with its font token wired to the Fonts API variable, and configuration covers the version floor, environment boundary and content security policy the sources omit. The reference version is _Astro_ 7; every rule that names a config key or import path carries the version it belongs to. Framework-agnostic semantic _HTML_ and the _TailwindCSS_ v4 theme's own contents live in `html-best-practices`, loaded alongside this skill. Visual design direction and accessibility auditing are out of scope by design.
+Standards for building production websites with _Astro_ 7, where the defining decision is how little of the page reaches the browser as _JavaScript_. Static output is the default and on-demand rendering is the exception that has to justify itself; a component is an `.astro` component until interactivity proves otherwise, and an island carries the hydration directive its position earns rather than `client:load` everywhere. Content is a typed collection through the Content Layer API, because a schema is the only place a required field becomes a build failure instead of a missing tag in production. An external API call in the frontmatter is bounded by a timeout and validated against a schema, so a third-party outage degrades deliberately instead of hanging the build or shipping an undefined value. SEO is treated as a system generated from that schema — one canonical rule, one trailing-slash convention, a sitemap that lists only indexable URLs, JSON-LD derived from the content model — never assembled page by page. Assets, fonts, third-party scripts and navigation follow the built-in APIs that already solve them, _TailwindCSS_ v4 is installed through the _Vite_ plugin with its font token wired to the Fonts API variable, and configuration covers the version floor, environment boundary and content security policy the sources omit. The reference version is _Astro_ 7; every rule that names a config key or import path carries the version it belongs to. Framework-agnostic semantic _HTML_ and the _TailwindCSS_ v4 theme's own contents live in `html-best-practices`, loaded alongside this skill. Visual design direction and accessibility auditing are out of scope by design.
 
 ---
 
@@ -28,6 +28,7 @@ Standards for building production websites with _Astro_ 7, where the defining de
    - [2.1 Content Collections Through the Content Layer API](#21-content-collections-through-the-content-layer-api)
    - [2.2 The Schema Is the Publishing Contract](#22-the-schema-is-the-publishing-contract)
    - [2.3 Markdown, MDX & the Code Component](#23-markdown-mdx--the-code-component)
+   - [2.4 External API Requests at Build Time](#24-external-api-requests-at-build-time)
 3. [SEO System](#3-seo-system) — `CRITICAL`
    - [3.1 Site URL, Metadata & Canonicals](#31-site-url-metadata--canonicals)
    - [3.2 URL Hygiene, Redirects & Migration](#32-url-hygiene-redirects--migration)
@@ -556,7 +557,7 @@ Reference: [Defining a collection schema](https://docs.astro.build/en/guides/con
 
 ### 2.3 Markdown, MDX & the Code Component
 
-**Impact (HIGH):** _MDX_ is _Markdown_ that can import and execute components, and that capability is not free: every _MDX_ file is compiled as a module, can pull a framework component into the page, and stops being content a non-developer can safely edit. Making it the default authoring format for a blog means a hundred prose files carry the machinery that four of them needed. The mirror defect is reaching for raw `<pre>` blocks or a third-party highlighter when the code being rendered is dynamic, ignoring the highlighter _Astro_ already runs. And in v7 the processor underneath all of this changed: **Sätteri is the default**, it does not run _remark_ or _rehype_ plugins, and `@astrojs/markdown-remark` is no longer installed for you — so a project that carried a plugin pipeline forward without touching the config has silently lost it.
+**Impact (HIGH):** _MDX_ is _Markdown_ that can import and execute components, and that capability is not free: every _MDX_ file is compiled as a module, can pull a framework component into the page, and stops being content a non-developer can safely edit. Making it the default authoring format for a blog means a hundred prose files carry the machinery that four of them needed. The mirror defect is reaching for raw `<pre>` blocks or a third-party highlighter when the code being rendered is dynamic, ignoring the highlighter _Astro_ already runs. And in v7 the processor underneath all of this changed: _Sätteri_ is the default, it does not run _remark_ or _rehype_ plugins, and `@astrojs/markdown-remark` is no longer installed for you — so a project that carried a plugin pipeline forward without touching the config has silently lost it.
 
 **Guidelines:**
 
@@ -576,7 +577,7 @@ Reference: [Defining a collection schema](https://docs.astro.build/en/guides/con
     - It does **not** inherit `markdown.shikiConfig`. A `<Code />` block that has to match the theme of the surrounding fenced blocks must be passed `theme` explicitly, or the page renders two different themes
     - `import.meta.glob()` is how a build-time file becomes that variable; `Astro.glob()` was removed in v6
 5.  **Configure the processor rather than inheriting it:**
-    - **Sätteri** is the default in v7 and needs no configuration; state it explicitly only when passing feature flags
+    - _Sätteri_ is the default in v7 and needs no configuration; state it explicitly only when passing feature flags
     - It runs _mdast_ and _hast_ plugins, which are its own ecosystem — _remark_ and _rehype_ plugins do not work under it
     - A project with an existing _remark_/_rehype_ pipeline opts back in with `processor: unified()` from `@astrojs/markdown-remark`, which must now be installed explicitly
     - Top-level `markdown.remarkPlugins`, `rehypePlugins`, `remarkRehype`, `gfm` and `smartypants` are deprecated in favour of options passed to the processor. Leaving them in place is a pipeline that will stop being applied
@@ -650,6 +651,87 @@ const [path, source] = Object.entries(modules)[0];
 ```
 
 Reference: [Markdown in Astro](https://docs.astro.build/en/guides/markdown-content/)
+
+### 2.4 External API Requests at Build Time
+
+**Impact (HIGH):** A frontmatter `fetch()` runs at build time, and unlike a request a visitor's browser makes, nothing about its failure is visible until the build itself succeeds or fails. An API with no timeout hangs the build indefinitely instead of failing fast; an API that changes its response shape renders `undefined` where a number used to be, and the page ships that way because nothing checked; an API that is down takes every page depending on it down with it — including pages that have nothing to do with the data that failed. None of this is hypothetical for a site built around a handful of external calls: it is the first production incident that data source causes, and it always looks the same, a change on someone else's server breaking a build nobody touched.
+
+**Guidelines:**
+
+1.  **Fetch in the frontmatter, at build time by default:**
+    - It runs on the server, so an external request belongs there like any other build-time data, resolved before the page renders
+    - Fetch from the client only when the data is genuinely request-specific or interactive — that is an island's concern, not this rule's
+2.  **Collection-shaped data still goes through a loader; a one-off value is a plain fetch:**
+    - A list of entries with a stable schema is content — `glob()`, `file()` or a custom loader in `src/content.config.ts`, per the content collections rule
+    - A single value with no collection behind it — a star count, a stock level, an exchange rate — does not need one; a plain `fetch()` in the frontmatter that needs it is the right size
+3.  **Decide explicitly what a failed request does to the build:**
+    - A field the page cannot render without — a required data source — is left to throw, so the build fails loudly at the file that needs it
+    - A non-critical enrichment — a stat, a badge, a "trending" strip — is wrapped in `try`/`catch` with an explicit fallback, so a third-party outage degrades one section instead of blocking every page
+    - What is never acceptable is catching the error and letting the page render `undefined` where the value should be — that is the failure with no signal at all
+4.  **Bound every request with an explicit timeout:**
+    - `fetch(url, { signal: AbortSignal.timeout(5000) })` on every external call — an API with no SLA can otherwise hang the build indefinitely, which is worse than a slow page: the whole site never deploys
+    - A timeout that fires is still a failure, and guideline 3 decides what happens next
+5.  **Validate the response before using it:**
+    - Parse it with the same tool the content schema rule uses — a `z.object()` shape checked against the payload — so an API that changed its fields is a build error naming the field, not a silent `undefined` three components downstream
+    - `response.ok` is checked before the body is read; a 404 or 500 with a JSON error body still parses as JSON if nothing checks the status first
+6.  **Centralize the fetch in one function, and reach for on-demand rendering when the data is genuinely too volatile:**
+    - One function per external source, in `src/lib/`, called from every page or component that needs it — not the same `fetch()` retyped at each call site with a slightly different timeout or none at all
+    - Data too volatile to rebuild for is the on-demand case the rendering rule already names — `prerender = false` reads the same data at request time instead of trying to keep a static build fresh
+
+**Incorrect (unbounded, unvalidated, duplicated, and silent on failure):**
+
+```astro
+---
+// src/pages/index.astro
+// Bad: no timeout, no schema, no try/catch — a slow or changed API hangs or
+// silently breaks this page, and the same fetch is retyped on every page
+// that shows this stat
+const res = await fetch('https://api.github.com/repos/withastro/astro');
+const data = await res.json();
+---
+
+<p>{data.stargazers_count} stars</p>
+```
+
+**Correct (centralized, bounded, validated, and explicit about failure):**
+
+```ts
+// src/lib/github-stats.ts
+import { z } from 'astro/zod';
+
+const RepoStatsSchema = z.object({ stargazers_count: z.number() });
+
+export async function getRepoStats(repo: string) {
+  try {
+    const response = await fetch(`https://api.github.com/repos/${repo}`, {
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub API responded ${response.status}`);
+    }
+
+    return RepoStatsSchema.parse(await response.json());
+  } catch (error) {
+    // Non-critical enrichment: degrade this section, do not fail the build
+    console.warn(`Could not fetch stats for ${repo}:`, error);
+    return null;
+  }
+}
+```
+
+```astro
+---
+// src/pages/index.astro
+import { getRepoStats } from '@lib/github-stats';
+
+const stats = await getRepoStats('withastro/astro');
+---
+
+{stats && <p>{stats.stargazers_count} stars</p>}
+```
+
+Reference: [Fetching data](https://docs.astro.build/en/guides/data-fetching/)
 
 ---
 
@@ -1382,6 +1464,7 @@ Reference: [Fonts](https://docs.astro.build/en/guides/fonts/)
 5.  **A tag manager is a delegation of this rule, not an exemption from it:**
     - It is one script that can load arbitrarily many more, none of which pass through review
     - If one is required, the constraint has to be enforced where the container is edited, and the site's own performance budget is what it is measured against
+    - `@astrojs/partytown` is the tool for the ones that genuinely cannot be trimmed — _Google Tag Manager_, _GA4_, _Facebook Pixel_ — relocating their execution to a web worker so they stop competing with the main thread
 6.  **Review flags:**
     - A `<script src>` pointing at another origin, added to a layout rather than a page
     - An iframe with no width, height or aspect ratio
@@ -1900,8 +1983,9 @@ Reference: [Astro components](https://docs.astro.build/en/basics/astro-component
     - `baseUrl` set to the project root, and a `paths` entry per top-level directory the project imports from
     - _Astro_ reads this configuration through _Vite_, so no second declaration is needed for the bundler
 2.  **One alias per meaningful directory, not one catch-all:**
-    - `@components/*`, `@layouts/*`, `@lib/*`, `@styles/*` say something at the import site; a lone `@/*` restates the relative path with a different prefix
-    - Keep a general `@/*` alongside them for the occasional module that fits nowhere, not as the primary mechanism
+    - `@components/*`, `@layouts/*`, `@lib/*`, `@styles/*` say something at the import site; a lone `~/*` restates the relative path with a different prefix
+    - Keep a general `~/*` alongside them for the occasional module that fits nowhere, not as the primary mechanism
+    - _Astro_ ships no alias by default — `astro create` does not add one to `tsconfig.json`, so `~/*` and every scoped alias are this project's own choice, not a framework convention
     - The alias set mirrors the directory conventions in the route-responsibility rule — if a new alias does not correspond to a real directory, the structure is the thing to fix
 3.  **Use them consistently:**
     - A file that imports one sibling relatively and another by alias makes both harder to scan. Same-directory imports are the reasonable exception: `./Card.astro` beside the file that uses it is clearer than an absolute path
@@ -1930,7 +2014,7 @@ import '../../../styles/global.css';
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "~/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
       "@lib/*": ["src/lib/*"],
@@ -2589,6 +2673,7 @@ Reference: [Environment variables](https://docs.astro.build/en/guides/environmen
 
 1.  **Deploy static output to an edge platform:**
     - _Cloudflare Pages_, _Netlify_ and _Vercel_ all build and serve _Astro_ with no configuration, and the output is files
+    - _Hostinger_ has two different products here, and only one qualifies on its own: _Web Apps Hosting_ builds from a connected repository, auto-detects _Astro_ (static or with a _Node_ adapter), and ships an in-house global _CDN_ on every plan, no add-on required. Its older, traditional shared hosting is the opposite case — `dist/` uploaded by hand through _hPanel_ or _FTP_, with no build step and no edge distribution unless its separate _Cloudflare_ _CDN_ integration is turned on
     - The choice among them is an operational one — this rule only requires that the target serves from an edge network rather than a single origin
 2.  **The adapter follows the rendering decision, not the other way round:**
     - A fully prerendered site with no on-demand routes and no server islands needs no adapter
@@ -2601,6 +2686,7 @@ Reference: [Environment variables](https://docs.astro.build/en/guides/environmen
 4.  **Build the way the platform builds:**
     - Run `astro build` in _CI_ on the same _Node_ version the host uses, and treat a warning-free local build on a different major as unverified
     - `astro check` in the same pipeline catches the type and template errors that a build alone can let through
+    - On a platform that already builds from the connected repository — _Hostinger Web Apps Hosting_ among them — this _CI_ run is not the deploy step, the host's own build is. Its job is to fail fast on a pull request, before a broken commit ever reaches the host's build queue; a separate workflow that duplicates the actual deploy is the thing to skip
 5.  **Keep the deploy output reviewable:**
     - The build emits `dist/`; nothing should be edited there, and nothing generated should be committed
     - Where a host needs headers, redirects or a routing file, generate it from configuration — the redirect map already lives in `astro.config.mjs`
@@ -2639,7 +2725,7 @@ export default defineConfig({
   "engines": {
     "node": ">=22.12.0"
   },
-  "packageManager": "yarn@4.5.0",
+  "packageManager": "bun@1.4.2",
   "scripts": {
     "build": "astro check && astro build",
     "preview": "astro preview"
@@ -2661,17 +2747,18 @@ export default defineConfig({
 ```
 
 ```yaml
-# .github/workflows/deploy.yml — the same floor the host uses
+# .github/workflows/ci.yml — verifies pull requests on the same floor the host
+# uses; the host's own connected-repository build is what actually deploys
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: '22.12.0'
-      - run: yarn install --immutable
-      - run: yarn build
+          bun-version: '1.4.2'
+      - run: bun install --frozen-lockfile
+      - run: bun run build
 ```
 
 Reference: [Deploy your Astro site](https://docs.astro.build/en/guides/deploy/)

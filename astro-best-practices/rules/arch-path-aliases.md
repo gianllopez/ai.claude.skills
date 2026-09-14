@@ -15,8 +15,9 @@ tags: typescript, imports, configuration, structure
     - `baseUrl` set to the project root, and a `paths` entry per top-level directory the project imports from
     - _Astro_ reads this configuration through _Vite_, so no second declaration is needed for the bundler
 2.  **One alias per meaningful directory, not one catch-all:**
-    - `@components/*`, `@layouts/*`, `@lib/*`, `@styles/*` say something at the import site; a lone `@/*` restates the relative path with a different prefix
-    - Keep a general `@/*` alongside them for the occasional module that fits nowhere, not as the primary mechanism
+    - `@components/*`, `@layouts/*`, `@lib/*`, `@styles/*` say something at the import site; a lone `~/*` restates the relative path with a different prefix
+    - Keep a general `~/*` alongside them for the occasional module that fits nowhere, not as the primary mechanism
+    - _Astro_ ships no alias by default — `astro create` does not add one to `tsconfig.json`, so `~/*` and every scoped alias are this project's own choice, not a framework convention
     - The alias set mirrors the directory conventions in the route-responsibility rule — if a new alias does not correspond to a real directory, the structure is the thing to fix
 3.  **Use them consistently:**
     - A file that imports one sibling relatively and another by alias makes both harder to scan. Same-directory imports are the reasonable exception: `./Card.astro` beside the file that uses it is clearer than an absolute path
@@ -45,7 +46,7 @@ import '../../../styles/global.css';
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "~/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
       "@lib/*": ["src/lib/*"],

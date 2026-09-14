@@ -7,7 +7,7 @@ tags: content, markdown, mdx, shiki, processor
 
 ## Markdown, MDX & the Code Component
 
-**Impact (HIGH):** _MDX_ is _Markdown_ that can import and execute components, and that capability is not free: every _MDX_ file is compiled as a module, can pull a framework component into the page, and stops being content a non-developer can safely edit. Making it the default authoring format for a blog means a hundred prose files carry the machinery that four of them needed. The mirror defect is reaching for raw `<pre>` blocks or a third-party highlighter when the code being rendered is dynamic, ignoring the highlighter _Astro_ already runs. And in v7 the processor underneath all of this changed: **Sätteri is the default**, it does not run _remark_ or _rehype_ plugins, and `@astrojs/markdown-remark` is no longer installed for you — so a project that carried a plugin pipeline forward without touching the config has silently lost it.
+**Impact (HIGH):** _MDX_ is _Markdown_ that can import and execute components, and that capability is not free: every _MDX_ file is compiled as a module, can pull a framework component into the page, and stops being content a non-developer can safely edit. Making it the default authoring format for a blog means a hundred prose files carry the machinery that four of them needed. The mirror defect is reaching for raw `<pre>` blocks or a third-party highlighter when the code being rendered is dynamic, ignoring the highlighter _Astro_ already runs. And in v7 the processor underneath all of this changed: _Sätteri_ is the default, it does not run _remark_ or _rehype_ plugins, and `@astrojs/markdown-remark` is no longer installed for you — so a project that carried a plugin pipeline forward without touching the config has silently lost it.
 
 **Guidelines:**
 
@@ -27,7 +27,7 @@ tags: content, markdown, mdx, shiki, processor
     - It does **not** inherit `markdown.shikiConfig`. A `<Code />` block that has to match the theme of the surrounding fenced blocks must be passed `theme` explicitly, or the page renders two different themes
     - `import.meta.glob()` is how a build-time file becomes that variable; `Astro.glob()` was removed in v6
 5.  **Configure the processor rather than inheriting it:**
-    - **Sätteri** is the default in v7 and needs no configuration; state it explicitly only when passing feature flags
+    - _Sätteri_ is the default in v7 and needs no configuration; state it explicitly only when passing feature flags
     - It runs _mdast_ and _hast_ plugins, which are its own ecosystem — _remark_ and _rehype_ plugins do not work under it
     - A project with an existing _remark_/_rehype_ pipeline opts back in with `processor: unified()` from `@astrojs/markdown-remark`, which must now be installed explicitly
     - Top-level `markdown.remarkPlugins`, `rehypePlugins`, `remarkRehype`, `gfm` and `smartypants` are deprecated in favour of options passed to the processor. Leaving them in place is a pipeline that will stop being applied
