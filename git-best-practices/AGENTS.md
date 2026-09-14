@@ -39,7 +39,7 @@ Version-control conventions for projects, covering both what a commit message lo
 2. **Types (only these):** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 3. **Description:** one plain-prose paragraph after a blank line — no bullet points, no numbered lists, no line breaks inside the paragraph itself. Summarize the most significant change only; discard minor details
 4. **Backticks (critical):** every reference to a code member (variable, function, class, filename) or third-party library (`react-query`, `axios`) is wrapped in backticks, in both the header and the description
-5. **Footer (mandatory):** one blank line after the description, then the attribution line exactly as the project's active attribution instructions specify for the current session — never fabricated or reused from a prior session
+5. **Footer (mandatory, no links):** one blank line after the description, then only a `Co-Authored-By: <name> <email>` line — never a session URL, conversation link, or any other link, even if the session's active attribution instructions include one
 6. **Language:** the message is written in _English_ only, regardless of the language used to discuss the change
 
 **Incorrect (untyped, unscoped, no backticks, prose lost in a list):**
