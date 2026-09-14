@@ -1,10 +1,10 @@
 ---
 name: astro-best-practices
-description: Standards for production Astro 7 websites — static output by default, .astro components before framework components, hydration directives matched to a component's position, typed content through the Content Layer API, SEO generated from the content schema, the built-in image, font, prefetch and view-transition APIs, TailwindCSS v4 theming in CSS, and the version, environment and CSP configuration a project needs. Use when writing or reviewing .astro files, astro.config.mjs, content collections and their schemas, client:* directives, route and layout structure, or a project's SEO, asset and deployment configuration. In a project that uses React islands, react-core-best-practices loads alongside this skill and owns everything inside those components.
+description: Standards for production Astro 7 websites — static output by default, .astro components before framework components, hydration directives matched to a component's position, typed content through the Content Layer API, SEO generated from the content schema, the built-in image, font, prefetch and view-transition APIs, scoped component styles, TailwindCSS v4 installed through the Vite plugin, and the version, environment and CSP configuration a project needs. Use when writing or reviewing .astro files, astro.config.mjs, content collections and their schemas, client:* directives, route and layout structure, or a project's SEO, asset and deployment configuration. html-best-practices loads alongside this skill for framework-agnostic semantic HTML and TailwindCSS v4 theme tokens; in a project that uses React islands, react-core-best-practices also loads alongside it and owns everything inside those components.
 license: MIT
 metadata:
   author: gianllopez
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Astro Best Practices
@@ -17,7 +17,7 @@ Every rule names a defect concrete enough to point at in a diff — a `<img>` wh
 
 **Reference version: Astro 7.** The framework moves fast and its recent majors removed real _APIs_ — `Astro.glob()`, legacy content collections, `<ViewTransitions />`, `@astrojs/db`. Every rule that names a config key, import path or component states the version it belongs to, so the guidance degrades into a stale reference rather than silently teaching a removed _API_. Where a rule's intent outlives its _API_, the intent is stated first and the _API_ second.
 
-**Scope.** The framework and what it emits. In a project that renders _React_ islands, `react-core-best-practices` loads alongside this skill and owns what happens inside those components — effects, state, the query layer, composition and typing; this skill owns only the boundary: whether the island should exist and how it hydrates. Visual design direction is deliberately out of scope — it is not verifiable against a diff — and so is accessibility auditing, matching the call `react-best-practices` already makes: semantic and structural rules here are justified by machine-readability and maintainability instead.
+**Scope.** The framework and what it emits. Framework-agnostic semantic _HTML_ and _TailwindCSS_ v4 theming — the `@theme` block's contents, arbitrary-value review flags, class-attribute formatting — live in `html-best-practices`, which a _TailwindCSS_-using _Astro_ project loads alongside this one; this skill keeps only what the installation path and the compiler make _Astro_-specific. In a project that renders _React_ islands, `react-core-best-practices` also loads alongside this skill and owns what happens inside those components — effects, state, the query layer, composition and typing; this skill owns only the boundary: whether the island should exist and how it hydrates. Visual design direction is deliberately out of scope — it is not verifiable against a diff — and so is accessibility auditing, matching the call `html-best-practices` already makes: semantic and structural rules here are justified by machine-readability and maintainability instead.
 
 ## When to Apply
 
@@ -84,7 +84,7 @@ Priority orders where to look first; peak impact is the strongest rule in the se
 
 ### 6. Styling (HIGH)
 
-- `style-tailwind-v4-setup` - `@tailwindcss/vite`, never the deprecated `@astrojs/tailwind`; tokens declared in `@theme`, wired to the Fonts API variable
+- `style-tailwind-v4-setup` - `@tailwindcss/vite`, never the deprecated `@astrojs/tailwind`; the font token wired to the Fonts API variable
 - `style-scoped-css` - Component styles stay scoped; `is:global` is an escape hatch that names its reason
 
 ### 7. Build & Configuration (HIGH)
