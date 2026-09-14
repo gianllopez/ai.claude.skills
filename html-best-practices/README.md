@@ -1,8 +1,8 @@
-# React Best Practices
+# HTML Best Practices
 
-A structured repository of the rules that only exist because a web project is built with _React_: a forms library's contract, and a component generator's contract. Optimized for agents, LLMs, and human developers. Built for writing and reviewing: each rule names a defect concrete enough to point at in a diff, and shows the correct shape beside it.
+A structured repository of _HTML_, _CSS_, and _TailwindCSS_ v4 rules, optimized for agents, LLMs, and human developers. Built for writing and reviewing: each rule names a defect concrete enough to point at in a diff, and shows the correct shape beside it.
 
-Framework-agnostic semantic HTML and _TailwindCSS_ v4 rules live in `html-best-practices`; renderer-agnostic _React_ rules live in `react-core-best-practices`. A web project loads all three.
+Framework-agnostic by design: examples use plain _HTML_ and _TailwindCSS_ v4 class attributes, which read the same whether the surrounding file is `.tsx`, `.astro`, or any other template format. `react-best-practices` and `astro-best-practices` each load this skill alongside their own for what genuinely does not survive the move from one meta-framework to the other.
 
 Accessibility auditing is intentionally out of scope. Semantic rules are justified by structural correctness, machine-readability, and maintainability.
 
@@ -26,11 +26,11 @@ Accessibility auditing is intentionally out of scope. Semantic rules are justifi
 
 1. Copy `rules/_template.md` to `rules/category-name.md`
 2. Choose the appropriate category prefix:
-   - `arch-` for the view layer's structure and the shadcn/ui generator contract
-   - `sem-` for form markup and field association through react-hook-form
-   - Semantic HTML, TailwindCSS discipline, and layout/performance rules that do not depend on React belong in `html-best-practices` instead of here
+   - `sem-` for markup semantics: sectioning, interactive elements, content elements
+   - `tw-` for TailwindCSS discipline: theme tokens, class composition, state-driven styling, variants, custom layers, class formatting
+   - `perf-` for performance and robustness: layout stability, CSS footprint
 3. Fill in the frontmatter (`title`, `impact`, `description`, `tags`)
-4. Ensure you have clear _Incorrect_ vs _Correct_ examples, in `tsx`, `ts`, `css`, `js`, `json`, or `plaintext`
+4. Ensure you have clear _Incorrect_ vs _Correct_ examples, in `html`, `css`, `js`, or `plaintext`
 5. Register the rule in `rules/_sections.md` (section + order)
 6. Regenerate `AGENTS.md` (see below)
 
@@ -45,7 +45,7 @@ Two details of the header fail silently if they are missed:
 
 ## Rule File Structure
 
-`rules/_template.md` is the source of truth for this shape; the copy below mirrors it for reference. A rule whose guidelines need their own headings replaces the `**Guidelines:**` list with numbered `###` subsections, which the compiler demotes to `####` — `arch-syntax-conventions` is the one rule that does this.
+`rules/_template.md` is the source of truth for this shape; the copy below mirrors it for reference.
 
 Each rule file should follow this strict frontmatter and structure:
 
@@ -84,16 +84,16 @@ Reference: [<label>](url)
 ## File Naming Convention
 
 - Files starting with `_` are special (metadata or templates)
-- Rule files: `prefix-description.md` (e.g., `state-effect-discipline.md`)
+- Rule files: `prefix-description.md` (e.g., `sem-content-elements.md`)
 - Rules are categorized by their filename prefix
 
 ## Impact Levels
 
-- **CRITICAL** - Breaks behavior or ships broken output (misplaced effects, interpolated class names, non-interactive controls)
+- **CRITICAL** - Breaks behavior or ships broken output (non-interactive controls, hardcoded design decisions with no single definition)
 - **HIGH** - Wrong ownership or strategy, or standardization that prevents technical debt; costly to unwind later
 - **MEDIUM** - Optimizations for build output or runtime behavior
 - **LOW** - Stylistic preferences, usually enforced by tooling
 
 ## Acknowledgments
 
-Originally created by [@gianllopez](https://github.com/gianllopez).
+Originally created by [@gianllopez](https://github.com/gianllopez), extracted from the framework-agnostic rules of `react-best-practices` and `astro-best-practices`.
