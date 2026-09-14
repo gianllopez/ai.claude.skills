@@ -36,11 +36,11 @@ export default {
 };
 ```
 
-```tsx
-// Bad: the class comes from data and is built by interpolation
-<span className={`bg-${status.color}-100 text-${status.color}-800`}>
-  {status.label}
-</span>
+```html
+<!-- Bad: the class comes from data and is built by interpolation -->
+<span class="bg-{{ status.color }}-100 text-{{ status.color }}-800"
+  >{{ status.label }}</span
+>
 ```
 
 **Correct (automatic detection, explicit source registration, static map with a scoped inline fallback):**
@@ -59,15 +59,15 @@ export default {
 @source inline("bg-{success,warning,info} text-{success,warning,info}-foreground");
 ```
 
-```tsx
+```js
 const STATUS_STYLES = {
   error: 'bg-destructive text-destructive-foreground',
   ok: 'bg-success text-success-foreground',
   warn: 'bg-warning text-warning-foreground',
-} as const;
+};
 
 // Good: complete static strings, nothing for the scanner to miss
-<span className={STATUS_STYLES[status.kind]}>{status.label}</span>;
+const classes = STATUS_STYLES[status.kind];
 ```
 
 Reference: [Detecting classes in source files](https://tailwindcss.com/docs/detecting-classes-in-source-files)

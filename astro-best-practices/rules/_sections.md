@@ -1,6 +1,6 @@
 ---
 title: Rule Sections
-description: Index of the Astro 7 best practices; what happens inside a React island belongs to react-core-best-practices, which an island-rendering project loads alongside this one.
+description: Index of the Astro 7 best practices; framework-agnostic semantic HTML and TailwindCSS v4 theming belong to html-best-practices, and what happens inside a React island belongs to react-core-best-practices — both load alongside this one where they apply.
 ---
 
 ## Rendering & Hydration
@@ -38,7 +38,7 @@ description: Index of the Astro 7 best practices; what happens inside a React is
 
 ## Styling
 
-- **Setup:** [TailwindCSS v4 Setup & Theme Tokens](./style-tailwind-v4-setup.md)
+- **Setup:** [TailwindCSS v4 Setup & Font Wiring](./style-tailwind-v4-setup.md)
 - **Scope:** [Scoped Component Styles](./style-scoped-css.md)
 
 ## Build & Configuration
