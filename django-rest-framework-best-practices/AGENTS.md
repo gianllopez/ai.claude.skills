@@ -1,6 +1,6 @@
 # Django REST Framework Best Practices
 
-**Version 1.3.0**  
+**Version 1.3.1**  
 _Gian López_  
 _January 2026_
 
@@ -686,7 +686,7 @@ Reference: [Django Model Meta Options](https://docs.djangoproject.com/en/6.0/ref
 4.  **Field Declaration:**
     - `Meta.fields` must always be an explicit list `[...]`. Never use `"__all__"` or any other shorthand
     - The order of fields in the list must match the order in which they are defined in the model
-    - Every field goes on its own line, with a trailing comma after the last one, however short the list is. The trailing comma is what pins that layout: any _Black_-compatible formatter keeps an exploded literal exploded once it is present, so a two-field serializer does not collapse back onto one line while a five-field one stays expanded
+    - Every field goes on its own line, however short the list is
 
 **Incorrect (Implicit fields, arbitrary order, or a collapsed list):**
 
