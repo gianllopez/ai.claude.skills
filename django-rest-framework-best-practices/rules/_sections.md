@@ -26,3 +26,7 @@ description: Index of all enforced best practices for the Django project.
 ## Testing & Verification
 
 - [Scoped Verification & No Unsolicited Tests](./test-scoped-verification.md)
+
+## Documentation & Style
+
+- [Comment Language, Structure & Necessity](./doc-comment-standards.md)
