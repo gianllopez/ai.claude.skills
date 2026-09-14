@@ -15,7 +15,7 @@ tags: performance, layout, media
     - Every `img` declares `width` and `height` attributes, or sits in an `aspect-*` container with `object-cover`
     - Attributes plus `h-auto w-full` gives a responsive image that still reserves its ratio
 2.  **Loading strategy:**
-    - `loading="lazy"` below the fold; the LCP image stays eager and may be preloaded from the route
+    - `loading="lazy"` below the fold; the LCP image stays eager and may be preloaded from the page's `head`
 3.  **Viewport units:**
     - `w-screen` is `100vw`, which ignores the scrollbar and overflows — use `w-full`
     - `h-screen` fights the mobile dynamic toolbar — prefer `h-dvh` (or `min-h-dvh`)
@@ -31,64 +31,51 @@ tags: performance, layout, media
 
 **Incorrect (unsized image, w-screen, fixed text height, unshrinkable flex child):**
 
-```tsx
-type Props = { file: Attachment };
+```html
+<!-- Bad: no dimensions — the page jumps when this loads -->
+<img src="/preview.jpg" class="w-full rounded-lg" />
 
-export function AttachmentRow({ file }: Props) {
-  return (
-    <>
-      {/* Bad: no dimensions — the page jumps when this loads */}
-      <img src={file.previewUrl} className="w-full rounded-lg" />
-      {/* Bad: 100vw ignores the scrollbar and scrolls the page sideways */}
-      <section className="w-screen bg-muted py-12">
-        <div className="mx-auto flex max-w-3xl items-center gap-3">
-          {/* Bad: no min-w-0, so a long filename blows out the row instead of truncating */}
-          <div className="flex-1">
-            <p className="h-[24px] truncate">{file.name}</p>
-          </div>
-          <button type="button">Download</button>
-        </div>
-      </section>
-    </>
-  );
-}
+<!-- Bad: 100vw ignores the scrollbar and scrolls the page sideways -->
+<section class="w-screen bg-muted py-12">
+  <div class="mx-auto flex max-w-3xl items-center gap-3">
+    <!-- Bad: no min-w-0, so a long filename blows out the row instead of truncating -->
+    <div class="flex-1">
+      <p class="h-[24px] truncate">quarterly-report-final-v3-reviewed.pdf</p>
+    </div>
+    <button type="button">Download</button>
+  </div>
+</section>
 ```
 
 **Correct (reserved ratio, w-full, content-sized text, min-w-0 on the flex child):**
 
-```tsx
-type Props = { file: Attachment };
+```html
+<img
+  src="/preview.jpg"
+  width="1200"
+  height="630"
+  loading="lazy"
+  class="h-auto w-full rounded-lg"
+/>
 
-export function AttachmentRow({ file }: Props) {
-  return (
-    <>
-      <img
-        src={file.previewUrl}
-        width={1200}
-        height={630}
-        loading="lazy"
-        className="h-auto w-full rounded-lg"
-      />
-      <section className="w-full bg-muted py-12">
-        <div className="mx-auto flex max-w-3xl items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="truncate">{file.name}</p>
-          </div>
-          <button type="button">Download</button>
-        </div>
-      </section>
-      {/* Unknown intrinsic size: reserve the ratio instead */}
-      <figure>
-        <div className="mb-2 aspect-video overflow-hidden rounded-lg">
-          <img src={file.previewUrl} className="size-full object-cover" />
-        </div>
-        <figcaption className="text-sm text-muted-foreground">
-          Attachment preview
-        </figcaption>
-      </figure>
-    </>
-  );
-}
+<section class="w-full bg-muted py-12">
+  <div class="mx-auto flex max-w-3xl items-center gap-3">
+    <div class="min-w-0 flex-1">
+      <p class="truncate">quarterly-report-final-v3-reviewed.pdf</p>
+    </div>
+    <button type="button">Download</button>
+  </div>
+</section>
+
+<!-- Unknown intrinsic size: reserve the ratio instead -->
+<figure>
+  <div class="mb-2 aspect-video overflow-hidden rounded-lg">
+    <img src="/preview.jpg" class="size-full object-cover" />
+  </div>
+  <figcaption class="text-sm text-muted-foreground">
+    Attachment preview
+  </figcaption>
+</figure>
 ```
 
 Reference: [Cumulative Layout Shift](https://web.dev/articles/cls)

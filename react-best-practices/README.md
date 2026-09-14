@@ -1,8 +1,8 @@
 # React Best Practices
 
-A structured repository of _React_ application rules, optimized for agents, LLMs, and human developers. Built for writing and reviewing: each rule names a defect concrete enough to point at in a diff, and shows the correct shape beside it.
+A structured repository of the rules that only exist because a web project is built with _React_: a forms library's contract, and a component generator's contract. Optimized for agents, LLMs, and human developers. Built for writing and reviewing: each rule names a defect concrete enough to point at in a diff, and shows the correct shape beside it.
 
-Framework-agnostic — examples use _React Router_ because that is the reference stack, but the principles hold for any router that owns navigation data.
+Framework-agnostic semantic HTML and _TailwindCSS_ v4 rules live in `html-best-practices`; renderer-agnostic _React_ rules live in `react-core-best-practices`. A web project loads all three.
 
 Accessibility auditing is intentionally out of scope. Semantic rules are justified by structural correctness, machine-readability, and maintainability.
 
@@ -26,12 +26,9 @@ Accessibility auditing is intentionally out of scope. Semantic rules are justifi
 
 1. Copy `rules/_template.md` to `rules/category-name.md`
 2. Choose the appropriate category prefix:
-   - `arch-` for component architecture: folder structure, composition, extraction, typing, markup depth, syntax conventions
-   - `state-` for state and effects: effect discipline, derivation, ownership, identity
-   - `data-` for data flow: the query layer, mutations, async branches
-   - `sem-` for markup semantics: sectioning, interactive elements, forms, content elements
-   - `tw-` for TailwindCSS discipline: theme tokens, class composition, state-driven styling, variants, custom layers, class formatting
-   - `perf-` for performance and robustness: render stability, layout stability, CSS footprint
+   - `arch-` for the view layer's structure and the shadcn/ui generator contract
+   - `sem-` for form markup and field association through react-hook-form
+   - Semantic HTML, TailwindCSS discipline, and layout/performance rules that do not depend on React belong in `html-best-practices` instead of here
 3. Fill in the frontmatter (`title`, `impact`, `description`, `tags`)
 4. Ensure you have clear _Incorrect_ vs _Correct_ examples, in `tsx`, `ts`, `css`, `js`, `json`, or `plaintext`
 5. Register the rule in `rules/_sections.md` (section + order)
