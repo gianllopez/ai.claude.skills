@@ -98,7 +98,7 @@ Use when the skill is a large, evolving set of many independent rules that (a) b
 
 1. **Pick a tier** using the table above
 2. **Use the name the user chose** — never invent or pick one; if it is missing, ask. Then validate it: lowercase letters, numbers, and hyphens only; ≤ 64 chars; must not contain `anthropic` or `claude`
-3. **Copy the matching template** from `templates/tier-<n>/` into `~/.claude/skills/<skill-name>/`
+3. **Copy the matching template** from `templates/tier-<n>/` into `~/.claude/skills/<skill-name>/`, then rename `SKILL.template.md` to `SKILL.md`. Templates ship under that name because a skill bundle must contain exactly one `SKILL.md`
 4. **Fill every placeholder** (`<skill-name>`, `<Title>`, `<description>`, …). The `description` must state what the skill does and when to use it — it is what _Claude_ matches against
 5. **Tier 3 only:** author one rule per file under `rules/`, register each in `rules/_sections.md`, then compile `AGENTS.md` following _AGENTS.md Compilation_ below
 6. **Verify** against the checklists in _File Formats_ below

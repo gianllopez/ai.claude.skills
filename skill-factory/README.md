@@ -22,7 +22,7 @@ The authoring toolkit for this skills collection. It standardizes how new skills
 ## Usage
 
 1. Read `SKILL.md` and pick a tier
-2. Copy `templates/tier-<n>/` into `~/.claude/skills/<skill-name>/`
+2. Copy `templates/tier-<n>/` into `~/.claude/skills/<skill-name>/` and rename `SKILL.template.md` to `SKILL.md`
 3. Replace every placeholder and validate with the checklists in `SKILL.md`
 4. For _Tier 3_, author the rules and compile `AGENTS.md` per the procedure in `SKILL.md`
 

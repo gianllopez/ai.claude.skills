@@ -6,6 +6,9 @@ yarn.lock
 # os
 .DS_Store
 
+# claude code
+synced/
+
 # ----- Pending ⌛ -----
 # ----- Done ✅ --------
 # DONE: Agregar pruebas automatizadas de las implementaciones [`django-rest-framework-best-practices`].
