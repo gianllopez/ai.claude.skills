@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "author": "Gian López",
+  "date": "October 2026",
+  "abstract": "Standard for creating, extending and auditing a company's brand design system: process, naming, color, surfaces, brand assets, print production, foundations, writing, iconography, components, communication pieces and governance. It describes how every piece derived from a brand must look and be documented, not a specific website, app or presentation, and uses the ASK TECHNOLOGY S.A.S. (ASKIT) system as the worked reference.",
+  "references": [
+    "https://claude.ai/artifact/9eCaJesYHHVPdcU3Unoq1W",
+    "https://www.w3.org/TR/WCAG22/",
+    "https://getbem.com/naming/",
+    "https://tailwindcss.com/docs/colors",
+    "https://tailwindcss.com/docs/theme",
+    "https://en.wikipedia.org/wiki/Bleed_(printing)",
+    "https://www.w3.org/TR/css-values-4/",
+    "https://playwright.dev/docs/api/class-page",
+    "https://pikepdf.readthedocs.io/",
+    "https://fonts.google.com/specimen/Lexend",
+    "https://tailwindcss.com/docs/font-size",
+    "https://tailwindcss.com/docs/responsive-design",
+    "https://reicon.dev/icons",
+    "https://www.caniemail.com/",
+    "https://semver.org/",
+    "https://keepachangelog.com/"
+  ]
+}
